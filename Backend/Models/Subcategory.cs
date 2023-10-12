@@ -3,10 +3,9 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Backend.Models;
 
-public class Type {
+public class ProductType {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public string? ObjectId { get; set; }
 
     [BsonRequired]
     public string Name { get; set; } = null!;
@@ -15,11 +14,14 @@ public class Type {
 public class Subcategory {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public ObjectId? Id { get; set; }
 
     [BsonRequired]
     public string Name { get; set; } = null!;
 
-    private List<Type> Types { get; set; } = new();
-    public Dictionary<string, List<string>> Filters { get; set; } = new();
+    public List<ProductType>? ProductTypes { get; set; } = new();
+    public Dictionary<string, List<string>>? Filters { get; set; } = new();
+
+    [BsonRequired]
+    public ObjectId? CategoryId { get; set; }
 }

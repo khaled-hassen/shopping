@@ -1,4 +1,5 @@
-﻿using Backend.Settings;
+﻿using Backend.Models;
+using Backend.Settings;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -12,7 +13,15 @@ public class DatabaseService {
         _database = client.GetDatabase(settings.Value.DatabaseName);
     }
 
-    public IMongoCollection<T> GetCollection<T>(string name) {
+    private IMongoCollection<T> GetCollection<T>(string name) {
         return _database.GetCollection<T>(name);
+    }
+
+    public IMongoCollection<Category> GetCategoryCollection() {
+        return GetCollection<Category>("categories");
+    }
+
+    public IMongoCollection<Subcategory> GetSubcategoryCollection() {
+        return GetCollection<Subcategory>("subcategories");
     }
 }

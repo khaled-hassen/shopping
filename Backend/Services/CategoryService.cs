@@ -1,40 +1,84 @@
 ﻿using Backend.Interfaces;
 using Backend.Models;
+using Backend.Types;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Backend.Services;
 
 public class CategoryService : ICategoryService {
     private readonly IMongoCollection<Category> _collection;
+    private readonly IMongoCollection<Subcategory> _subcategoryCollection;
 
     public CategoryService(DatabaseService database) {
-        _collection = database.GetCollection<Category>("categories");
+        _collection = database.GetCategoryCollection();
+        _subcategoryCollection = database.GetSubcategoryCollection();
     }
 
-    public async Task<IEnumerable<Category>> GetCategoriesAsync() {
-        return await _collection.Find(c => true).ToListAsync();
+    public async Task<List<CategoryResult>> GetCategoriesAsync() {
+        return await _collection.Aggregate()
+            .Lookup<Category, Subcategory, CategoryResult>(
+                _subcategoryCollection,
+                category => category.SubcategoriesIds,
+                subcategory => subcategory.Id,
+                categoryResult => categoryResult.Subcategories
+            )
+            .ToListAsync();
     }
 
-    public async Task<Category?> GetCategoryAsync(string id) {
-        return await _collection.Find(c => c.Id == id).FirstOrDefaultAsync();
-    }
-
-    public async Task<Category> CreateCategoryAsync(string name) {
-        var category = new Category {
-            Name = name
-        };
-        await _collection.InsertOneAsync(category);
-        return category;
+    public async Task<CategoryResult?> GetCategoryAsync(string id) {
+        return await _collection
+            .Aggregate()
+            .Match(c => c.Id.ToString() == id)
+            .Lookup<Category, Subcategory, CategoryResult>(
+                _subcategoryCollection,
+                category => category.SubcategoriesIds,
+                subcategory => subcategory.Id,
+                categoryResult => categoryResult.Subcategories
+            )
+            .FirstOrDefaultAsync();
     }
 
     public async Task<bool> UpdateCategoryNameAsync(string id, string name) {
         var update = Builders<Category>.Update.Set(c => c.Name, name);
-        var res = await _collection.UpdateOneAsync(c => c.Id == id, update);
+        var res = await _collection.UpdateOneAsync(c => c.Id.ToString() == id, update);
         return res is not null && res.ModifiedCount != 0;
     }
 
     public async Task<bool> DeleteCategoryAsync(string id) {
-        var res = await _collection.DeleteOneAsync(c => c.Id == id);
+        var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
+        if (res is null || res.DeletedCount == 0) return false;
+        res = await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
         return res is not null && res.DeletedCount != 0;
+    }
+
+    public async Task<bool> AttachSubcategoriesAsync(string id, List<string> subcategoriesId) {
+        throw new NotImplementedException();
+    }
+
+    public async Task<CreatedCategory> CreateCategoryAsync(string name, List<Subcategory> subcategories) {
+        var id = ObjectId.GenerateNewId();
+        var category = new Category {
+            Id = id,
+            Name = name
+        };
+
+        var subcategoriesList = new HashSet<Subcategory>();
+        if (subcategories.Count > 0) {
+            var subcategoriesId = new HashSet<ObjectId>();
+            foreach (var subcategory in subcategories) {
+                var subcategoryId = ObjectId.GenerateNewId();
+                subcategory.Id = subcategoryId;
+                subcategory.CategoryId = id;
+                subcategoriesList.Add(subcategory);
+                subcategoriesId.Add(subcategoryId);
+            }
+
+            await _subcategoryCollection.InsertManyAsync(subcategoriesList);
+            category.SubcategoriesIds = subcategoriesId;
+        }
+
+        await _collection.InsertOneAsync(category);
+        return new CreatedCategory(id.ToString()!, name, subcategoriesList);
     }
 }

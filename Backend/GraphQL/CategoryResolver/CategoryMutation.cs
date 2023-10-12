@@ -1,5 +1,6 @@
 ﻿using Backend.Interfaces;
 using Backend.Models;
+using Backend.Types;
 
 namespace Backend.GraphQL.CategoryResolver;
 
@@ -11,8 +12,8 @@ public class CategoryMutation {
         _categoryService = categoryService;
     }
 
-    public async Task<Category> CreateCategory(string name) {
-        return await _categoryService.CreateCategoryAsync(name);
+    public async Task<CreatedCategory> CreateCategory(string name, List<Subcategory> subcategories) {
+        return await _categoryService.CreateCategoryAsync(name, subcategories);
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]

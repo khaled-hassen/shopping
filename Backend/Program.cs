@@ -3,6 +3,7 @@ using Backend.GraphQL.CategoryResolver;
 using Backend.Interfaces;
 using Backend.Services;
 using Backend.Settings;
+using MongoDB.Bson;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<DataBaseSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 
 // setup graphql
 builder.Services.AddGraphQLServer()
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment())
     .AddQueryType<Query>()
+    .BindRuntimeType<ObjectId, IdType>()
+    .AddTypeConverter<ObjectId, string>(o => o.ToString())
+    .AddTypeConverter<string, ObjectId>(o => ObjectId.Parse(o))
     .AddType<CategoryQuery>()
     .AddMutationConventions()
     .AddMutationType<Mutation>()

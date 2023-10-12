@@ -1,5 +1,5 @@
 ﻿using Backend.Interfaces;
-using Backend.Models;
+using Backend.Types;
 
 namespace Backend.GraphQL.CategoryResolver;
 
@@ -11,11 +11,11 @@ public class CategoryQuery {
         _categoryService = categoryService;
     }
 
-    public async Task<IEnumerable<Category>> GetCategories() {
+    public async Task<List<CategoryResult>> GetCategories() {
         return await _categoryService.GetCategoriesAsync();
     }
 
-    public async Task<Category?> GetCategory(string id) {
+    public async Task<CategoryResult?> GetCategory(string id) {
         return await _categoryService.GetCategoryAsync(id);
     }
 }
