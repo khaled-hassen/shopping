@@ -1,5 +1,6 @@
 using Backend.GraphQL;
 using Backend.GraphQL.CategoryResolver;
+using Backend.GraphQL.SubcategoryResolver;
 using Backend.Interfaces;
 using Backend.Services;
 using Backend.Settings;
@@ -12,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // setup mongodb
 builder.Services.Configure<DataBaseSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddSingleton<DatabaseService>();
+
+// dependency injection
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 
@@ -22,10 +25,12 @@ builder.Services.AddGraphQLServer()
     .BindRuntimeType<ObjectId, IdType>()
     .AddTypeConverter<ObjectId, string>(o => o.ToString())
     .AddTypeConverter<string, ObjectId>(o => ObjectId.Parse(o))
-    .AddType<CategoryQuery>()
     .AddMutationConventions()
     .AddMutationType<Mutation>()
-    .AddType<CategoryMutation>();
+    .AddType<CategoryQuery>()
+    .AddType<CategoryMutation>()
+    .AddType<SubcategoryQuery>()
+    .AddType<SubcategoryMutation>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

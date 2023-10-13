@@ -39,23 +39,6 @@ public class CategoryService : ICategoryService {
             .FirstOrDefaultAsync();
     }
 
-    public async Task<bool> UpdateCategoryNameAsync(string id, string name) {
-        var update = Builders<Category>.Update.Set(c => c.Name, name);
-        var res = await _collection.UpdateOneAsync(c => c.Id.ToString() == id, update);
-        return res is not null && res.ModifiedCount != 0;
-    }
-
-    public async Task<bool> DeleteCategoryAsync(string id) {
-        var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
-        if (res is null || res.DeletedCount == 0) return false;
-        res = await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
-        return res is not null && res.DeletedCount != 0;
-    }
-
-    public async Task<bool> AttachSubcategoriesAsync(string id, List<string> subcategoriesId) {
-        throw new NotImplementedException();
-    }
-
     public async Task<CreatedCategory> CreateCategoryAsync(string name, List<Subcategory> subcategories) {
         var id = ObjectId.GenerateNewId();
         var category = new Category {
@@ -80,5 +63,18 @@ public class CategoryService : ICategoryService {
 
         await _collection.InsertOneAsync(category);
         return new CreatedCategory(id.ToString()!, name, subcategoriesList);
+    }
+
+    public async Task<bool> UpdateCategoryNameAsync(string id, string name) {
+        var update = Builders<Category>.Update.Set(c => c.Name, name);
+        var res = await _collection.UpdateOneAsync(c => c.Id.ToString() == id, update);
+        return res is not null && res.ModifiedCount != 0;
+    }
+
+    public async Task<bool> DeleteCategoryAsync(string id) {
+        var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
+        if (res is null || res.DeletedCount == 0) return false;
+        res = await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
+        return res is not null && res.DeletedCount != 0;
     }
 }
