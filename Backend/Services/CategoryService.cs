@@ -40,7 +40,7 @@ public class CategoryService : ICategoryService {
             .FirstOrDefaultAsync();
     }
 
-    public async Task<CreatedCategory> CreateCategoryAsync(string name, List<Subcategory> subcategories) {
+    public async Task<CreatedCategory> CreateCategoryAsync(string name, List<Subcategory>? subcategories) {
         var id = ObjectId.GenerateNewId();
         var category = new Category {
             Id = id,
@@ -48,7 +48,7 @@ public class CategoryService : ICategoryService {
         };
 
         var subcategoriesList = new HashSet<Subcategory>();
-        if (subcategories.Count > 0) {
+        if (subcategories is not null && subcategories.Count > 0) {
             var subcategoriesId = new HashSet<ObjectId>();
             foreach (var subcategory in subcategories) {
                 SubcategoryHelper.TransformFiltersAndTypes(subcategory);
@@ -77,6 +77,6 @@ public class CategoryService : ICategoryService {
         var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
         res = await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
-        return res is not null && res.DeletedCount != 0;
+        return res is not null;
     }
 }

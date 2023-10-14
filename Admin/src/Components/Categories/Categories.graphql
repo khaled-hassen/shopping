@@ -1,0 +1,13 @@
+query GetCategories {
+    categories {
+        id
+        name
+        subcategoriesIds
+    }
+}
+
+mutation DeleteCategory($id: String!) {
+    deleteCategory(input: {id: $id}) {
+        deleted
+    }
+}

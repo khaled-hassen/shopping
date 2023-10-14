@@ -12,7 +12,7 @@ public class CategoryMutation {
         _categoryService = categoryService;
     }
 
-    public async Task<CreatedCategory> CreateCategory(string name, List<Subcategory> subcategories) {
+    public async Task<CreatedCategory> CreateCategory(string name, List<Subcategory>? subcategories) {
         return await _categoryService.CreateCategoryAsync(name, subcategories);
     }
 
