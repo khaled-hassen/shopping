@@ -1,4 +1,5 @@
-﻿using Backend.Interfaces;
+﻿using Backend.Helpers;
+using Backend.Interfaces;
 using Backend.Models;
 using Backend.Types;
 using MongoDB.Bson;
@@ -50,6 +51,7 @@ public class CategoryService : ICategoryService {
         if (subcategories.Count > 0) {
             var subcategoriesId = new HashSet<ObjectId>();
             foreach (var subcategory in subcategories) {
+                SubcategoryHelper.TransformFiltersAndTypes(subcategory);
                 var subcategoryId = ObjectId.GenerateNewId();
                 subcategory.Id = subcategoryId;
                 subcategory.CategoryId = id;
