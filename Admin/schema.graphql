@@ -83,7 +83,7 @@ type UpdateSubcategoryProductTypesPayload {
 
 input CreateCategoryInput {
     name: String!
-    subcategories: [SubcategoryInput!]!
+    subcategories: [SubcategoryInput!]
 }
 
 input CreateSubcategoryInput {

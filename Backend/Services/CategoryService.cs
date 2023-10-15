@@ -76,7 +76,7 @@ public class CategoryService : ICategoryService {
     public async Task<bool> DeleteCategoryAsync(string id) {
         var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
-        res = await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
-        return res is not null;
+        await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
+        return true;
     }
 }

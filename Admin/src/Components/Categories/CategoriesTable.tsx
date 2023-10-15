@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import FormControl from "@mui/joy/FormControl";
@@ -14,8 +14,10 @@ import { ButtonGroup, Stack } from "@mui/joy";
 import {
   useDeleteCategoryMutation,
   useGetCategoriesQuery,
+  useUpdateCategoryMutation,
 } from "../../__generated__/graphql.ts";
 import DeleteCategoryModal from "./DeleteCategoryModal.tsx";
+import EditCategoryModal from "./EditCategoryModal.tsx";
 
 type Order = "asc" | "desc" | "none";
 
@@ -23,7 +25,7 @@ const CategoriesTable: React.FC = () => {
   const [order, setOrder] = useState<Order>("none");
   const [search, setSearch] = useState("");
   const { data, refetch } = useGetCategoriesQuery();
-  const [deleteCat, { loading }] = useDeleteCategoryMutation();
+  const [deleteCat, { loading: deleteLoading }] = useDeleteCategoryMutation();
 
   const categories = useMemo(() => {
     if (!data) return [];
@@ -36,22 +38,51 @@ const CategoriesTable: React.FC = () => {
     return categories.sort((a, b) => b.name.localeCompare(a.name));
   }, [data, order, search]);
 
-  const [categoryId, setCategoryId] = useState<string>();
+  const categoryId = useRef<string | null>();
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   async function deleteCategory() {
-    const { data } = await deleteCat({ variables: { id: categoryId || "" } });
+    const { data } = await deleteCat({
+      variables: { id: categoryId.current || "" },
+    });
     if (data?.deleteCategory.deleted) await refetch();
-    setCategoryId(undefined);
+    setOpenDeleteModal(false);
+    categoryId.current = null;
+  }
+
+  const [updateCat, { loading: updateLoading }] = useUpdateCategoryMutation();
+  async function updateCategory(newName: string) {
+    const { data } = await updateCat({
+      variables: { id: categoryId.current || "", name: newName },
+    });
+    if (data?.updateCategory.updated) await refetch();
+    setOpenEditModal(false);
+    categoryId.current = null;
   }
 
   return (
     <>
       <DeleteCategoryModal
-        loading={loading}
-        open={!!categoryId}
+        loading={updateLoading}
+        open={openDeleteModal}
         onConfirm={deleteCategory}
-        onCancel={() => setCategoryId(undefined)}
+        onCancel={() => {
+          setOpenDeleteModal(false);
+          categoryId.current = null;
+        }}
       />
+
+      <EditCategoryModal
+        loading={deleteLoading}
+        open={openEditModal}
+        onUpdate={updateCategory}
+        onCancel={() => {
+          setOpenEditModal(false);
+          categoryId.current = null;
+        }}
+      />
+
       <Box
         className="SearchAndFilters-tabletUp"
         sx={{
@@ -170,10 +201,21 @@ const CategoriesTable: React.FC = () => {
                   >
                     <ButtonGroup variant="soft">
                       <Button>View</Button>
-                      <Button color="primary">Edit</Button>
+                      <Button
+                        color="primary"
+                        onClick={() => {
+                          setOpenEditModal(true);
+                          categoryId.current = cat.id;
+                        }}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         color="danger"
-                        onClick={() => setCategoryId(cat.id || undefined)}
+                        onClick={() => {
+                          setOpenDeleteModal(true);
+                          categoryId.current = cat.id;
+                        }}
                       >
                         Delete
                       </Button>
