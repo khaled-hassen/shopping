@@ -1,84 +1,91 @@
 import React, { useMemo, useRef, useState } from "react";
 import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
+import Typography from "@mui/joy/Typography";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  useDeleteSubcategoryMutation,
+  useGetSubcategoriesQuery,
+} from "../__generated__/graphql.ts";
+import DeleteItemModal from "../components/DeleteItemModal.tsx";
+import { ButtonGroup, Stack } from "@mui/joy";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
-import Link from "@mui/joy/Link";
 import Input from "@mui/joy/Input";
-import Table from "@mui/joy/Table";
-import Sheet from "@mui/joy/Sheet";
-import Typography from "@mui/joy/Typography";
 import SearchIcon from "@mui/icons-material/Search";
+import Button from "@mui/joy/Button";
+import Sheet from "@mui/joy/Sheet";
+import Table from "@mui/joy/Table";
+import Link from "@mui/joy/Link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { ButtonGroup, Stack } from "@mui/joy";
-import {
-  useDeleteCategoryMutation,
-  useGetCategoriesQuery,
-  useUpdateCategoryMutation,
-} from "../../__generated__/graphql.ts";
-import DeleteCategoryModal from "./DeleteCategoryModal.tsx";
-import EditCategoryModal from "./EditCategoryModal.tsx";
+
+interface IProps {}
 
 type Order = "asc" | "desc" | "none";
 
-const CategoriesTable: React.FC = () => {
+const Subcategories: React.FC<IProps> = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   const [order, setOrder] = useState<Order>("none");
   const [search, setSearch] = useState("");
-  const { data, refetch } = useGetCategoriesQuery();
-  const [deleteCat, { loading: deleteLoading }] = useDeleteCategoryMutation();
+  const { data, refetch } = useGetSubcategoriesQuery({
+    variables: { categoryId: id || "" },
+  });
 
-  const categories = useMemo(() => {
+  const subcategories = useMemo(() => {
     if (!data) return [];
-    const regex = new RegExp(search, "i");
-    const categories = data.categories.filter((cat) => regex.test(cat.name));
+    if (data.subcategories === null || data.subcategories === undefined) {
+      navigate("/404");
+      return [];
+    }
 
-    if (order === "none") return categories;
+    const regex = new RegExp(search, "i");
+    const subcategories = data.subcategories.filter((sub) =>
+      regex.test(sub.name),
+    );
+
+    if (order === "none") return subcategories;
     if (order === "asc")
-      return categories.sort((a, b) => a.name.localeCompare(b.name));
-    return categories.sort((a, b) => b.name.localeCompare(a.name));
-  }, [data, order, search]);
+      return subcategories.sort((a, b) => a.name.localeCompare(b.name));
+    return subcategories.sort((a, b) => b.name.localeCompare(a.name));
+  }, [data, order, search, navigate]);
 
   const categoryId = useRef<string | null>();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
+  const [deleteSub, { loading }] = useDeleteSubcategoryMutation();
 
-  async function deleteCategory() {
-    const { data } = await deleteCat({
+  async function deleteSubcategory() {
+    const { data } = await deleteSub({
       variables: { id: categoryId.current || "" },
     });
-    if (data?.deleteCategory.deleted) await refetch();
+    if (data?.deleteSubcategory.deleted) await refetch();
     setOpenDeleteModal(false);
-    categoryId.current = null;
-  }
-
-  const [updateCat, { loading: updateLoading }] = useUpdateCategoryMutation();
-  async function updateCategory(newName: string) {
-    const { data } = await updateCat({
-      variables: { id: categoryId.current || "", name: newName },
-    });
-    if (data?.updateCategory.updated) await refetch();
-    setOpenEditModal(false);
     categoryId.current = null;
   }
 
   return (
     <>
-      <DeleteCategoryModal
-        loading={updateLoading}
+      <Box
+        sx={{
+          display: "flex",
+          my: 1,
+          gap: 1,
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "start", sm: "center" },
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography level="h2">Subcategories</Typography>
+      </Box>
+
+      <DeleteItemModal
+        text="Are you sure you want to delete this subcategory?"
+        loading={loading}
         open={openDeleteModal}
-        onConfirm={deleteCategory}
+        onConfirm={deleteSubcategory}
         onCancel={() => {
           setOpenDeleteModal(false);
-          categoryId.current = null;
-        }}
-      />
-
-      <EditCategoryModal
-        loading={deleteLoading}
-        open={openEditModal}
-        onUpdate={updateCategory}
-        onCancel={() => {
-          setOpenEditModal(false);
           categoryId.current = null;
         }}
       />
@@ -115,7 +122,9 @@ const CategoriesTable: React.FC = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </FormControl>
-          <Button>Create new category</Button>
+          <Button onClick={() => navigate(`/subcategory/${id}/new`)}>
+            Create new subcategory
+          </Button>
         </Stack>
       </Box>
       <Sheet
@@ -162,10 +171,11 @@ const CategoriesTable: React.FC = () => {
                     },
                   }}
                 >
-                  Category name
+                  Name
                 </Link>
               </th>
-              <th style={{ padding: "12px 16px" }}>Number of subcategories</th>
+              <th style={{ padding: "12px 16px" }}>Number of filters</th>
+              <th style={{ padding: "12px 16px" }}>Number of product types</th>
               <th style={{ padding: "12px 16px" }}>
                 <div
                   style={{
@@ -180,14 +190,19 @@ const CategoriesTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {categories.map((cat) => (
+            {subcategories.map((cat) => (
               <tr key={cat.id}>
                 <td style={{ padding: "12px 16px" }}>
                   <Typography level="body-xs">{cat.name}</Typography>
                 </td>
                 <td style={{ padding: "12px 16px" }}>
                   <Typography level="body-xs">
-                    {cat.subcategoriesIds.length}
+                    {cat.filters?.length || 0}
+                  </Typography>
+                </td>
+                <td style={{ padding: "12px 16px" }}>
+                  <Typography level="body-xs">
+                    {cat.productTypes?.length || 0}
                   </Typography>
                 </td>
                 <td style={{ padding: "12px 16px" }}>
@@ -200,13 +215,9 @@ const CategoriesTable: React.FC = () => {
                     }}
                   >
                     <ButtonGroup variant="soft">
-                      <Button>View</Button>
                       <Button
                         color="primary"
-                        onClick={() => {
-                          setOpenEditModal(true);
-                          categoryId.current = cat.id;
-                        }}
+                        onClick={() => navigate(`/subcategory/${cat.id}/edit`)}
                       >
                         Edit
                       </Button>
@@ -231,4 +242,4 @@ const CategoriesTable: React.FC = () => {
   );
 };
 
-export default CategoriesTable;
+export default Subcategories;

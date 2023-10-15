@@ -15,18 +15,18 @@ public class SubcategoryMutation {
         return await _subcategoryService.CreateSubcategoryAsync(categoryId, subcategory);
     }
 
-    [UseMutationConvention(PayloadFieldName = "udpated")]
+    [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateSubcategoryName(string id, string name) {
         return await _subcategoryService.UpdateSubcategoryNameAsync(id, name);
     }
 
-    [UseMutationConvention(PayloadFieldName = "udpated")]
+    [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateSubcategoryProductTypes(string id, HashSet<string> types) {
         return await _subcategoryService.UpdateSubcategoryProductTypesAsync(id, types);
     }
 
 
-    [UseMutationConvention(PayloadFieldName = "udpated")]
+    [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateSubcategoryFilters(string id, Dictionary<string, HashSet<string>> filters) {
         return await _subcategoryService.UpdateSubcategoryFiltersAsync(id, filters);
     }

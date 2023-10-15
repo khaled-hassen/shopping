@@ -18,7 +18,9 @@ public class SubcategoryService : ISubcategoryService {
         return await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
     }
 
-    public async Task<List<Subcategory>> GetSubcategoriesAsync(string categoryId) {
+    public async Task<List<Subcategory>?> GetSubcategoriesAsync(string categoryId) {
+        var cat = _categoryCollection.Find(c => c.Id.ToString() == categoryId).FirstOrDefault();
+        if (cat is null) return null;
         return await _collection.Find(c => c.CategoryId.ToString() == categoryId).ToListAsync();
     }
 

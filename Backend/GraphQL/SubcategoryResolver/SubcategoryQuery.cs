@@ -11,7 +11,7 @@ public class SubcategoryQuery {
         _subcategoryService = subcategoryService;
     }
 
-    public async Task<List<Subcategory>> GetSubcategories(string categoryId) {
+    public async Task<List<Subcategory>?> GetSubcategories(string categoryId) {
         return await _subcategoryService.GetSubcategoriesAsync(categoryId);
     }
 

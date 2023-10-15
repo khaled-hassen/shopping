@@ -12,13 +12,15 @@ import Divider from "@mui/joy/Divider";
 interface IProps {
   open: boolean;
   loading: boolean;
+  text: string;
   onConfirm(): void;
   onCancel(): void;
 }
 
-const DeleteCategoryModal: React.FC<IProps> = ({
+const DeleteItemModal: React.FC<IProps> = ({
   open,
   loading,
+  text,
   onConfirm,
   onCancel,
 }) => {
@@ -27,9 +29,7 @@ const DeleteCategoryModal: React.FC<IProps> = ({
       <ModalDialog variant="outlined" role="alertdialog">
         <DialogTitle>Delete confirmation</DialogTitle>
         <Divider />
-        <DialogContent>
-          Are you sure you want to delete this category?
-        </DialogContent>
+        <DialogContent>{text}</DialogContent>
         <DialogActions>
           <Button
             variant="solid"
@@ -48,4 +48,4 @@ const DeleteCategoryModal: React.FC<IProps> = ({
   );
 };
 
-export default DeleteCategoryModal;
+export default DeleteItemModal;

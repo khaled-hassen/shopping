@@ -26,8 +26,8 @@ dist-ssr
 .env
 
 # graphql ide config
-schema.graphql
-graphql.config.yml
+/schema.graphql
+/graphql.config.yml
 
 # generated graphql types
 __generated__

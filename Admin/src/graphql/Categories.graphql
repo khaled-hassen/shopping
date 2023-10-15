@@ -17,3 +17,11 @@ mutation UpdateCategory($id: String!, $name: String!) {
         updated
     }
 }
+
+mutation CreateNewCategory($name: String!) {
+    createCategory(input: {name: $name}) {
+        createdCategory {
+            id
+        }
+    }
+}

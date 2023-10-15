@@ -37,6 +37,7 @@ const Layout: React.FC<IProps> = ({ children }) => {
             minWidth: 0,
             height: "100dvh",
             gap: 1,
+            overflow: "auto",
           }}
         >
           {children}
