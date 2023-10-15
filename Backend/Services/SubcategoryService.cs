@@ -1,5 +1,4 @@
-﻿using Backend.Helpers;
-using Backend.Interfaces;
+﻿using Backend.Interfaces;
 using Backend.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -29,7 +28,24 @@ public class SubcategoryService : ISubcategoryService {
         var id = ObjectId.GenerateNewId();
         subcategory.Id = id;
 
-        SubcategoryHelper.TransformFiltersAndTypes(subcategory);
+        if (subcategory.ProductTypes is not null) {
+            HashSet<string> lowercaseTypes = new();
+            foreach (var type in subcategory.ProductTypes)
+                lowercaseTypes.Add(type.ToLower());
+            subcategory.ProductTypes = lowercaseTypes;
+        }
+
+        if (subcategory.Filters is not null) {
+            Dictionary<string, HashSet<string>> lowercaseFilters = new();
+            foreach (var filter in subcategory.Filters) {
+                HashSet<string> lowercaseValues = new();
+                foreach (var value in filter.Value)
+                    lowercaseValues.Add(value.ToLower());
+                lowercaseFilters.Add(filter.Key.ToLower(), lowercaseValues);
+            }
+
+            subcategory.Filters = lowercaseFilters;
+        }
 
         var updated = await _categoryCollection.UpdateOneAsync(
             c => c.Id.Equals(parentId),

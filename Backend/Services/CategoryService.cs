@@ -1,5 +1,4 @@
-﻿using Backend.Helpers;
-using Backend.Interfaces;
+﻿using Backend.Interfaces;
 using Backend.Models;
 using Backend.Types;
 using MongoDB.Bson;
@@ -40,31 +39,15 @@ public class CategoryService : ICategoryService {
             .FirstOrDefaultAsync();
     }
 
-    public async Task<CreatedCategory> CreateCategoryAsync(string name, List<Subcategory>? subcategories) {
+    public async Task<CreatedCategory> CreateCategoryAsync(string name) {
         var id = ObjectId.GenerateNewId();
         var category = new Category {
             Id = id,
             Name = name
         };
 
-        var subcategoriesList = new HashSet<Subcategory>();
-        if (subcategories is not null && subcategories.Count > 0) {
-            var subcategoriesId = new HashSet<ObjectId>();
-            foreach (var subcategory in subcategories) {
-                SubcategoryHelper.TransformFiltersAndTypes(subcategory);
-                var subcategoryId = ObjectId.GenerateNewId();
-                subcategory.Id = subcategoryId;
-                subcategory.CategoryId = id;
-                subcategoriesList.Add(subcategory);
-                subcategoriesId.Add(subcategoryId);
-            }
-
-            await _subcategoryCollection.InsertManyAsync(subcategoriesList);
-            category.SubcategoriesIds = subcategoriesId;
-        }
-
         await _collection.InsertOneAsync(category);
-        return new CreatedCategory(id.ToString()!, name, subcategoriesList);
+        return new CreatedCategory(id.ToString()!, name);
     }
 
     public async Task<bool> UpdateCategoryNameAsync(string id, string name) {
