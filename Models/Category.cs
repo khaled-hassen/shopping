@@ -11,4 +11,6 @@ public class Category {
     public string Name { get; set; } = null!;
 
     public HashSet<ObjectId> SubcategoriesIds { get; set; } = new();
+
+    public string Image { get; set; } = null!;
 }

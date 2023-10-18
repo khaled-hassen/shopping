@@ -2,5 +2,6 @@
 
 public record CreatedCategory(
     string Id,
-    string Name
+    string Name,
+    string Image
 );

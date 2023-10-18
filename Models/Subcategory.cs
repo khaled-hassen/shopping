@@ -16,4 +16,7 @@ public class Subcategory {
 
     [BsonRequired]
     public ObjectId? CategoryId { get; set; }
+
+    [BsonRequired]
+    public string? Image { get; set; }
 }

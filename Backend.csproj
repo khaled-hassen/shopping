@@ -7,14 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="HotChocolate.AspNetCore" Version="13.5.1" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-        <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="HotChocolate.AspNetCore" Version="13.5.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.22.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Types\CategoryTypes\" />
+        <Folder Include="wwwroot\"/>
+        <Folder Include="wwwroot\Storage\"/>
     </ItemGroup>
 
 </Project>

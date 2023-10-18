@@ -30,7 +30,8 @@ builder.Services.AddGraphQLServer()
     .AddType<CategoryQuery>()
     .AddType<CategoryMutation>()
     .AddType<SubcategoryQuery>()
-    .AddType<SubcategoryMutation>();
+    .AddType<SubcategoryMutation>()
+    .AddType<UploadType>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -52,6 +53,8 @@ app.UseCors(
         cors.AllowAnyOrigin();
     }
 );
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

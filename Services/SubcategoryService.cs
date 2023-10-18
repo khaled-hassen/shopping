@@ -1,4 +1,5 @@
-﻿using Backend.Interfaces;
+﻿using Backend.Helpers;
+using Backend.Interfaces;
 using Backend.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -24,11 +25,15 @@ public class SubcategoryService : ISubcategoryService {
         return await _collection.Find(c => c.CategoryId.ToString() == categoryId).ToListAsync();
     }
 
-    public async Task<Subcategory?> CreateSubcategoryAsync(string categoryId, Subcategory subcategory) {
+    public async Task<Subcategory?> CreateSubcategoryAsync(string categoryId, Subcategory subcategory, IFile image) {
         var parentId = ObjectId.Parse(categoryId);
         subcategory.CategoryId = parentId;
         var id = ObjectId.GenerateNewId();
         subcategory.Id = id;
+
+        var filename = subcategory.Name + '-' + id;
+        var path = await GraphQLImageUpload.UploadImage(image, categoryId, filename);
+        subcategory.Image = path;
 
         if (subcategory.ProductTypes is not null) {
             HashSet<string> lowercaseTypes = new();

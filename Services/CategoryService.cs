@@ -1,4 +1,5 @@
-﻿using Backend.Interfaces;
+﻿using Backend.Helpers;
+using Backend.Interfaces;
 using Backend.Models;
 using Backend.Types;
 using MongoDB.Bson;
@@ -39,15 +40,20 @@ public class CategoryService : ICategoryService {
             .FirstOrDefaultAsync();
     }
 
-    public async Task<CreatedCategory> CreateCategoryAsync(string name) {
+    public async Task<CreatedCategory> CreateCategoryAsync(string name, IFile image) {
         var id = ObjectId.GenerateNewId();
+
+        var filename = name + '-' + id;
+        var path = await GraphQLImageUpload.UploadImage(image, id.ToString()!, filename);
+
         var category = new Category {
             Id = id,
-            Name = name
+            Name = name,
+            Image = path
         };
 
         await _collection.InsertOneAsync(category);
-        return new CreatedCategory(id.ToString()!, name);
+        return new CreatedCategory(id.ToString()!, name, path);
     }
 
     public async Task<bool> UpdateCategoryNameAsync(string id, string name) {
@@ -60,6 +66,7 @@ public class CategoryService : ICategoryService {
         var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
         await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
+        GraphQLImageUpload.DeleteImageDirectory(id);
         return true;
     }
 }
