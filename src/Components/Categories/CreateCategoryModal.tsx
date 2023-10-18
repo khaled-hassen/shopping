@@ -1,5 +1,5 @@
-import { DialogTitle, Modal, ModalDialog, Stack } from "@mui/joy";
-import React from "react";
+import { Card, DialogTitle, Modal, ModalDialog, Stack } from "@mui/joy";
+import React, { useState } from "react";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
@@ -14,17 +14,25 @@ interface IProps {
 
 const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
   const [create, { loading }] = useCreateNewCategoryMutation();
+  const [previewImage, setPreviewImage] = useState<string>();
+
+  function closeModal() {
+    setPreviewImage(undefined);
+    onCancel();
+  }
 
   async function createNewCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const name = data.get("name")?.toString() || "";
-    await create({ variables: { name } });
+    const image = data.get("image");
+    await create({ variables: { name, image } });
+    setPreviewImage(undefined);
     onCreated();
   }
 
   return (
-    <Modal open={open} onClose={onCancel}>
+    <Modal open={open} onClose={closeModal}>
       <ModalDialog>
         <DialogTitle>Create new category</DialogTitle>
         <form onSubmit={createNewCategory}>
@@ -33,6 +41,17 @@ const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
               <FormLabel>Name</FormLabel>
               <Input autoFocus required name="name" />
             </FormControl>
+            <Card size="sm" variant="outlined">
+              <img src={previewImage} alt="" style={{ width: "100%" }} />
+              <input
+                type="file"
+                name="image"
+                required
+                onChange={(e: any) => {
+                  setPreviewImage(URL.createObjectURL(e.target.files[0]));
+                }}
+              />
+            </Card>
             <Button type="submit" loading={loading}>
               Create
             </Button>

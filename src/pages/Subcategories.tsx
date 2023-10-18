@@ -17,6 +17,7 @@ import Sheet from "@mui/joy/Sheet";
 import Table from "@mui/joy/Table";
 import Link from "@mui/joy/Link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { asset } from "../utils.ts";
 
 interface IProps {}
 
@@ -174,6 +175,7 @@ const Subcategories: React.FC<IProps> = () => {
                   Name
                 </Link>
               </th>
+              <th style={{ padding: "12px 16px" }}>Image</th>
               <th style={{ padding: "12px 16px" }}>Number of filters</th>
               <th style={{ padding: "12px 16px" }}>Number of product types</th>
               <th style={{ padding: "12px 16px" }}>
@@ -194,6 +196,14 @@ const Subcategories: React.FC<IProps> = () => {
               <tr key={cat.id}>
                 <td style={{ padding: "12px 16px" }}>
                   <Typography level="body-xs">{cat.name}</Typography>
+                </td>
+                <td style={{ padding: "12px 16px" }}>
+                  <img
+                    src={asset(cat.image)}
+                    alt={cat.name}
+                    height={60}
+                    width={90}
+                  />
                 </td>
                 <td style={{ padding: "12px 16px" }}>
                   <Typography level="body-xs">

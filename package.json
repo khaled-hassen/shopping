@@ -4,28 +4,30 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "yarn generate",
+    "preinstall": "npx only-allow pnpm",
+    "predev": "pnpm generate",
     "dev": "vite",
-    "prebuild": "yarn generate",
+    "prebuild": "pnpm generate",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "generate": "graphql-codegen --config codegen.ts --require dotenv/config",
-    "watch": "yarn generate --watch"
+    "watch": "pnpm generate --watch"
   },
   "dependencies": {
-    "@apollo/client": "^3.8.5",
+    "@apollo/client": "^3.8.6",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fontsource/inter": "^5.0.13",
-    "@mui/icons-material": "^5.14.13",
-    "@mui/joy": "^5.0.0-beta.10",
-    "@mui/material": "^5.14.13",
+    "@mui/icons-material": "^5.14.14",
+    "@mui/joy": "5.0.0-beta.11",
+    "@mui/material": "^5.14.14",
+    "apollo-upload-client": "^17.0.0",
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.16.0"
+    "react-router-dom": "^6.17.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.0",
@@ -34,16 +36,18 @@
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-react-apollo": "^4.0.0",
     "@parcel/watcher": "^2.3.0",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "@vitejs/plugin-react": "^4.0.3",
-    "eslint": "^8.45.0",
+    "@types/apollo-upload-client": "^17.0.4",
+    "@types/node": "^20.8.7",
+    "@types/react": "^18.2.29",
+    "@types/react-dom": "^18.2.13",
+    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/parser": "^6.8.0",
+    "@vitejs/plugin-react": "^4.1.0",
+    "eslint": "^8.51.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "prettier": "^3.0.3",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

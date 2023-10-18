@@ -3,6 +3,7 @@ query GetCategories {
         id
         name
         subcategoriesIds
+        image
     }
 }
 
@@ -18,8 +19,8 @@ mutation UpdateCategory($id: String!, $name: String!) {
     }
 }
 
-mutation CreateNewCategory($name: String!) {
-    createCategory(input: {name: $name}) {
+mutation CreateNewCategory($name: String!, $image: Upload!) {
+    createCategory(input: {name: $name, image: $image}) {
         createdCategory {
             id
         }

@@ -5,10 +5,16 @@ import "./index.css";
 import "@fontsource/inter";
 import { BrowserRouter } from "react-router-dom";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 
 const client = new ApolloClient({
-  uri: import.meta.env.VITE_API_URL,
   cache: new InMemoryCache(),
+  link: createUploadLink({
+    uri: import.meta.env.VITE_API_URL + "/graphql",
+    headers: {
+      "GraphQL-Preflight": "true",
+    },
+  }),
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
