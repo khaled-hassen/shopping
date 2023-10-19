@@ -100,11 +100,16 @@ const Subcategories: React.FC<IProps> = () => {
 
         <Grid container>
           <Card size="sm" variant="outlined">
-            <img src={previewImage} alt="" style={{ width: 500 }} />
+            <img
+              src={previewImage}
+              alt=""
+              style={{ width: 500, objectFit: "contain" }}
+            />
             <input
               type="file"
               name="image"
               required
+              accept="image/png, image/jpeg"
               onChange={(e: any) => {
                 setPreviewImage(URL.createObjectURL(e.target.files[0]));
               }}

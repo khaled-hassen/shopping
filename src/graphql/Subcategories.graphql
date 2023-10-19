@@ -47,8 +47,8 @@ query GetSubcategory($id: String!) {
     }
 }
 
-mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!]!, $filters: [KeyValuePairOfStringAndHashSetOfStringInput!]!) {
-    updateSubcategoryName(input: {id: $id, name: $name}) {
+mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!]!, $filters: [KeyValuePairOfStringAndHashSetOfStringInput!]!, $image:Upload) {
+    updateSubcategory(input: {id: $id, name: $name, image: $image}) {
         updated
     }
 

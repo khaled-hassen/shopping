@@ -42,11 +42,16 @@ const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
               <Input autoFocus required name="name" />
             </FormControl>
             <Card size="sm" variant="outlined">
-              <img src={previewImage} alt="" style={{ width: "100%" }} />
+              <img
+                src={previewImage}
+                alt=""
+                style={{ width: "100%", objectFit: "contain" }}
+              />
               <input
                 type="file"
                 name="image"
                 required
+                accept="image/png, image/jpeg"
                 onChange={(e: any) => {
                   setPreviewImage(URL.createObjectURL(e.target.files[0]));
                 }}

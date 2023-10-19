@@ -4,7 +4,7 @@ import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import { Grid, Stack } from "@mui/joy";
+import { Card, Grid, Stack } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import { Add, Delete } from "@mui/icons-material";
 import IconButton from "@mui/joy/IconButton";
@@ -27,18 +27,12 @@ const Subcategories: React.FC<IProps> = () => {
   const [name, setName] = useState("");
   const [productTypes, setProductTypes] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
+  const [previewImage, setPreviewImage] = useState<string>();
 
   const { id } = useParams();
   const navigate = useNavigate();
   const { data } = useGetSubcategoryQuery({ variables: { id: id || "" } });
-  const [update, { loading }] = useUpdateSubcategoryMutation({
-    // refetchQueries: [
-    //   {
-    //     query: GetSubcategoriesDocument,
-    //     variables: { categoryId: data?.subcategory?.categoryId },
-    //   },
-    // ],
-  });
+  const [update, { loading }] = useUpdateSubcategoryMutation();
 
   useEffect(() => {
     if (!data) return;
@@ -56,12 +50,18 @@ const Subcategories: React.FC<IProps> = () => {
         value: [...filter.value],
       })) || [],
     );
+    setPreviewImage(subcategory.image || "");
   }, [data, navigate]);
 
   async function createSubcategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const image = formData.get("image") as File | null;
+    const file = !image || image.size === 0 ? null : image;
+
     await update({
-      variables: { id: id || "", name, filters, productTypes },
+      variables: { id: id || "", name, filters, productTypes, image: file },
       update(cache) {
         cache.updateQuery<GetSubcategoriesQuery>(
           {
@@ -71,8 +71,10 @@ const Subcategories: React.FC<IProps> = () => {
           (data) => ({
             subcategories:
               data?.subcategories?.map((sub) => {
-                if (sub.id === id)
-                  return { ...sub, name, filters, productTypes };
+                if (sub.id === id) {
+                  const image = file ? URL.createObjectURL(file) : sub.image;
+                  return { ...sub, name, filters, productTypes, image };
+                }
                 return sub;
               }) || [],
           }),
@@ -115,6 +117,25 @@ const Subcategories: React.FC<IProps> = () => {
               onChange={(e) => setName(e.target.value)}
             />
           </FormControl>
+        </Grid>
+
+        <Grid container>
+          <Card size="sm" variant="outlined">
+            <img
+              src={previewImage}
+              alt=""
+              style={{ width: 500, objectFit: "contain" }}
+            />
+            <input
+              type="file"
+              name="image"
+              required
+              accept="image/png, image/jpeg"
+              onChange={(e: any) => {
+                setPreviewImage(URL.createObjectURL(e.target.files[0]));
+              }}
+            />
+          </Card>
         </Grid>
 
         <Stack spacing={2}>

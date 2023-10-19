@@ -1,11 +1,11 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import { useNavigate } from "react-router-dom";
 import {
+  GetCategoriesQuery,
   useDeleteCategoryMutation,
   useGetCategoriesQuery,
-  useUpdateCategoryMutation,
 } from "../__generated__/graphql.ts";
 import DeleteItemModal from "../components/DeleteItemModal.tsx";
 import EditCategoryModal from "../components/Categories/EditCategoryModal.tsx";
@@ -45,28 +45,20 @@ const Categories: React.FC<IProps> = () => {
     return categories.sort((a, b) => b.name.localeCompare(a.name));
   }, [data, order, search]);
 
-  const categoryId = useRef<string | null>();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [category, setCategory] = useState<
+    GetCategoriesQuery["categories"][number] | null
+  >(null);
 
   async function deleteCategory() {
     const { data } = await deleteCat({
-      variables: { id: categoryId.current || "" },
+      variables: { id: category?.id || "" },
     });
     if (data?.deleteCategory.deleted) await refetch();
     setOpenDeleteModal(false);
-    categoryId.current = null;
-  }
-
-  const [updateCat, { loading: updateLoading }] = useUpdateCategoryMutation();
-  async function updateCategory(newName: string) {
-    const { data } = await updateCat({
-      variables: { id: categoryId.current || "", name: newName },
-    });
-    if (data?.updateCategory.updated) await refetch();
-    setOpenEditModal(false);
-    categoryId.current = null;
+    setCategory(null);
   }
 
   return (
@@ -92,17 +84,16 @@ const Categories: React.FC<IProps> = () => {
         onConfirm={deleteCategory}
         onCancel={() => {
           setOpenDeleteModal(false);
-          categoryId.current = null;
+          setCategory(null);
         }}
       />
 
       <EditCategoryModal
-        loading={updateLoading}
+        category={category}
         open={openEditModal}
-        onUpdate={updateCategory}
-        onCancel={() => {
+        onClose={() => {
           setOpenEditModal(false);
-          categoryId.current = null;
+          setCategory(null);
         }}
       />
 
@@ -222,10 +213,11 @@ const Categories: React.FC<IProps> = () => {
                 </td>
                 <td style={{ padding: "12px 16px" }}>
                   <img
-                    src={asset(cat.image)}
+                    src={cat.image}
                     alt={cat.name}
                     height={60}
                     width={90}
+                    style={{ objectFit: "contain" }}
                   />
                 </td>
                 <td style={{ padding: "12px 16px" }}>
@@ -250,7 +242,7 @@ const Categories: React.FC<IProps> = () => {
                         color="primary"
                         onClick={() => {
                           setOpenEditModal(true);
-                          categoryId.current = cat.id;
+                          setCategory(cat);
                         }}
                       >
                         Edit
@@ -259,7 +251,7 @@ const Categories: React.FC<IProps> = () => {
                         color="danger"
                         onClick={() => {
                           setOpenDeleteModal(true);
-                          categoryId.current = cat.id;
+                          setCategory(cat);
                         }}
                       >
                         Delete

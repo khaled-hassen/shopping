@@ -13,8 +13,8 @@ mutation DeleteCategory($id: String!) {
     }
 }
 
-mutation UpdateCategory($id: String!, $name: String!) {
-    updateCategory(input: {id: $id, name: $name}) {
+mutation UpdateCategory($id: String!, $name: String!, $image: Upload) {
+    updateCategory(input: {id: $id, name: $name, image: $image}) {
         updated
     }
 }
