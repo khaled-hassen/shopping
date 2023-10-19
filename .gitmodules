@@ -1,0 +1,6 @@
+[submodule "Backend"]
+	path = Backend
+	url = https://github.com/khaled-hassen/shopping/tree/backend
+[submodule "Admin"]
+	path = Admin
+	url = https://github.com/khaled-hassen/shopping/tree/admin
