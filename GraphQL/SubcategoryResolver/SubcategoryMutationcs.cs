@@ -1,6 +1,4 @@
-﻿using Backend.GraphQL.SubcategoryResolver.Types;
-using Backend.Helpers;
-using Backend.Interfaces;
+﻿using Backend.Interfaces;
 using Backend.Models;
 
 namespace Backend.GraphQL.SubcategoryResolver;
@@ -18,8 +16,8 @@ public class SubcategoryMutation {
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]
-    public async Task<bool> UpdateSubcategoryName(string id, string name) {
-        return await _subcategoryService.UpdateSubcategoryNameAsync(id, name);
+    public async Task<bool> UpdateSubcategory(string id, string name, IFile? image) {
+        return await _subcategoryService.UpdateSubcategoryAsync(id, name, image);
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]

@@ -31,8 +31,7 @@ public class SubcategoryService : ISubcategoryService {
         var id = ObjectId.GenerateNewId();
         subcategory.Id = id;
 
-        var filename = subcategory.Name + '-' + id;
-        var path = await GraphQLImageUpload.UploadImage(image, categoryId, filename);
+        var path = await FileUpload.UploadFile(image, categoryId, id.ToString()!);
         subcategory.Image = path;
 
         if (subcategory.ProductTypes is not null) {
@@ -65,10 +64,20 @@ public class SubcategoryService : ISubcategoryService {
         return subcategory;
     }
 
-    public async Task<bool> UpdateSubcategoryNameAsync(string id, string name) {
+    public async Task<bool> UpdateSubcategoryAsync(string id, string name, IFile? image) {
+        var subcategory = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        if (subcategory is null) return false;
+
+        var update = Builders<Subcategory>.Update.Set(c => c.Name, name);
+        if (image is not null) {
+            FileUpload.DeleteFile(subcategory.Image ?? "");
+            var path = await FileUpload.UploadFile(image, subcategory.CategoryId.ToString()!, id);
+            update = update.Set(c => c.Image, path);
+        }
+
         var updated = await _collection.UpdateOneAsync(
             c => c.Id.ToString() == id,
-            Builders<Subcategory>.Update.Set(c => c.Name, name)
+            update
         );
         return updated is not null && updated.ModifiedCount > 0;
     }
@@ -115,6 +124,8 @@ public class SubcategoryService : ISubcategoryService {
         if (updated is null || updated.ModifiedCount == 0) return false;
 
         var deleted = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
+
+        FileUpload.DeleteFile(subcategory.Image ?? "");
         return deleted is not null && deleted.DeletedCount > 0;
     }
 }

@@ -42,9 +42,7 @@ public class CategoryService : ICategoryService {
 
     public async Task<CreatedCategory> CreateCategoryAsync(string name, IFile image) {
         var id = ObjectId.GenerateNewId();
-
-        var filename = name + '-' + id;
-        var path = await GraphQLImageUpload.UploadImage(image, id.ToString()!, filename);
+        var path = await FileUpload.UploadFile(image, id.ToString()!, id.ToString()!);
 
         var category = new Category {
             Id = id,
@@ -56,8 +54,17 @@ public class CategoryService : ICategoryService {
         return new CreatedCategory(id.ToString()!, name, path);
     }
 
-    public async Task<bool> UpdateCategoryNameAsync(string id, string name) {
+    public async Task<bool> UpdateCategoryAsync(string id, string name, IFile? image) {
+        var category = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        if (category is null) return false;
+
         var update = Builders<Category>.Update.Set(c => c.Name, name);
+        if (image is not null) {
+            FileUpload.DeleteFile(category.Image);
+            var path = await FileUpload.UploadFile(image, id, id);
+            update = update.Set(c => c.Image, path);
+        }
+
         var res = await _collection.UpdateOneAsync(c => c.Id.ToString() == id, update);
         return res is not null && res.ModifiedCount != 0;
     }
@@ -66,7 +73,7 @@ public class CategoryService : ICategoryService {
         var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
         await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
-        GraphQLImageUpload.DeleteImageDirectory(id);
+        FileUpload.DeleteDirectory(id);
         return true;
     }
 }

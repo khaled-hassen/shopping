@@ -1,5 +1,4 @@
-﻿using Backend.Helpers;
-using Backend.Interfaces;
+﻿using Backend.Interfaces;
 using Backend.Types;
 
 namespace Backend.GraphQL.CategoryResolver;
@@ -17,8 +16,8 @@ public class CategoryMutation {
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]
-    public async Task<bool> UpdateCategory(string id, string name) {
-        return await _categoryService.UpdateCategoryNameAsync(id, name);
+    public async Task<bool> UpdateCategory(string id, string name, IFile? image) {
+        return await _categoryService.UpdateCategoryAsync(id, name, image);
     }
 
     [UseMutationConvention(PayloadFieldName = "deleted")]
