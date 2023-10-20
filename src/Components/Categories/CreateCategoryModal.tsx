@@ -1,10 +1,12 @@
-import { Card, DialogTitle, Modal, ModalDialog, Stack } from "@mui/joy";
+import { Alert, Card, DialogTitle, Modal, ModalDialog, Stack } from "@mui/joy";
 import React, { useState } from "react";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
+import ReportIcon from "@mui/icons-material/Report";
 import { useCreateNewCategoryMutation } from "../../__generated__/graphql.ts";
+import Typography from "@mui/joy/Typography";
 
 interface IProps {
   open: boolean;
@@ -15,6 +17,7 @@ interface IProps {
 const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
   const [create, { loading }] = useCreateNewCategoryMutation();
   const [previewImage, setPreviewImage] = useState<string>();
+  const [errors, setErrors] = useState<MutationErrors>([]);
 
   function closeModal() {
     setPreviewImage(undefined);
@@ -23,10 +26,14 @@ const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
 
   async function createNewCategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const name = data.get("name")?.toString() || "";
-    const image = data.get("image");
-    await create({ variables: { name, image } });
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name")?.toString() || "";
+    const image = formData.get("image");
+    const { data } = await create({ variables: { name, image } });
+    if (data?.createCategory.errors?.length) {
+      setErrors(data.createCategory.errors);
+      return;
+    }
     setPreviewImage(undefined);
     onCreated();
   }
@@ -35,6 +42,23 @@ const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
     <Modal open={open} onClose={closeModal}>
       <ModalDialog>
         <DialogTitle>Create new category</DialogTitle>
+        {!!errors.length && (
+          <Alert
+            sx={{ alignItems: "flex-start" }}
+            startDecorator={<ReportIcon />}
+            variant="soft"
+            color="danger"
+          >
+            <div>
+              <Typography>Error</Typography>
+              {errors.map((error, i) => (
+                <Typography key={i} level="body-sm" color="danger">
+                  {error.message}
+                </Typography>
+              ))}
+            </div>
+          </Alert>
+        )}
         <form onSubmit={createNewCategory}>
           <Stack spacing={2}>
             <FormControl>

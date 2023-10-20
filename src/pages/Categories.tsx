@@ -20,7 +20,6 @@ import Sheet from "@mui/joy/Sheet";
 import Table from "@mui/joy/Table";
 import Link from "@mui/joy/Link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { asset } from "../utils.ts";
 
 interface IProps {}
 
@@ -130,7 +129,7 @@ const Categories: React.FC<IProps> = () => {
           sx={{ width: "100%" }}
         >
           <FormControl size="sm">
-            <FormLabel>Search for order</FormLabel>
+            <FormLabel>Search</FormLabel>
             <Input
               size="sm"
               placeholder="Search"

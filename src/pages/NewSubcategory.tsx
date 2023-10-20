@@ -4,7 +4,7 @@ import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import { Card, Grid, Stack } from "@mui/joy";
+import { Alert, Card, Grid, Stack } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import { Add, Delete } from "@mui/icons-material";
 import IconButton from "@mui/joy/IconButton";
@@ -14,6 +14,7 @@ import {
   GetSubcategoriesQuery,
   useCreateSubcategoryMutation,
 } from "../__generated__/graphql";
+import ReportIcon from "@mui/icons-material/Report";
 
 interface IProps {}
 
@@ -31,13 +32,14 @@ const Subcategories: React.FC<IProps> = () => {
   const [productTypes, setProductTypes] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
   const [previewImage, setPreviewImage] = useState<string>();
+  const [errors, setErrors] = useState<MutationErrors>([]);
 
   async function createSubcategory(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const image = data.get("image");
+    const formData = new FormData(e.currentTarget);
+    const image = formData.get("image");
 
-    await create({
+    const { data } = await create({
       variables: {
         categoryId: id || "",
         name,
@@ -45,7 +47,9 @@ const Subcategories: React.FC<IProps> = () => {
         filters,
         image,
       },
-      update(cache) {
+      update(cache, { data }) {
+        if (data?.createSubcategory.errors?.length) return;
+
         cache.updateQuery<GetSubcategoriesQuery>(
           {
             query: GetSubcategoriesDocument,
@@ -60,15 +64,19 @@ const Subcategories: React.FC<IProps> = () => {
         );
       },
     });
+
+    if (data?.createSubcategory.errors?.length) {
+      setErrors(data.createSubcategory.errors);
+      return;
+    }
+
     navigate(`/categories/${id}`);
   }
 
   return (
     <form onSubmit={createSubcategory} style={{ paddingBottom: 100 }}>
       <Stack
-        direction="row"
         spacing={2}
-        alignItems="center"
         justifyContent="space-between"
         sx={{
           py: 4,
@@ -78,12 +86,41 @@ const Subcategories: React.FC<IProps> = () => {
           background: "black",
         }}
       >
-        <Box>
-          <Typography level="h2">New Subcategory</Typography>
-        </Box>
-        <Button color="success" variant="soft" type="submit" loading={loading}>
-          Create
-        </Button>
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Typography level="h2">New Subcategory</Typography>
+          </Box>
+          <Button
+            color="success"
+            variant="soft"
+            type="submit"
+            loading={loading}
+          >
+            Create
+          </Button>
+        </Stack>
+        {!!errors.length && (
+          <Alert
+            sx={{ alignItems: "flex-start" }}
+            startDecorator={<ReportIcon />}
+            variant="soft"
+            color="danger"
+          >
+            <div>
+              <Typography>Error</Typography>
+              {errors.map((error, i) => (
+                <Typography key={i} level="body-sm" color="danger">
+                  {error.message}
+                </Typography>
+              ))}
+            </div>
+          </Alert>
+        )}
       </Stack>
 
       <Stack spacing={4}>

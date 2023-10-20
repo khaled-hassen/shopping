@@ -1,4 +1,4 @@
-import { Card, DialogTitle, Modal, ModalDialog, Stack } from "@mui/joy";
+import { Alert, Card, DialogTitle, Modal, ModalDialog, Stack } from "@mui/joy";
 import React, { useState } from "react";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
@@ -9,6 +9,8 @@ import {
   GetCategoriesQuery,
   useUpdateCategoryMutation,
 } from "../../__generated__/graphql.ts";
+import ReportIcon from "@mui/icons-material/Report";
+import Typography from "@mui/joy/Typography";
 
 interface IProps {
   category: GetCategoriesQuery["categories"][number] | null;
@@ -19,6 +21,7 @@ interface IProps {
 const EditCategoryModal: React.FC<IProps> = ({ category, open, onClose }) => {
   const [previewImage, setPreviewImage] = useState<string>();
   const [updateCat, { loading }] = useUpdateCategoryMutation();
+  const [errors, setErrors] = useState<MutationErrors>([]);
 
   async function updateCategory(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,9 +30,10 @@ const EditCategoryModal: React.FC<IProps> = ({ category, open, onClose }) => {
     const image = formData.get("image") as File | null;
     const file = !image || image.size === 0 ? null : image;
 
-    await updateCat({
+    const { data } = await updateCat({
       variables: { id: category?.id || "", name, image: file },
-      update(cache) {
+      update(cache, { data }) {
+        if (data?.updateCategory.errors?.length) return;
         cache.updateQuery<GetCategoriesQuery>(
           {
             query: GetCategoriesDocument,
@@ -47,6 +51,11 @@ const EditCategoryModal: React.FC<IProps> = ({ category, open, onClose }) => {
       },
     });
 
+    if (data?.updateCategory.errors?.length) {
+      setErrors(data.updateCategory.errors);
+      return;
+    }
+
     onClose();
   }
 
@@ -54,6 +63,23 @@ const EditCategoryModal: React.FC<IProps> = ({ category, open, onClose }) => {
     <Modal open={open} onClose={onClose}>
       <ModalDialog>
         <DialogTitle>Update category name</DialogTitle>
+        {!!errors.length && (
+          <Alert
+            sx={{ alignItems: "flex-start" }}
+            startDecorator={<ReportIcon />}
+            variant="soft"
+            color="danger"
+          >
+            <div>
+              <Typography>Error</Typography>
+              {errors.map((error, i) => (
+                <Typography key={i} level="body-sm" color="danger">
+                  {error.message}
+                </Typography>
+              ))}
+            </div>
+          </Alert>
+        )}
         <form onSubmit={updateCategory}>
           <Stack spacing={2}>
             <FormControl>

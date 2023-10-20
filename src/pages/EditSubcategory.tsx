@@ -4,7 +4,7 @@ import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import { Card, Grid, Stack } from "@mui/joy";
+import { Alert, Card, Grid, Stack } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import { Add, Delete } from "@mui/icons-material";
 import IconButton from "@mui/joy/IconButton";
@@ -15,6 +15,7 @@ import {
   useGetSubcategoryQuery,
   useUpdateSubcategoryMutation,
 } from "../__generated__/graphql.ts";
+import ReportIcon from "@mui/icons-material/Report";
 
 interface IProps {}
 
@@ -33,6 +34,7 @@ const Subcategories: React.FC<IProps> = () => {
   const navigate = useNavigate();
   const { data } = useGetSubcategoryQuery({ variables: { id: id || "" } });
   const [update, { loading }] = useUpdateSubcategoryMutation();
+  const [errors, setErrors] = useState<MutationErrors>([]);
 
   useEffect(() => {
     if (!data) return;
@@ -60,9 +62,22 @@ const Subcategories: React.FC<IProps> = () => {
     const image = formData.get("image") as File | null;
     const file = !image || image.size === 0 ? null : image;
 
-    await update({
+    const { data: response } = await update({
       variables: { id: id || "", name, filters, productTypes, image: file },
-      update(cache) {
+      update(cache, { data: response }) {
+        const updateSubcategoryErrors =
+          response?.updateSubcategory.errors || [];
+        const updateProductTypesErrors =
+          response?.updateSubcategoryProductTypes.errors || [];
+        const updateFiltersErrors =
+          response?.updateSubcategoryFilters.errors || [];
+        if (
+          updateSubcategoryErrors.length ||
+          updateProductTypesErrors.length ||
+          updateFiltersErrors.length
+        )
+          return;
+
         cache.updateQuery<GetSubcategoriesQuery>(
           {
             query: GetSubcategoriesDocument,
@@ -81,15 +96,31 @@ const Subcategories: React.FC<IProps> = () => {
         );
       },
     });
+
+    const updateSubcategoryErrors = response?.updateSubcategory.errors || [];
+    const updateProductTypesErrors =
+      response?.updateSubcategoryProductTypes.errors || [];
+    const updateFiltersErrors = response?.updateSubcategoryFilters.errors || [];
+    if (
+      updateSubcategoryErrors.length ||
+      updateProductTypesErrors.length ||
+      updateFiltersErrors.length
+    ) {
+      setErrors([
+        ...updateSubcategoryErrors,
+        ...updateProductTypesErrors,
+        ...updateFiltersErrors,
+      ]);
+      return;
+    }
+
     navigate(`/categories/${data?.subcategory?.categoryId}`);
   }
 
   return (
     <form onSubmit={createSubcategory} style={{ paddingBottom: 100 }}>
       <Stack
-        direction="row"
         spacing={2}
-        alignItems="center"
         justifyContent="space-between"
         sx={{
           py: 4,
@@ -99,23 +130,48 @@ const Subcategories: React.FC<IProps> = () => {
           background: "black",
         }}
       >
-        <Box>
-          <Typography level="h2">Edit Subcategory</Typography>
-        </Box>
-        <Button color="success" variant="soft" type="submit" loading={loading}>
-          Save changes
-        </Button>
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Typography level="h2">Edit Subcategory</Typography>
+          </Box>
+          <Button
+            color="success"
+            variant="soft"
+            type="submit"
+            loading={loading}
+          >
+            Save changes
+          </Button>
+        </Stack>
+        {!!errors.length && (
+          <Alert
+            sx={{ alignItems: "flex-start" }}
+            startDecorator={<ReportIcon />}
+            variant="soft"
+            color="danger"
+          >
+            <div>
+              <Typography>Error</Typography>
+              {errors.map((error, i) => (
+                <Typography key={i} level="body-sm" color="danger">
+                  {error.message}
+                </Typography>
+              ))}
+            </div>
+          </Alert>
+        )}
       </Stack>
 
       <Stack spacing={4}>
         <Grid container>
           <FormControl>
             <FormLabel>Name</FormLabel>
-            <Input
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
           </FormControl>
         </Grid>
 
@@ -129,7 +185,6 @@ const Subcategories: React.FC<IProps> = () => {
             <input
               type="file"
               name="image"
-              required
               accept="image/png, image/jpeg"
               onChange={(e: any) => {
                 setPreviewImage(URL.createObjectURL(e.target.files[0]));

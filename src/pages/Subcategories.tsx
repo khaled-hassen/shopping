@@ -114,7 +114,7 @@ const Subcategories: React.FC<IProps> = () => {
           sx={{ width: "100%" }}
         >
           <FormControl size="sm">
-            <FormLabel>Search for order</FormLabel>
+            <FormLabel>Search</FormLabel>
             <Input
               size="sm"
               placeholder="Search"

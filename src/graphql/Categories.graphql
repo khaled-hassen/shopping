@@ -16,6 +16,12 @@ mutation DeleteCategory($id: String!) {
 mutation UpdateCategory($id: String!, $name: String!, $image: Upload) {
     updateCategory(input: {id: $id, name: $name, image: $image}) {
         updated
+
+        errors {
+            ...on InvalidInputExceptions {
+                message
+            }
+        }
     }
 }
 
@@ -23,6 +29,12 @@ mutation CreateNewCategory($name: String!, $image: Upload!) {
     createCategory(input: {name: $name, image: $image}) {
         createdCategory {
             id
+        }
+
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
         }
     }
 }

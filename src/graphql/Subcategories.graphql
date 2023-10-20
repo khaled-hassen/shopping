@@ -30,6 +30,12 @@ mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: 
         subcategory {
             id
         }
+
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
     }
 }
 
@@ -50,13 +56,31 @@ query GetSubcategory($id: String!) {
 mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!]!, $filters: [KeyValuePairOfStringAndHashSetOfStringInput!]!, $image:Upload) {
     updateSubcategory(input: {id: $id, name: $name, image: $image}) {
         updated
+
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
     }
 
     updateSubcategoryFilters(input: {id: $id, filters: $filters}) {
         updated
+
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
     }
 
     updateSubcategoryProductTypes(input: {id: $id, types: $productTypes}) {
         updated
+
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
     }
 }
