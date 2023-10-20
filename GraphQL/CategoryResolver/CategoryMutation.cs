@@ -1,5 +1,7 @@
-﻿using Backend.Interfaces;
+﻿using Backend.Exceptions;
+using Backend.Interfaces;
 using Backend.Types;
+using Backend.Validation;
 
 namespace Backend.GraphQL.CategoryResolver;
 
@@ -11,12 +13,16 @@ public class CategoryMutation {
         _categoryService = categoryService;
     }
 
+    [Error<InvalidInputExceptions>]
     public async Task<CreatedCategory> CreateCategory(string name, IFile image) {
+        Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Category name cannot be empty");
         return await _categoryService.CreateCategoryAsync(name, image);
     }
 
+    [Error<InvalidInputExceptions>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateCategory(string id, string name, IFile? image) {
+        Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Category name cannot be empty");
         return await _categoryService.UpdateCategoryAsync(id, name, image);
     }
 

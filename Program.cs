@@ -20,6 +20,7 @@ builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 
 // setup graphql
 builder.Services.AddGraphQLServer()
+    .AllowIntrospection(builder.Environment.IsDevelopment())
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment())
     .AddQueryType<Query>()
     .BindRuntimeType<ObjectId, IdType>()
