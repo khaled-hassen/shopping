@@ -23,7 +23,7 @@ interface Filter {
   value: string[];
 }
 
-const Subcategories: React.FC<IProps> = () => {
+const NewSubcategory: React.FC<IProps> = () => {
   const { id } = useParams();
   const [create, { loading }] = useCreateSubcategoryMutation();
   const navigate = useNavigate();
@@ -310,4 +310,4 @@ const Subcategories: React.FC<IProps> = () => {
   );
 };
 
-export default Subcategories;
+export default NewSubcategory;

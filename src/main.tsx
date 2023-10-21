@@ -6,12 +6,14 @@ import "@fontsource/inter";
 import { BrowserRouter } from "react-router-dom";
 import {
   ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
   ApolloLink,
+  ApolloProvider,
+  InMemoryCache,
 } from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
-import { asset } from "./utils.ts";
+import { asset, getToken, removeToken } from "./utils.ts";
+import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 
 const formatImagesLink = new ApolloLink((operation, forward) => {
   function mutateImageKeys(obj: unknown): any {
@@ -40,9 +42,20 @@ const uploadLink = createUploadLink({
   },
 });
 
+const authLink = setContext((_, { headers }) => {
+  const token = getToken();
+  return {
+    headers: { ...headers, Authorization: token ? `Bearer ${token}` : "" },
+  };
+});
+
+const logoutLink = onError(({ networkError }: any) => {
+  if (networkError.statusCode === 401) removeToken();
+});
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: formatImagesLink.concat(uploadLink),
+  link: authLink.concat(logoutLink).concat(formatImagesLink).concat(uploadLink),
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

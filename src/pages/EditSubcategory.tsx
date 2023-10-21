@@ -24,7 +24,7 @@ interface Filter {
   value: string[];
 }
 
-const Subcategories: React.FC<IProps> = () => {
+const EditSubcategory: React.FC<IProps> = () => {
   const [name, setName] = useState("");
   const [productTypes, setProductTypes] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -349,4 +349,4 @@ const Subcategories: React.FC<IProps> = () => {
   );
 };
 
-export default Subcategories;
+export default EditSubcategory;

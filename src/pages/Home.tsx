@@ -3,8 +3,8 @@ import Box from "@mui/joy/Box";
 
 interface IProps {}
 
-const Categories: React.FC<IProps> = () => {
+const Home: React.FC<IProps> = () => {
   return <Box sx={{ display: "flex", alignItems: "center" }}></Box>;
 };
 
-export default Categories;
+export default Home;

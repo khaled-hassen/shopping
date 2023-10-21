@@ -4,7 +4,7 @@ import Typography from "@mui/joy/Typography";
 
 interface IProps {}
 
-const Categories: React.FC<IProps> = () => {
+const NotFound: React.FC<IProps> = () => {
   return (
     <Box sx={{ display: "grid", placeContent: "center", height: "100%" }}>
       <Typography level="h1" sx={{ textAlign: "center" }}>
@@ -15,4 +15,4 @@ const Categories: React.FC<IProps> = () => {
   );
 };
 
-export default Categories;
+export default NotFound;

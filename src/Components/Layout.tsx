@@ -1,21 +1,29 @@
-import React from "react";
+import React, { useContext } from "react";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
 import { CssVarsProvider } from "@mui/joy/styles";
+import { getToken } from "../utils.ts";
+import { AuthContext } from "../store/auth.ts";
 
 interface IProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<IProps> = ({ children }) => {
+  const { loggedIn } = useContext(AuthContext);
+
   return (
     <CssVarsProvider disableTransitionOnChange defaultMode="dark">
       <CssBaseline />
       <Box sx={{ display: "flex", minHeight: "100dvh" }}>
-        <Header />
-        <Sidebar />
+        {loggedIn && (
+          <>
+            <Header />
+            <Sidebar />
+          </>
+        )}
         <Box
           component="main"
           className="MainContent"
