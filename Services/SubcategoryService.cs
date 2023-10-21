@@ -31,7 +31,7 @@ public class SubcategoryService : ISubcategoryService {
         var id = ObjectId.GenerateNewId();
         subcategory.Id = id;
 
-        var path = await FileUpload.UploadFile(image, categoryId, id.ToString()!);
+        var path = await FileUploadHelper.UploadFile(image, categoryId, id.ToString()!);
         subcategory.Image = path;
 
         if (subcategory.ProductTypes is not null) {
@@ -70,8 +70,8 @@ public class SubcategoryService : ISubcategoryService {
 
         var update = Builders<Subcategory>.Update.Set(c => c.Name, name);
         if (image is not null) {
-            FileUpload.DeleteFile(subcategory.Image ?? "");
-            var path = await FileUpload.UploadFile(image, subcategory.CategoryId.ToString()!, id);
+            FileUploadHelper.DeleteFile(subcategory.Image ?? "");
+            var path = await FileUploadHelper.UploadFile(image, subcategory.CategoryId.ToString()!, id);
             update = update.Set(c => c.Image, path);
         }
 
@@ -125,7 +125,7 @@ public class SubcategoryService : ISubcategoryService {
 
         var deleted = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
 
-        FileUpload.DeleteFile(subcategory.Image ?? "");
+        FileUploadHelper.DeleteFile(subcategory.Image ?? "");
         return deleted is not null && deleted.DeletedCount > 0;
     }
 }

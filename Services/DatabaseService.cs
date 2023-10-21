@@ -24,4 +24,8 @@ public class DatabaseService {
     public IMongoCollection<Subcategory> GetSubcategoryCollection() {
         return GetCollection<Subcategory>("subcategories");
     }
+
+    public IMongoCollection<Admin> GetAdminCollection() {
+        return GetCollection<Admin>("admins");
+    }
 }

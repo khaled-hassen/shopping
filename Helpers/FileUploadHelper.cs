@@ -2,7 +2,7 @@
 
 namespace Backend.Helpers;
 
-public static class FileUpload {
+public static class FileUploadHelper {
     public static async Task<string> UploadFile(IFile file, string folder, string filename) {
         List<string> allowedFileTypes = new() { "image/jpeg", "image/png" };
 

@@ -42,7 +42,7 @@ public class CategoryService : ICategoryService {
 
     public async Task<CreatedCategory> CreateCategoryAsync(string name, IFile image) {
         var id = ObjectId.GenerateNewId();
-        var path = await FileUpload.UploadFile(image, id.ToString()!, id.ToString()!);
+        var path = await FileUploadHelper.UploadFile(image, id.ToString()!, id.ToString()!);
 
         var category = new Category {
             Id = id,
@@ -60,8 +60,8 @@ public class CategoryService : ICategoryService {
 
         var update = Builders<Category>.Update.Set(c => c.Name, name);
         if (image is not null) {
-            FileUpload.DeleteFile(category.Image);
-            var path = await FileUpload.UploadFile(image, id, id);
+            FileUploadHelper.DeleteFile(category.Image);
+            var path = await FileUploadHelper.UploadFile(image, id, id);
             update = update.Set(c => c.Image, path);
         }
 
@@ -73,7 +73,7 @@ public class CategoryService : ICategoryService {
         var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
         await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
-        FileUpload.DeleteDirectory(id);
+        FileUploadHelper.DeleteDirectory(id);
         return true;
     }
 }
