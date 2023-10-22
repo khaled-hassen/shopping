@@ -8,6 +8,6 @@ public interface ISubcategoryService {
     public Task<Subcategory?> CreateSubcategoryAsync(string categoryId, Subcategory subcategory, IFile image);
     public Task<bool> UpdateSubcategoryAsync(string id, string name, IFile? image);
     public Task<bool> UpdateSubcategoryProductTypesAsync(string id, HashSet<string> productTypes);
-    public Task<bool> UpdateSubcategoryFiltersAsync(string id, Dictionary<string, HashSet<string>> filters);
+    public Task<bool> UpdateSubcategoryFiltersAsync(string id, HashSet<Filter> filters);
     public Task<bool> DeleteSubcategoryAsync(string id);
 }

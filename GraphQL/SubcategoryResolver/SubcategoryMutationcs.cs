@@ -41,8 +41,8 @@ public class SubcategoryMutation {
     [Authorize(Roles = new[] { "Admin" })]
     [Error<InvalidInputExceptions>]
     [UseMutationConvention(PayloadFieldName = "updated")]
-    public async Task<bool> UpdateSubcategoryFilters(string id, Dictionary<string, HashSet<string>> filters) {
-        Validator<NonEmptyFiltersValidator, Dictionary<string, HashSet<string>>>.ValidateAndThrow(filters);
+    public async Task<bool> UpdateSubcategoryFilters(string id, HashSet<Filter> filters) {
+        Validator<NonEmptyFiltersValidator, HashSet<Filter>>.ValidateAndThrow(filters);
         return await _subcategoryService.UpdateSubcategoryFiltersAsync(id, filters);
     }
 

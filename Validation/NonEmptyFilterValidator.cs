@@ -1,10 +1,11 @@
-﻿using FluentValidation;
+﻿using Backend.Models;
+using FluentValidation;
 
 namespace Backend.Validation;
 
-public class NonEmptyFilterValidator : AbstractValidator<KeyValuePair<string, HashSet<string>>> {
+public class NonEmptyFilterValidator : AbstractValidator<Filter> {
     public NonEmptyFilterValidator() {
-        RuleFor(x => x.Key).NotEmpty().WithMessage("Filter name cannot be empty");
-        RuleForEach(x => x.Value).NotEmpty().WithMessage("Filter value cannot be empty");
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Filter name cannot be empty");
+        RuleFor(x => x.Type).NotNull().WithMessage("Filter type cannot be empty");
     }
 }

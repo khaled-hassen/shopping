@@ -46,7 +46,7 @@ public class CategoryService : ICategoryService {
 
         var category = new Category {
             Id = id,
-            Name = name,
+            Name = name.Trim(),
             Image = path
         };
 
@@ -58,7 +58,7 @@ public class CategoryService : ICategoryService {
         var category = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (category is null) return false;
 
-        var update = Builders<Category>.Update.Set(c => c.Name, name);
+        var update = Builders<Category>.Update.Set(c => c.Name, name.Trim());
         if (image is not null) {
             FileUploadHelper.DeleteFile(category.Image);
             var path = await FileUploadHelper.UploadFile(image, id, id);
