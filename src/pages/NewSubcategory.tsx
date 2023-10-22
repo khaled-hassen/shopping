@@ -4,12 +4,14 @@ import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import { Alert, Card, Grid, Stack } from "@mui/joy";
+import { Alert, Card, Grid, Option, Select, Stack } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import { Add, Delete } from "@mui/icons-material";
 import IconButton from "@mui/joy/IconButton";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  FilterInput,
+  FilterType,
   GetSubcategoriesDocument,
   GetSubcategoriesQuery,
   useCreateSubcategoryMutation,
@@ -18,11 +20,6 @@ import ReportIcon from "@mui/icons-material/Report";
 
 interface IProps {}
 
-interface Filter {
-  key: string;
-  value: string[];
-}
-
 const NewSubcategory: React.FC<IProps> = () => {
   const { id } = useParams();
   const [create, { loading }] = useCreateSubcategoryMutation();
@@ -30,7 +27,7 @@ const NewSubcategory: React.FC<IProps> = () => {
 
   const [name, setName] = useState("");
   const [productTypes, setProductTypes] = useState<string[]>([]);
-  const [filters, setFilters] = useState<Filter[]>([]);
+  const [filters, setFilters] = useState<FilterInput[]>([]);
   const [previewImage, setPreviewImage] = useState<string>();
   const [errors, setErrors] = useState<MutationErrors>([]);
 
@@ -221,7 +218,10 @@ const NewSubcategory: React.FC<IProps> = () => {
                 variant="outlined"
                 startDecorator={<Add />}
                 onClick={() =>
-                  setFilters([...filters, { key: "", value: [""] }])
+                  setFilters([
+                    ...filters,
+                    { name: "", type: FilterType.String, unit: "" },
+                  ])
                 }
               >
                 Add
@@ -230,77 +230,59 @@ const NewSubcategory: React.FC<IProps> = () => {
           </Stack>
           <Stack spacing={4}>
             {filters.map((_, i) => (
-              <Stack key={i} spacing={10} direction="row" alignItems="start">
-                <Stack spacing={1} direction="row" alignItems="end">
-                  <IconButton
-                    color="danger"
-                    onClick={() =>
-                      setFilters((val) => val.filter((_, index) => index !== i))
-                    }
-                  >
-                    <Delete />
-                  </IconButton>
-                  <FormControl>
-                    <FormLabel>Filter {i + 1}</FormLabel>
-                    <Input
-                      required
-                      value={filters[i].key}
-                      onChange={(e) =>
-                        setFilters((val) => {
-                          const newFilters = [...val];
-                          newFilters[i].key = e.target.value;
-                          return newFilters;
-                        })
-                      }
-                    />
-                  </FormControl>
-                  <IconButton
-                    onClick={() =>
+              <Stack key={i} spacing={1} direction="row" alignItems="end">
+                <IconButton
+                  color="danger"
+                  onClick={() =>
+                    setFilters((val) => val.filter((_, index) => index !== i))
+                  }
+                >
+                  <Delete />
+                </IconButton>
+                <FormControl>
+                  <FormLabel>Type</FormLabel>
+                  <Select
+                    value={filters[i].type}
+                    required
+                    onChange={(_, value) =>
                       setFilters((val) => {
                         const newFilters = [...val];
-                        newFilters[i].value.push("");
+                        newFilters[i].type = value || FilterType.String;
                         return newFilters;
                       })
                     }
                   >
-                    <Add />
-                  </IconButton>
-                </Stack>
-                <Stack spacing={2}>
-                  {filters[i].value.map((_, j) => (
-                    <Stack key={j} spacing={1} direction="row" alignItems="end">
-                      <IconButton
-                        disabled={filters[i].value.length === 1}
-                        color="danger"
-                        onClick={() =>
-                          setFilters((val) => {
-                            const newFilters = [...val];
-                            newFilters[i].value = newFilters[i].value.filter(
-                              (_, index) => index !== j,
-                            );
-                            return newFilters;
-                          })
-                        }
-                      >
-                        <Delete />
-                      </IconButton>
-                      <FormControl>
-                        <FormLabel>Value {j + 1}</FormLabel>
-                        <Input
-                          required
-                          value={filters[i].value[j]}
-                          onChange={(e) =>
-                            setFilters((val) => {
-                              const newFilters = [...val];
-                              newFilters[i].value[j] = e.target.value;
-                              return newFilters;
-                            })
-                          }
-                        />
-                      </FormControl>
-                    </Stack>
-                  ))}
-                </Stack>
+                    <Option value={FilterType.String}>String</Option>
+                    <Option value={FilterType.Number}>Number</Option>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    required
+                    value={filters[i].name}
+                    onChange={(e) =>
+                      setFilters((val) => {
+                        const newFilters = [...val];
+                        newFilters[i].name = e.target.value;
+                        return newFilters;
+                      })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Unit</FormLabel>
+                  <Input
+                    value={filters[i].unit}
+                    onChange={(e) =>
+                      setFilters((val) => {
+                        const newFilters = [...val];
+                        newFilters[i].unit = e.target.value;
+                        return newFilters;
+                      })
+                    }
+                  />
+                </FormControl>
               </Stack>
             ))}
           </Stack>

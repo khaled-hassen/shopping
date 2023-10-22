@@ -3,7 +3,7 @@ query GetSubcategories($categoryId: String!) {
         id
         name
         filters {
-            key
+            name
         }
         productTypes
         image
@@ -16,7 +16,7 @@ mutation DeleteSubcategory($id: String!) {
     }
 }
 
-mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: [String!], $filters: [KeyValuePairOfStringAndHashSetOfStringInput!], $image: Upload!) {
+mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: [String!], $filters: [FilterInput!], $image: Upload!) {
     createSubcategory(input: {
         categoryId: $categoryId,
         subcategory: {
@@ -44,8 +44,9 @@ query GetSubcategory($id: String!) {
         id
         name
         filters {
-            key
-            value
+            name
+            unit
+            type
         }
         productTypes
         categoryId
@@ -53,7 +54,7 @@ query GetSubcategory($id: String!) {
     }
 }
 
-mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!]!, $filters: [KeyValuePairOfStringAndHashSetOfStringInput!]!, $image:Upload) {
+mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!]!, $filters: [FilterInput!]!, $image:Upload) {
     updateSubcategory(input: {id: $id, name: $name, image: $image}) {
         updated
 
