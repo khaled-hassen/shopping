@@ -16,7 +16,7 @@ mutation DeleteSubcategory($id: String!) {
     }
 }
 
-mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: [String!], $filters: [FilterInput!], $image: Upload!) {
+mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: [String!]!, $filters: [FilterInput!]!, $image: Upload!) {
     createSubcategory(input: {
         categoryId: $categoryId,
         subcategory: {
@@ -47,6 +47,7 @@ query GetSubcategory($id: String!) {
             name
             unit
             type
+            productTypes
         }
         productTypes
         categoryId

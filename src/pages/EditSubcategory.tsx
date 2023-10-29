@@ -4,7 +4,7 @@ import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import { Alert, Card, Grid, Option, Select, Stack } from "@mui/joy";
+import { Alert, Card, Checkbox, Grid, Option, Select, Stack } from "@mui/joy";
 import Button from "@mui/joy/Button";
 import { Add, Delete } from "@mui/icons-material";
 import IconButton from "@mui/joy/IconButton";
@@ -18,6 +18,8 @@ import {
   useUpdateSubcategoryMutation,
 } from "../__generated__/graphql.ts";
 import ReportIcon from "@mui/icons-material/Report";
+import List from "@mui/joy/List";
+import ListItem from "@mui/joy/ListItem";
 
 interface IProps {}
 
@@ -48,6 +50,7 @@ const EditSubcategory: React.FC<IProps> = () => {
         unit: f.unit,
         type: f.type,
         name: f.name,
+        productTypes: f.productTypes,
       })),
     );
     setPreviewImage(subcategory.image || "");
@@ -124,7 +127,7 @@ const EditSubcategory: React.FC<IProps> = () => {
           py: 4,
           position: "sticky",
           top: -24,
-          zIndex: 1,
+          zIndex: 10,
           background: "black",
         }}
       >
@@ -192,29 +195,14 @@ const EditSubcategory: React.FC<IProps> = () => {
         </Grid>
 
         <Stack spacing={2}>
-          <Stack
-            spacing={4}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box>
-              <Typography level="h3">Product types</Typography>
-            </Box>
-            <Box>
-              <Button
-                variant="outlined"
-                startDecorator={<Add />}
-                onClick={() => setProductTypes([...productTypes, ""])}
-              >
-                Add
-              </Button>
-            </Box>
-          </Stack>
+          <Box>
+            <Typography level="h3">Product types</Typography>
+          </Box>
           <Stack spacing={2}>
             {productTypes.map((_, i) => (
               <Stack key={i} spacing={1} direction="row" alignItems="end">
                 <IconButton
+                  disabled={productTypes.length === 1}
                   color="danger"
                   onClick={() =>
                     setProductTypes((val) =>
@@ -241,91 +229,139 @@ const EditSubcategory: React.FC<IProps> = () => {
               </Stack>
             ))}
           </Stack>
+          <Box>
+            <Button
+              variant="outlined"
+              startDecorator={<Add />}
+              onClick={() => setProductTypes([...productTypes, ""])}
+            >
+              Add
+            </Button>
+          </Box>
         </Stack>
 
         <Stack spacing={2}>
-          <Stack
-            spacing={4}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Box>
-              <Typography level="h3">Filters</Typography>
-            </Box>
-            <Box>
-              <Button
-                variant="outlined"
-                startDecorator={<Add />}
-                onClick={() =>
-                  setFilters([
-                    ...filters,
-                    { name: "", type: FilterType.String, unit: "" },
-                  ])
-                }
-              >
-                Add
-              </Button>
-            </Box>
-          </Stack>
+          <Box>
+            <Typography level="h3">Filters</Typography>
+          </Box>
           <Stack spacing={4}>
             {filters.map((_, i) => (
-              <Stack key={i} spacing={1} direction="row" alignItems="end">
-                <IconButton
-                  color="danger"
-                  onClick={() =>
-                    setFilters((val) => val.filter((_, index) => index !== i))
-                  }
-                >
-                  <Delete />
-                </IconButton>
-                <FormControl>
-                  <FormLabel>Type</FormLabel>
-                  <Select
-                    value={filters[i].type}
-                    required
-                    onChange={(_, value) =>
-                      setFilters((val) => {
-                        const newFilters = [...val];
-                        newFilters[i].type = value || FilterType.String;
-                        return newFilters;
-                      })
+              <Stack key={i} spacing={2}>
+                <Stack key={i} spacing={1} direction="row" alignItems="end">
+                  <IconButton
+                    disabled={filters.length === 1}
+                    color="danger"
+                    onClick={() =>
+                      setFilters((val) => val.filter((_, index) => index !== i))
                     }
                   >
-                    <Option value={FilterType.String}>String</Option>
-                    <Option value={FilterType.Number}>Number</Option>
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Name</FormLabel>
-                  <Input
-                    required
-                    value={filters[i].name}
-                    onChange={(e) =>
-                      setFilters((val) => {
-                        const newFilters = [...val];
-                        newFilters[i].name = e.target.value;
-                        return newFilters;
-                      })
-                    }
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>Unit</FormLabel>
-                  <Input
-                    value={filters[i].unit}
-                    onChange={(e) =>
-                      setFilters((val) => {
-                        const newFilters = [...val];
-                        newFilters[i].unit = e.target.value;
-                        return newFilters;
-                      })
-                    }
-                  />
-                </FormControl>
+                    <Delete />
+                  </IconButton>
+                  <FormControl>
+                    <FormLabel>Type</FormLabel>
+                    <Select
+                      value={filters[i].type}
+                      required
+                      onChange={(_, value) =>
+                        setFilters((val) => {
+                          const newFilters = [...val];
+                          newFilters[i].type = value || FilterType.String;
+                          return newFilters;
+                        })
+                      }
+                    >
+                      <Option value={FilterType.String}>String</Option>
+                      <Option value={FilterType.Number}>Number</Option>
+                    </Select>
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                      required
+                      value={filters[i].name}
+                      onChange={(e) =>
+                        setFilters((val) => {
+                          const newFilters = [...val];
+                          newFilters[i].name = e.target.value;
+                          return newFilters;
+                        })
+                      }
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Unit</FormLabel>
+                    <Input
+                      value={filters[i].unit}
+                      onChange={(e) =>
+                        setFilters((val) => {
+                          const newFilters = [...val];
+                          newFilters[i].unit = e.target.value;
+                          return newFilters;
+                        })
+                      }
+                    />
+                  </FormControl>
+                </Stack>
+                <Stack spacing={1}>
+                  <Typography fontSize={18}>
+                    Product types with this filter:
+                  </Typography>
+                  <List
+                    sx={{ "--List-gap": "8px" }}
+                    orientation="horizontal"
+                    wrap
+                  >
+                    {productTypes
+                      .filter((p) => !!p)
+                      .map((item) => (
+                        <ListItem key={item}>
+                          <Checkbox
+                            overlay
+                            disableIcon
+                            variant="soft"
+                            label={item}
+                            checked={filters[i].productTypes.includes(item)}
+                            onChange={(event) =>
+                              setFilters((val) => {
+                                const newFilters = [...val];
+                                const checked = event.target.checked;
+                                if (checked)
+                                  newFilters[i].productTypes.push(item);
+                                else {
+                                  newFilters[i].productTypes = newFilters[
+                                    i
+                                  ].productTypes.filter((p) => p !== item);
+                                }
+                                return newFilters;
+                              })
+                            }
+                          />
+                        </ListItem>
+                      ))}
+                  </List>
+                </Stack>
               </Stack>
             ))}
           </Stack>
+          <Box>
+            <Button
+              variant="outlined"
+              startDecorator={<Add />}
+              onClick={() =>
+                setFilters([
+                  ...filters,
+                  {
+                    name: "",
+                    type: FilterType.String,
+                    unit: "",
+                    productTypes: [],
+                  },
+                ])
+              }
+            >
+              Add
+            </Button>
+          </Box>
         </Stack>
       </Stack>
     </form>
