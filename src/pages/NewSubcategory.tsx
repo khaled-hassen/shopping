@@ -234,6 +234,7 @@ const NewSubcategory: React.FC<IProps> = () => {
                     >
                       <Option value={FilterType.String}>String</Option>
                       <Option value={FilterType.Number}>Number</Option>
+                      <Option value={FilterType.Boolean}>Boolean</Option>
                     </Select>
                   </FormControl>
                   <FormControl>
@@ -250,19 +251,21 @@ const NewSubcategory: React.FC<IProps> = () => {
                       }
                     />
                   </FormControl>
-                  <FormControl>
-                    <FormLabel>Unit</FormLabel>
-                    <Input
-                      value={filters[i].unit}
-                      onChange={(e) =>
-                        setFilters((val) => {
-                          const newFilters = [...val];
-                          newFilters[i].unit = e.target.value;
-                          return newFilters;
-                        })
-                      }
-                    />
-                  </FormControl>
+                  {filters[i].type === FilterType.Number && (
+                    <FormControl>
+                      <FormLabel>Unit</FormLabel>
+                      <Input
+                        value={filters[i].unit}
+                        onChange={(e) =>
+                          setFilters((val) => {
+                            const newFilters = [...val];
+                            newFilters[i].unit = e.target.value;
+                            return newFilters;
+                          })
+                        }
+                      />
+                    </FormControl>
+                  )}
                 </Stack>
                 <Stack spacing={1}>
                   <Typography fontSize={18}>
