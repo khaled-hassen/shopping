@@ -10,6 +10,7 @@ import EditSubcategory from "./pages/EditSubcategory.tsx";
 import { getToken } from "./utils.ts";
 import Login from "./pages/Login.tsx";
 import { AuthContext } from "./store/auth.ts";
+import Config from "./pages/Config.tsx";
 
 const App: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -28,6 +29,7 @@ const App: React.FC = () => {
             <Route path="/categories/:id" element={<Subcategories />} />
             <Route path="/subcategory/:id/new" element={<NewSubcategory />} />
             <Route path="/subcategory/:id/edit" element={<EditSubcategory />} />
+            <Route path="/config" element={<Config />} />
             <Route path="/404" element={<NotFound />} />
             <Route path="/*" element={<NotFound />} />
           </Routes>

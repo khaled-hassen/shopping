@@ -1,0 +1,34 @@
+query GetConfig {
+    config {
+        homeHeroCategoryId
+        heroCategoryId
+        heroBgColor
+        heroActionBgColor
+        heroTitle
+        heroSubtitle
+    }
+
+    categories {
+        id
+        name
+    }
+}
+
+mutation UpdateConfig($homeHeroCategoryId: String!, $heroCategoryId: String!, $heroTitle: String!, $heroSubtitle: String!, $heroBgColor: String!, $heroActionBgColor: String!) {
+    updateConfig(input: {
+        homeHeroCategoryId: $homeHeroCategoryId,
+        heroCategoryId: $heroCategoryId,
+        heroTitle: $heroTitle,
+        heroSubtitle: $heroSubtitle,
+        heroBgColor: $heroBgColor,
+        heroActionBgColor: $heroActionBgColor
+    })
+    {
+        updated
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
+    }
+}

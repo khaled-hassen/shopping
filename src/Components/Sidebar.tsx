@@ -12,6 +12,7 @@ import Sheet from "@mui/joy/Sheet";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import CategoryRoundedIcon from "@mui/icons-material/CategoryRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import { closeSidebar, removeToken } from "../utils";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import Link from "@mui/joy/Link";
@@ -31,6 +32,11 @@ const Sidebar: React.FC = () => {
       name: "Categories",
       path: "/categories",
       Icon: CategoryRoundedIcon,
+    },
+    {
+      name: "Configuration",
+      path: "/config",
+      Icon: SettingsRoundedIcon,
     },
   ];
 
