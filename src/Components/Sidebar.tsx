@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import GlobalStyles from "@mui/joy/GlobalStyles";
 import Box from "@mui/joy/Box";
 import Divider from "@mui/joy/Divider";
@@ -12,12 +12,14 @@ import Sheet from "@mui/joy/Sheet";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import CategoryRoundedIcon from "@mui/icons-material/CategoryRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import { closeSidebar } from "../utils";
+import { closeSidebar, removeToken } from "../utils";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import Link from "@mui/joy/Link";
+import { AuthContext } from "../store/auth.ts";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
+  const { setLoggedIn } = useContext(AuthContext);
 
   const routes = [
     {
@@ -31,6 +33,11 @@ const Sidebar: React.FC = () => {
       Icon: CategoryRoundedIcon,
     },
   ];
+
+  function logout() {
+    removeToken();
+    setLoggedIn(false);
+  }
 
   return (
     <Sheet
@@ -137,7 +144,7 @@ const Sidebar: React.FC = () => {
         <Box sx={{ minWidth: 0, flex: 1 }}>
           <Typography level="title-sm">Admin</Typography>
         </Box>
-        <IconButton size="sm" variant="plain" color="neutral">
+        <IconButton size="sm" variant="plain" color="neutral" onClick={logout}>
           <LogoutRoundedIcon />
         </IconButton>
       </Box>
