@@ -5,7 +5,8 @@ namespace Backend.Models;
 
 public enum FilterType {
     String,
-    Number
+    Number,
+    Boolean
 }
 
 public record Filter(string Name, FilterType Type, string Unit, HashSet<string> ProductTypes);
