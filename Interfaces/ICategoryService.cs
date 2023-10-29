@@ -1,4 +1,4 @@
-﻿using Backend.Types;
+﻿using Backend.GraphQL.CategoryResolver.Types;
 
 namespace Backend.Interfaces;
 

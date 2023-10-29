@@ -1,4 +1,4 @@
-﻿namespace Backend.Types;
+﻿namespace Backend.GraphQL.CategoryResolver.Types;
 
 public record CreatedCategory(
     string Id,

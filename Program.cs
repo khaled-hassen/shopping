@@ -56,6 +56,7 @@ builder.Services.AddSingleton<DatabaseService>();
 // dependency injection
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
+builder.Services.AddScoped<IConfigService, ConfigService>();
 
 // setup admin
 builder.Services.AddHostedService<AdminHostedService>();

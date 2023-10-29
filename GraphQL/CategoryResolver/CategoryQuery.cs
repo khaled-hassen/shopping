@@ -1,5 +1,5 @@
-﻿using Backend.Interfaces;
-using Backend.Types;
+﻿using Backend.GraphQL.CategoryResolver.Types;
+using Backend.Interfaces;
 
 namespace Backend.GraphQL.CategoryResolver;
 

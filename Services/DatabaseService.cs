@@ -28,4 +28,8 @@ public class DatabaseService {
     public IMongoCollection<Admin> GetAdminCollection() {
         return GetCollection<Admin>("admins");
     }
+
+    public IMongoCollection<Config> GetConfigCollection() {
+        return GetCollection<Config>("config");
+    }
 }

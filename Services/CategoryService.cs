@@ -1,7 +1,7 @@
-﻿using Backend.Helpers;
+﻿using Backend.GraphQL.CategoryResolver.Types;
+using Backend.Helpers;
 using Backend.Interfaces;
 using Backend.Models;
-using Backend.Types;
 using MongoDB.Bson;
 using MongoDB.Driver;
 

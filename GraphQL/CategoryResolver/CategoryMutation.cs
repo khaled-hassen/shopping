@@ -1,6 +1,6 @@
 ﻿using Backend.Exceptions;
+using Backend.GraphQL.CategoryResolver.Types;
 using Backend.Interfaces;
-using Backend.Types;
 using Backend.Validation;
 using HotChocolate.Authorization;
 
