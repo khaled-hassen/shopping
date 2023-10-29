@@ -8,7 +8,7 @@ public enum FilterType {
     Number
 }
 
-public record Filter(string Name, FilterType Type, string Unit);
+public record Filter(string Name, FilterType Type, string Unit, HashSet<string> ProductTypes);
 
 public class Subcategory {
     [BsonId]
@@ -18,8 +18,8 @@ public class Subcategory {
     [BsonRequired]
     public string Name { get; set; } = null!;
 
-    public HashSet<string>? ProductTypes { get; set; } = new();
-    public HashSet<Filter>? Filters { get; set; } = new();
+    public HashSet<string> ProductTypes { get; set; } = null!;
+    public HashSet<Filter> Filters { get; set; } = null!;
 
     [BsonRequired]
     public ObjectId? CategoryId { get; set; }

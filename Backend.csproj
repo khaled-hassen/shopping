@@ -22,4 +22,10 @@
         <Folder Include="wwwroot\Storage\"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653558841427e3c088b23296.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653562de9f01fcc010d3ab37.jpg" />
+      <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653566fa7b740ae12877b84a.jpg" />
+    </ItemGroup>
+
 </Project>

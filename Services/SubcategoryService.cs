@@ -33,26 +33,23 @@ public class SubcategoryService : ISubcategoryService {
 
         var path = await FileUploadHelper.UploadFile(image, categoryId, id.ToString()!);
         subcategory.Image = path;
-
         subcategory.Name = subcategory.Name.Trim();
-        if (subcategory.ProductTypes is not null) {
-            HashSet<string> lowercaseTypes = new();
-            foreach (var type in subcategory.ProductTypes)
-                lowercaseTypes.Add(type.ToLower().Trim());
-            subcategory.ProductTypes = lowercaseTypes;
+        subcategory.ProductTypes = StringUtils.ToLowerCase(subcategory.ProductTypes);
+
+        HashSet<Filter> lowercaseFilters = new();
+        foreach (var filter in subcategory.Filters) {
+            var products = StringUtils.ToLowerCase(filter.ProductTypes);
+            products.IntersectWith(subcategory.ProductTypes);
+            lowercaseFilters.Add(
+                filter with {
+                    Name = filter.Name.ToLower().Trim(),
+                    Unit = filter.Unit.ToLower().Trim(),
+                    ProductTypes = products
+                }
+            );
         }
 
-        if (subcategory.Filters is not null) {
-            HashSet<Filter> lowercaseFilters = new();
-            foreach (var filter in subcategory.Filters)
-                lowercaseFilters.Add(
-                    filter with {
-                        Name = filter.Name.ToLower().Trim(),
-                        Unit = filter.Unit.ToLower().Trim()
-                    }
-                );
-            subcategory.Filters = lowercaseFilters;
-        }
+        subcategory.Filters = lowercaseFilters;
 
         var updated = await _categoryCollection.UpdateOneAsync(
             c => c.Id.Equals(parentId),
@@ -84,26 +81,31 @@ public class SubcategoryService : ISubcategoryService {
     }
 
     public async Task<bool> UpdateSubcategoryProductTypesAsync(string id, HashSet<string> productTypes) {
-        HashSet<string> lowercaseTypes = new();
-        foreach (var type in productTypes)
-            lowercaseTypes.Add(type.ToLower().Trim());
-
         var updated = await _collection.UpdateOneAsync(
             c => c.Id.ToString() == id,
-            Builders<Subcategory>.Update.Set(c => c.ProductTypes, lowercaseTypes)
+            Builders<Subcategory>.Update.Set(
+                c => c.ProductTypes,
+                StringUtils.ToLowerCase(productTypes)
+            )
         );
         return updated is not null && updated.ModifiedCount > 0;
     }
 
     public async Task<bool> UpdateSubcategoryFiltersAsync(string id, HashSet<Filter> filters) {
         HashSet<Filter> lowercaseFilters = new();
-        foreach (var filter in filters)
+        var productTypes = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        if (productTypes is null) return false;
+        foreach (var filter in filters) {
+            var products = StringUtils.ToLowerCase(filter.ProductTypes);
+            products.IntersectWith(productTypes.ProductTypes);
             lowercaseFilters.Add(
                 filter with {
                     Name = filter.Name.ToLower().Trim(),
-                    Unit = filter.Unit.ToLower().Trim()
+                    Unit = filter.Unit.ToLower().Trim(),
+                    ProductTypes = products
                 }
             );
+        }
 
         var updated = await _collection.UpdateOneAsync(
             c => c.Id.ToString() == id,
