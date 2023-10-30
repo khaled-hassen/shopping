@@ -5,7 +5,7 @@
 
 * [Admin](https://github.com/khaled-hassen/shopping/tree/admin)
 
-* [Admin](https://github.com/khaled-hassen/shopping/tree/frontend)
+* [Frontend](https://github.com/khaled-hassen/shopping/tree/frontend)
 
 ## Repository setup
 ```
