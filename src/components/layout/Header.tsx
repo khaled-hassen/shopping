@@ -30,11 +30,11 @@ const Header: React.FC<IProps> = ({}) => {
   return (
     <header
       className={clsx(
-        "sticky transition-[top]",
+        "sticky z-10 transition-[top] duration-300",
         direction === ScrollDirection.Down ? "-top-full" : "top-0",
       )}
     >
-      <div className="xs:px-10 relative z-[51] grid grid-cols-2 items-center gap-8 border-b border-black border-opacity-20 bg-primary px-6 py-6 transition-[padding] md:grid-cols-[1fr_auto_1fr] lg:px-16">
+      <div className="page-x-padding relative z-[51] grid grid-cols-2 items-center gap-8 border-b border-black border-opacity-20 bg-primary py-6 transition-[padding] md:grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-4">
           <button
             className="md:hidden"

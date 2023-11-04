@@ -10,3 +10,24 @@
     }
 }
 
+@layer components {
+    .page-left-padding {
+        @apply xs:pl-10 lg:pl-16 pl-6;
+    }
+
+    .page-right-padding {
+        @apply xs:pr-10 lg:pr-16 pr-6;
+    }
+
+    .page-x-padding {
+        @apply page-left-padding page-right-padding max-w-[110rem] mx-auto w-full;
+    }
+
+    .remove-page-right-padding {
+        @apply xs:-mr-10 lg:-mr-16 -mr-6;
+    }
+
+    .remove-page-left-padding {
+        @apply xs:-ml-10 lg:-ml-16 -ml-6;
+    }
+}

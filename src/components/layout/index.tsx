@@ -9,7 +9,9 @@ const Layout: React.FC<IProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1">{children}</main>
+      <main className="page-x-padding flex-1 bg-primary pb-20 transition-[padding]">
+        {children}
+      </main>
     </div>
   );
 };
