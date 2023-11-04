@@ -27,6 +27,18 @@ public class CategoryService : ICategoryService {
             .ToListAsync();
     }
 
+    public async Task<List<CategoryResult>> GetTopCategoriesAsync() {
+        return await _collection.Aggregate()
+            .Lookup<Category, Subcategory, CategoryResult>(
+                _subcategoryCollection,
+                category => category.SubcategoriesIds,
+                subcategory => subcategory.Id,
+                categoryResult => categoryResult.Subcategories
+            )
+            .Limit(4)
+            .ToListAsync();
+    }
+
     public async Task<CategoryResult?> GetCategoryAsync(string id) {
         return await _collection
             .Aggregate()

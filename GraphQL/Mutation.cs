@@ -36,6 +36,6 @@ public class Mutation {
             HeroActionBgColor = heroActionBgColor
         };
         Validator<ConfigValidator, Config>.ValidateAndThrow(config);
-        return await _service.UpdateConfig(config);
+        return await _service.UpdateConfigAsync(config);
     }
 }

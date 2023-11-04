@@ -11,7 +11,7 @@ public class AdminService : IAdminService {
         _collection = database.GetAdminCollection();
     }
 
-    public async Task<Admin?> GetAdmin(string email, string password) {
+    public async Task<Admin?> GetAdminAsync(string email, string password) {
         var admin = await _collection.Find(c => c.Email.Equals(email)).FirstOrDefaultAsync();
         if (admin is null) return null;
         if (!BCrypt.Net.BCrypt.Verify(password, admin.Password)) return null;

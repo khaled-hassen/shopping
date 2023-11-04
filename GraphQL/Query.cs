@@ -11,6 +11,6 @@ public class Query {
     }
 
     public async Task<ConfigResult?> GetConfig() {
-        return await _service.GetConfig();
+        return await _service.GetConfigAsync();
     }
 }

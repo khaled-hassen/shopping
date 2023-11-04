@@ -3,7 +3,7 @@
 namespace Backend.GraphQL.Types;
 
 public class ConfigLookupResult : Config {
-    public List<Category> HomeHeroCategories { get; set; }
+    public List<Category> HomeHeroCategories { get; set; } = null!;
     public List<Category> HeroCategories { get; set; } = null!;
 }
 

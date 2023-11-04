@@ -4,6 +4,6 @@ using Backend.Models;
 namespace Backend.Interfaces;
 
 public interface IConfigService {
-    public Task<ConfigResult?> GetConfig();
-    public Task<bool> UpdateConfig(Config config);
+    public Task<ConfigResult?> GetConfigAsync();
+    public Task<bool> UpdateConfigAsync(Config config);
 }

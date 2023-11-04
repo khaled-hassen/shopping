@@ -15,7 +15,12 @@ public class CategoryQuery {
         return await _categoryService.GetCategoriesAsync();
     }
 
+
     public async Task<CategoryResult?> GetCategory(string id) {
         return await _categoryService.GetCategoryAsync(id);
+    }
+
+    public async Task<List<CategoryResult>> GetTopCategories() {
+        return await _categoryService.GetTopCategoriesAsync();
     }
 }
