@@ -4,20 +4,21 @@ import {
   NormalizedCacheObject,
 } from "@apollo/client";
 import { useMemo } from "react";
+import { HttpLink } from "@apollo/client/link/http";
+// @ts-ignore
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | null = null;
 
 function createApolloLink() {
   if (typeof window === "undefined") {
     // server
-    const { HttpLink } = require("@apollo/client/link/http");
     return new HttpLink({
       uri: process.env.API_URL + "/graphql",
     });
   }
 
   // client
-  const { createUploadLink } = require("apollo-upload-client");
   return createUploadLink({
     uri: process.env.NEXT_PUBLIC_API_URL + "/graphql",
     headers: { "GraphQL-Preflight": "true" },
@@ -29,6 +30,9 @@ function createApolloClient() {
     ssrMode: typeof window === "undefined",
     cache: new InMemoryCache(),
     link: createApolloLink(),
+    defaultOptions: {
+      watchQuery: { fetchPolicy: "cache-and-network" },
+    },
   });
 }
 

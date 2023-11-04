@@ -1,0 +1,15 @@
+query GetHomePageData {
+    config {
+        homeHeroCategory {
+            id
+            name
+            image
+        }
+    }
+
+    topCategories {
+        id
+        name
+        image
+    }
+}
