@@ -16,7 +16,7 @@ public class SubcategoryService : ISubcategoryService {
     }
 
     public async Task<Subcategory?> GetSubcategoryAsync(string id) {
-        return await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        return await _collection.Find(c => c.Slug == id || c.Id.ToString() == id).FirstOrDefaultAsync();
     }
 
     public async Task<List<Subcategory>?> GetSubcategoriesAsync(string categoryId) {
@@ -35,6 +35,7 @@ public class SubcategoryService : ISubcategoryService {
         subcategory.Image = path;
         subcategory.Name = subcategory.Name.Trim();
         subcategory.ProductTypes = StringUtils.ToLowerCase(subcategory.ProductTypes);
+        subcategory.Slug = StringUtils.CreateSlug(subcategory.Name);
 
         HashSet<Filter> lowercaseFilters = new();
         foreach (var filter in subcategory.Filters) {
@@ -66,7 +67,9 @@ public class SubcategoryService : ISubcategoryService {
         var subcategory = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (subcategory is null) return false;
 
-        var update = Builders<Subcategory>.Update.Set(c => c.Name, name.Trim());
+        var update = Builders<Subcategory>.Update
+            .Set(c => c.Name, name.Trim())
+            .Set(c => c.Slug, StringUtils.CreateSlug(name.Trim()));
         if (image is not null) {
             FileUploadHelper.DeleteFile(subcategory.Image ?? "");
             var path = await FileUploadHelper.UploadFile(image, subcategory.CategoryId.ToString()!, id);

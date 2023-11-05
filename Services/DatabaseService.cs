@@ -1,4 +1,6 @@
-﻿using Backend.Models;
+﻿using System.Reflection;
+using Backend.Attributes;
+using Backend.Models;
 using Backend.Settings;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -14,7 +16,20 @@ public class DatabaseService {
     }
 
     private IMongoCollection<T> GetCollection<T>(string name) {
-        return _database.GetCollection<T>(name);
+        var documentType = typeof(T);
+        var uniqueFields = documentType.GetProperties()
+            .Where(p => p.GetCustomAttribute<UniqueFieldAttribute>() is not null)
+            .Select(p => p.Name);
+
+        var collection = _database.GetCollection<T>(name);
+        foreach (var fieldName in uniqueFields) {
+            var keys = Builders<T>.IndexKeys.Ascending(fieldName);
+            var indexOptions = new CreateIndexOptions { Unique = true };
+            var model = new CreateIndexModel<T>(keys, indexOptions);
+            collection.Indexes.CreateOne(model);
+        }
+
+        return collection;
     }
 
     public IMongoCollection<Category> GetCategoryCollection() {

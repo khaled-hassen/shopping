@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Backend.Attributes;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Backend.Models;
@@ -16,6 +17,11 @@ public class Subcategory {
     [BsonRepresentation(BsonType.ObjectId)]
     [GraphQLNonNullType]
     public ObjectId? Id { get; set; }
+
+    [BsonRequired]
+    [UniqueField]
+    [GraphQLNonNullType]
+    public string? Slug { get; set; }
 
     [BsonRequired]
     public string Name { get; set; } = null!;

@@ -42,7 +42,7 @@ public class CategoryService : ICategoryService {
     public async Task<CategoryResult?> GetCategoryAsync(string id) {
         return await _collection
             .Aggregate()
-            .Match(c => c.Id.ToString() == id)
+            .Match(c => c.Slug == id || c.Id.ToString() == id)
             .Lookup<Category, Subcategory, CategoryResult>(
                 _subcategoryCollection,
                 category => category.SubcategoriesIds,
@@ -59,7 +59,8 @@ public class CategoryService : ICategoryService {
         var category = new Category {
             Id = id,
             Name = name.Trim(),
-            Image = path
+            Image = path,
+            Slug = StringUtils.CreateSlug(name.Trim())
         };
 
         await _collection.InsertOneAsync(category);
@@ -70,7 +71,9 @@ public class CategoryService : ICategoryService {
         var category = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (category is null) return false;
 
-        var update = Builders<Category>.Update.Set(c => c.Name, name.Trim());
+        var update = Builders<Category>.Update
+            .Set(c => c.Name, name.Trim())
+            .Set(c => c.Slug, StringUtils.CreateSlug(name.Trim()));
         if (image is not null) {
             FileUploadHelper.DeleteFile(category.Image);
             var path = await FileUploadHelper.UploadFile(image, id, id);
