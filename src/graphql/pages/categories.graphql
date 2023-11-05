@@ -17,3 +17,15 @@ query GetCategoriesPageData {
         image
     }
 }
+
+query GetCategoryPageData($id: String!) {
+    category(id: $id) {
+        name
+        image
+        subcategories {
+            id
+            name
+            image
+        }
+    }
+}

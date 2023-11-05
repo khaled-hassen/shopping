@@ -1,5 +1,3 @@
-import { Maybe } from "graphql/jsutils/Maybe";
-
 enum Access {
   Public,
   Authenticated,
@@ -12,11 +10,12 @@ const routes = {
   latest: { path: "/latest", access: Access.Public },
   login: { path: "/login", access: Access.NotAuthenticated },
   register: { path: "/register", access: Access.NotAuthenticated },
-  category: { path: "/categories/:id", access: Access.Public },
+  category: { path: "/categories/:slug", access: Access.Public },
+  products: { path: "/:slug/products", access: Access.Public },
 };
 
 type Route = keyof typeof routes;
 
-export function route(route: Route, id?: string | Maybe<string>) {
-  return routes[route].path.replace(":id", id || "");
+export function route(route: Route, slug?: string) {
+  return routes[route].path.replace(":slug", slug || "");
 }

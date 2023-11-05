@@ -1,21 +1,20 @@
 import React from "react";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { CategoryResult, ssrGetHomeData } from "@/__generated__/ssr";
+import { ssrGetHomeData } from "@/__generated__/ssr";
 import LinkButton from "@/components/shared/LinkButton";
 import { route } from "@/router";
 import { asset } from "@/utils/assets";
 import OptimizedImage from "@/components/shared/OptimizedImage";
 import Link from "next/link";
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps = (async () => {
   const client = initializeApolloClient();
   return await ssrGetHomeData.getServerPage({}, client);
-};
+}) satisfies GetServerSideProps;
+type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const Home: React.FC = () => {
-  const { data } = ssrGetHomeData.usePage();
-
+const Home: React.FC<PageProps> = ({ data }) => {
   return (
     <div className="-mb-20 flex flex-col gap-20">
       <section className="remove-page-right-padding remove-page-left-padding flex flex-col items-center justify-between gap-10 lg:ml-0 lg:flex-row">
@@ -59,11 +58,11 @@ const Home: React.FC = () => {
       <section className="flex flex-col gap-14">
         <h2 className="text-4xl font-bold">Top categories</h2>
         <div className="grid grid-cols-[repeat(auto-fit,_minmax(18rem,_1fr))] gap-8">
-          {data?.topCategories.map((cat: CategoryResult) => (
+          {data?.topCategories.map((cat) => (
             <Link
               href={route("category", cat.id)}
               key={cat.id}
-              className="relative"
+              className="relative transition-transform duration-300 hover:scale-105"
             >
               <OptimizedImage
                 src={asset(cat.image)}

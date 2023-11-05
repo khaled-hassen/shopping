@@ -1,7 +1,7 @@
 import React from "react";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { CategoryResult, ssrGetCategoriesData } from "@/__generated__/ssr";
+import { ssrGetCategoriesData } from "@/__generated__/ssr";
 import LinkButton from "@/components/shared/LinkButton";
 import { route } from "@/router";
 import OptimizedImage from "@/components/shared/OptimizedImage";
@@ -10,20 +10,18 @@ import PageTitle from "@/components/pages/PageTitle";
 import CategoryCard from "@/components/pages/CategoryCard";
 import { useComputed } from "@preact/signals-react";
 
-interface IProps {}
-
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps = (async () => {
   const client = initializeApolloClient();
   return await ssrGetCategoriesData.getServerPage({}, client);
-};
+}) satisfies GetServerSideProps;
 
-const Categories: React.FC<IProps> = ({}) => {
-  const { data } = ssrGetCategoriesData.usePage();
+type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-  const categories = useComputed<CategoryResult[]>(
+const Categories: React.FC<PageProps> = ({ data }) => {
+  const categories = useComputed(
     () =>
       data?.categories.filter(
-        (cat: CategoryResult) => cat.id !== data?.config?.heroCategory.id,
+        (cat) => cat.id !== data?.config?.heroCategory.id,
       ),
   );
 
