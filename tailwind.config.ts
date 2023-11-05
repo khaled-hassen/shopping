@@ -22,6 +22,11 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addVariant }: any) {
+      addVariant("child", "& > *");
+      addVariant("children", "& *");
+    },
+  ],
 };
 export default config;

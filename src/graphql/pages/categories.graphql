@@ -1,0 +1,19 @@
+query GetCategoriesPageData {
+    config {
+        heroCategory {
+            id
+            name
+            image
+        }
+        heroTitle
+        heroSubtitle
+        heroBgColor
+        heroActionBgColor
+    }
+
+    categories {
+        id
+        name
+        image
+    }
+}

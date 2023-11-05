@@ -44,7 +44,7 @@ const Header: React.FC<IProps> = ({}) => {
           </button>
           <Link
             href={route("home")}
-            className="xs:text-2xl text-xl font-medium"
+            className="text-xl font-medium xs:text-2xl"
           >
             OneStopMALL
           </Link>
@@ -72,7 +72,7 @@ const Header: React.FC<IProps> = ({}) => {
           <div className="flex items-center gap-6">
             <Link
               href={route("login")}
-              className="xs:flex hidden items-center gap-4"
+              className="hidden items-center gap-4 xs:flex"
             >
               <AccountIcon />
               <span className="hidden text-xl lg:block">Account</span>
@@ -84,7 +84,11 @@ const Header: React.FC<IProps> = ({}) => {
           </div>
         </div>
       </div>
-      <MobileMenu pages={pages} show={showMobileMenu.value} />
+      <MobileMenu
+        pages={pages}
+        show={showMobileMenu.value}
+        onClose={() => (showMobileMenu.value = false)}
+      />
     </header>
   );
 };

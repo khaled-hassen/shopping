@@ -1,3 +1,5 @@
+import { Maybe } from "graphql/jsutils/Maybe";
+
 enum Access {
   Public,
   Authenticated,
@@ -15,6 +17,6 @@ const routes = {
 
 type Route = keyof typeof routes;
 
-export function route(route: Route, id?: string) {
+export function route(route: Route, id?: string | Maybe<string>) {
   return routes[route].path.replace(":id", id || "");
 }
