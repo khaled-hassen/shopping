@@ -2,6 +2,7 @@ query GetCategoriesPageData {
     config {
         heroCategory {
             id
+            slug
             name
             image
         }
@@ -13,17 +14,18 @@ query GetCategoriesPageData {
 
     categories {
         id
+        slug
         name
         image
     }
 }
 
-query GetCategoryPageData($id: String!) {
-    category(id: $id) {
+query GetCategoryPageData($slug: String!) {
+    category(id: $slug) {
         name
         image
         subcategories {
-            id
+            slug
             name
             image
         }

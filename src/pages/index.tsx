@@ -29,7 +29,7 @@ const Home: React.FC<PageProps> = ({ data }) => {
           </div>
           <LinkButton
             title="Discover"
-            href={route("category", data?.config?.homeHeroCategory.id)}
+            href={route("category", data?.config?.homeHeroCategory.slug)}
           />
         </div>
         <div className="relative">
@@ -49,7 +49,7 @@ const Home: React.FC<PageProps> = ({ data }) => {
             </div>
             <LinkButton
               title="Discover"
-              href={route("category", data?.config?.homeHeroCategory.id)}
+              href={route("category", data?.config?.homeHeroCategory.slug)}
             />
           </div>
         </div>
@@ -60,8 +60,8 @@ const Home: React.FC<PageProps> = ({ data }) => {
         <div className="grid grid-cols-[repeat(auto-fit,_minmax(18rem,_1fr))] gap-8">
           {data?.topCategories.map((cat) => (
             <Link
-              href={route("category", cat.id)}
-              key={cat.id}
+              href={route("category", cat.slug)}
+              key={cat.slug}
               className="relative transition-transform duration-300 hover:scale-105"
             >
               <OptimizedImage

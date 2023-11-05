@@ -48,7 +48,7 @@ const Categories: React.FC<PageProps> = ({ data }) => {
             </div>
             <LinkButton
               title="Discover"
-              href={route("category", data?.config?.heroCategory.id)}
+              href={route("category", data?.config?.heroCategory.slug)}
               style={{ backgroundColor: data?.config?.heroActionBgColor }}
             />
           </div>
@@ -60,7 +60,7 @@ const Categories: React.FC<PageProps> = ({ data }) => {
           </div>
           <LinkButton
             title="Discover"
-            href={route("category", data?.config?.heroCategory.id)}
+            href={route("category", data?.config?.heroCategory.slug)}
             style={{ backgroundColor: data?.config?.heroActionBgColor }}
           />
         </div>
@@ -71,13 +71,13 @@ const Categories: React.FC<PageProps> = ({ data }) => {
         <div className="grid md:grid-cols-2 xl:grid-cols-3">
           {categories.value.map((cat) => (
             <CategoryCard
-              key={cat.id}
+              key={cat.slug}
               title={cat.name}
               image={{
                 src: asset(cat.image),
                 alt: cat.name,
               }}
-              link={route("category", cat.id)}
+              link={route("category", cat.slug)}
             />
           ))}
         </div>

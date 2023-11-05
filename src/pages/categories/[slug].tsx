@@ -9,10 +9,10 @@ import PageTitle from "@/components/pages/PageTitle";
 import CategoryCard from "@/components/pages/CategoryCard";
 
 export const getServerSideProps = (async (ctx) => {
-  const id = ctx.params?.id as string;
+  const slug = ctx.params?.slug as string;
   const client = initializeApolloClient();
   const { props } = await ssrGetCategoryData.getServerPage(
-    { variables: { id } },
+    { variables: { slug } },
     client,
   );
   if (!props.data?.category) return { notFound: true };
@@ -56,13 +56,13 @@ const Category: React.FC<PageProps> = ({ data }) => {
         <div className="grid md:grid-cols-2 xl:grid-cols-3">
           {data?.category?.subcategories.map((sub) => (
             <CategoryCard
-              key={sub.id}
+              key={sub.slug}
               title={sub.name}
               image={{
                 src: asset(sub.image),
                 alt: sub.name,
               }}
-              link={route("products", sub.id)}
+              link={route("products", sub.slug)}
             />
           ))}
         </div>

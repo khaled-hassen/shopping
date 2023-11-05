@@ -1,14 +1,14 @@
 query GetHomePageData {
     config {
         homeHeroCategory {
-            id
+            slug
             name
             image
         }
     }
 
     topCategories {
-        id
+        slug
         name
         image
     }
