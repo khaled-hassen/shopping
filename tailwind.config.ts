@@ -20,6 +20,15 @@ const config: Config = {
         primary: "#F1EFEF",
         darkGray: "#4D5157",
       },
+      keyframes: {
+        reveal: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+      },
+      animation: {
+        reveal: "reveal 1s ease-in-out",
+      },
     },
   },
   plugins: [
