@@ -14,6 +14,7 @@ public record Filter(string Name, FilterType Type, string Unit, HashSet<string> 
 public class Subcategory {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
+    [GraphQLNonNullType]
     public ObjectId? Id { get; set; }
 
     [BsonRequired]
@@ -23,8 +24,10 @@ public class Subcategory {
     public HashSet<Filter> Filters { get; set; } = null!;
 
     [BsonRequired]
+    [GraphQLNonNullType]
     public ObjectId? CategoryId { get; set; }
 
     [BsonRequired]
+    [GraphQLNonNullType]
     public string? Image { get; set; }
 }

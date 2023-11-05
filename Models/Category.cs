@@ -5,6 +5,7 @@ namespace Backend.Models;
 
 public class Category {
     [BsonId]
+    [GraphQLNonNullType]
     public ObjectId? Id { get; set; }
 
     [BsonRequired]
