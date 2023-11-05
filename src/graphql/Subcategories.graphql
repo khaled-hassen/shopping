@@ -20,6 +20,9 @@ mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: 
     createSubcategory(input: {
         categoryId: $categoryId,
         subcategory: {
+            id: "",
+            categoryId: "",
+            image: "",
             name: $name,
             productTypes: $productTypes,
             filters: $filters,
