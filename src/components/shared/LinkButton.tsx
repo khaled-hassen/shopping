@@ -43,7 +43,7 @@ const LinkButton: React.FC<IProps> = ({
             "border-darkGray": color === "white",
           },
         )}
-      ></span>
+      />
     </Link>
   );
 };
