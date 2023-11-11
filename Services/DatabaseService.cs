@@ -32,19 +32,23 @@ public class DatabaseService {
         return collection;
     }
 
-    public IMongoCollection<Category> GetCategoryCollection() {
+    public IMongoCollection<Category> GetCategoriesCollection() {
         return GetCollection<Category>("categories");
     }
 
-    public IMongoCollection<Subcategory> GetSubcategoryCollection() {
+    public IMongoCollection<Subcategory> GetSubcategoriesCollection() {
         return GetCollection<Subcategory>("subcategories");
     }
 
-    public IMongoCollection<Admin> GetAdminCollection() {
+    public IMongoCollection<Admin> GetAdminsCollection() {
         return GetCollection<Admin>("admins");
     }
 
     public IMongoCollection<Config> GetConfigCollection() {
         return GetCollection<Config>("config");
+    }
+
+    public IMongoCollection<User> GetUsersCollection() {
+        return GetCollection<User>("users");
     }
 }

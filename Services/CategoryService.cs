@@ -12,8 +12,8 @@ public class CategoryService : ICategoryService {
     private readonly IMongoCollection<Subcategory> _subcategoryCollection;
 
     public CategoryService(DatabaseService database) {
-        _collection = database.GetCategoryCollection();
-        _subcategoryCollection = database.GetSubcategoryCollection();
+        _collection = database.GetCategoriesCollection();
+        _subcategoryCollection = database.GetSubcategoriesCollection();
     }
 
     public async Task<List<CategoryResult>> GetCategoriesAsync() {

@@ -12,7 +12,7 @@ public class ConfigService : IConfigService {
 
     public ConfigService(DatabaseService service) {
         _collection = service.GetConfigCollection();
-        _categoryCollection = service.GetCategoryCollection();
+        _categoryCollection = service.GetCategoriesCollection();
     }
 
     public async Task<ConfigResult?> GetConfigAsync() {

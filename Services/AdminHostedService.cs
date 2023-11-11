@@ -9,7 +9,7 @@ public class AdminHostedService : IHostedService {
 
     public AdminHostedService(IConfiguration configuration, DatabaseService database) {
         _configuration = configuration;
-        _collection = database.GetAdminCollection();
+        _collection = database.GetAdminsCollection();
     }
 
     public async Task StartAsync(CancellationToken cancellationToken) {

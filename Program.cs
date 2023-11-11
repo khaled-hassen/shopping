@@ -4,6 +4,7 @@ using Backend.GraphQL;
 using Backend.GraphQL.AdminResolver;
 using Backend.GraphQL.CategoryResolver;
 using Backend.GraphQL.SubcategoryResolver;
+using Backend.GraphQL.UserResolver;
 using Backend.Interfaces;
 using Backend.Services;
 using Backend.Settings;
@@ -57,6 +58,7 @@ builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 builder.Services.AddScoped<IConfigService, ConfigService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // setup admin
 builder.Services.AddHostedService<AdminHostedService>();
@@ -79,7 +81,9 @@ builder.Services.AddGraphQLServer()
     .AddType<SubcategoryQuery>()
     .AddType<SubcategoryMutation>()
     .AddType<UploadType>()
-    .AddType<AdminQuery>();
+    .AddType<AdminQuery>()
+    .AddType<UserQuery>()
+    .AddType<UserMutation>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Backend.Helpers;
 
 public static class AuthHelpers {
-    public static string CreateToken(DateTime expires, List<Claim>? claims) {
+    public static string CreateToken(DateTime expires, List<Claim>? claims = null) {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppConfig.JwtKey));
         var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var audiences = new List<Claim>();

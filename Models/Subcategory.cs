@@ -14,7 +14,6 @@ public record Filter(string Name, FilterType Type, string Unit, HashSet<string> 
 
 public class Subcategory {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
     [GraphQLNonNullType]
     public ObjectId? Id { get; set; }
 

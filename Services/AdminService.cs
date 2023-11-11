@@ -8,7 +8,7 @@ public class AdminService : IAdminService {
     private readonly IMongoCollection<Admin> _collection;
 
     public AdminService(DatabaseService database) {
-        _collection = database.GetAdminCollection();
+        _collection = database.GetAdminsCollection();
     }
 
     public async Task<Admin?> GetAdminAsync(string email, string password) {
