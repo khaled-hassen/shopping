@@ -16,7 +16,7 @@ public class AdminQuery {
 
     public async Task<AccessToken> LoginAdmin(string email, string password) {
         var admin = await _adminService.GetAdminAsync(email, password);
-        if (admin is null) throw new GraphQLException(new Error("Wrong credentials", ErrorCodes.AdminNotFound));
+        if (admin is null) throw new GraphQLException(new Error("Wrong credentials", ErrorCodes.WrongCredentials));
 
         var claims = new List<Claim> {
             new(ClaimTypes.Role, "Admin")

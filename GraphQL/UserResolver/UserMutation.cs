@@ -35,15 +35,14 @@ public class UserMutation {
             }
         );
         var user = await _userService.CreateUserAsync(firstName, lastName, email, phoneNumber, password);
-        if (httpContextAccessor.HttpContext is not null) {
-            var refreshToken = user.RefreshToken;
-            var cookieOptions = new CookieOptions {
-                HttpOnly = true,
-                Expires = refreshToken.ExpireDate
-            };
-            httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
-        }
+        if (httpContextAccessor.HttpContext is null) return user.Result;
 
+        var refreshToken = user.RefreshToken;
+        var cookieOptions = new CookieOptions {
+            HttpOnly = true,
+            Expires = refreshToken.ExpireDate
+        };
+        httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
         return user.Result;
     }
 }
