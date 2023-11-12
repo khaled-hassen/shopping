@@ -13,6 +13,7 @@ import {
   useScrollDirection,
 } from "@/hooks/useScrollDirection";
 import { clsx } from "clsx";
+import { useSession } from "next-auth/react";
 
 interface IProps {}
 
@@ -26,6 +27,7 @@ const Header: React.FC<IProps> = ({}) => {
   const pathname = usePathname();
   const showMobileMenu = useSignal(false);
   const direction = useScrollDirection();
+  const { data: session } = useSession();
 
   return (
     <header
@@ -71,7 +73,7 @@ const Header: React.FC<IProps> = ({}) => {
           <div className="h-full w-0.5 bg-black/20" />
           <div className="flex items-center gap-6">
             <Link
-              href={route("login")}
+              href={route(session ? "account" : "login")}
               className="hidden items-center gap-4 xs:flex"
             >
               <AccountIcon />

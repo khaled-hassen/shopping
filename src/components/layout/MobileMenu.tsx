@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { route } from "@/router";
 import AccountIcon from "@/components/icons/AccountIcon";
 import { useClickAway } from "@/hooks/useClickAway";
+import { useSession } from "next-auth/react";
 
 interface IProps {
   show: boolean;
@@ -14,6 +15,7 @@ interface IProps {
 const MobileMenu: React.FC<IProps> = ({ show, pages, onClose }) => {
   const pathname = usePathname();
   const ref = useClickAway<HTMLDivElement>(onClose);
+  const { data: session } = useSession();
 
   return (
     <div
@@ -37,7 +39,7 @@ const MobileMenu: React.FC<IProps> = ({ show, pages, onClose }) => {
           </Link>
         ))}
         <Link
-          href={route("login")}
+          href={route(session ? "account" : "login")}
           className="flex items-center gap-4 xs:hidden"
         >
           <AccountIcon />

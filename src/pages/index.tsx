@@ -8,8 +8,8 @@ import { asset } from "@/utils/assets";
 import OptimizedImage from "@/components/shared/OptimizedImage";
 import Link from "next/link";
 
-export const getServerSideProps = (async () => {
-  const client = initializeApolloClient();
+export const getServerSideProps = (async (context) => {
+  const client = initializeApolloClient(context);
   return await ssrGetHomeData.getServerPage({}, client);
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;

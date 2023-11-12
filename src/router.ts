@@ -12,6 +12,7 @@ const routes = {
   register: { path: "/register", access: Access.NotAuthenticated },
   category: { path: "/categories/:slug", access: Access.Public },
   products: { path: "/:slug/products", access: Access.Public },
+  account: { path: "/account", access: Access.Authenticated },
 };
 
 type Route = keyof typeof routes;
@@ -19,3 +20,11 @@ type Route = keyof typeof routes;
 export function route(route: Route, slug?: string) {
   return routes[route].path.replace(":slug", slug || "");
 }
+
+export const protectedRoutes = Object.entries(routes).filter(
+  ([_, route]) => route.access === Access.Authenticated,
+);
+
+export const unProtectedRoutes = Object.entries(routes).filter(
+  ([_, route]) => route.access === Access.NotAuthenticated,
+);
