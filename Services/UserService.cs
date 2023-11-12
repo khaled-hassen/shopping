@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Security.Claims;
 using Backend.Exceptions;
 using Backend.GraphQL.UserResolver.Types;
 using Backend.Helpers;
@@ -42,8 +43,11 @@ public class UserService : IUserService {
             }
         );
 
+        var claims = new List<Claim> {
+            new(ClaimTypes.Sid, id.ToString()!)
+        };
         var accessTokenExpireDate = DateTime.Now.AddMinutes(15);
-        var accessToken = AuthHelpers.CreateToken(accessTokenExpireDate);
+        var accessToken = AuthHelpers.CreateToken(accessTokenExpireDate, claims);
 
         var result = new UserResult {
             Id = id,
@@ -71,8 +75,11 @@ public class UserService : IUserService {
         };
         await _users.UpdateOneAsync(c => c.Id.Equals(user.Id), Builders<User>.Update.AddToSet(c => c.RefreshTokens, refreshToken));
 
+        var claims = new List<Claim> {
+            new(ClaimTypes.Sid, user.Id.ToString()!)
+        };
         var accessTokenExpireDate = DateTime.Now.AddMinutes(15);
-        var accessToken = AuthHelpers.CreateToken(accessTokenExpireDate);
+        var accessToken = AuthHelpers.CreateToken(accessTokenExpireDate, claims);
 
         var result = new UserResult {
             Id = user.Id ?? ObjectId.Empty,

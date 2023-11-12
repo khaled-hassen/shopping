@@ -13,7 +13,7 @@ public class UserQuery {
 
     public async Task<UserResult> Login(string email, string password, [Service] IHttpContextAccessor httpContextAccessor) {
         var user = await _userService.LoginAsync(email, password);
-        if (user is null) throw new GraphQLException(ErrorCodes.WrongCredentials);
+        if (user is null) throw new GraphQLException(new Error("Wrong credentials", ErrorCodes.WrongCredentials));
         if (httpContextAccessor.HttpContext is null) return user.Result;
 
         var refreshToken = user.RefreshToken;
