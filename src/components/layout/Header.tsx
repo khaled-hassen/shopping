@@ -14,6 +14,10 @@ import {
 } from "@/hooks/useScrollDirection";
 import { clsx } from "clsx";
 import { useSession } from "next-auth/react";
+import SettingsIcon from "@/components/icons/SettingsIcon";
+import WishlistIcon from "@/components/icons/WishlistIcon";
+import OrdersIcon from "@/components/icons/OrdersIcon";
+import LogoutIcon from "@/components/icons/LogoutIcon";
 
 interface IProps {}
 
@@ -23,11 +27,23 @@ const pages = [
   { name: "Latest", path: route("latest") },
 ];
 
+const accountDropdownItems = [
+  { name: "Settings", path: route("account"), Icon: SettingsIcon },
+  { name: "Orders", path: route("orders"), Icon: OrdersIcon },
+  { name: "Wishlist", path: route("wishlist"), Icon: WishlistIcon },
+];
+
 const Header: React.FC<IProps> = ({}) => {
   const pathname = usePathname();
   const showMobileMenu = useSignal(false);
   const direction = useScrollDirection();
   const { data: session } = useSession();
+  const showAccountDropdown = useSignal(false);
+
+  function toggleAccountDropdown(value: boolean) {
+    if (!session) return;
+    showAccountDropdown.value = value;
+  }
 
   return (
     <header
@@ -36,7 +52,7 @@ const Header: React.FC<IProps> = ({}) => {
         direction === ScrollDirection.Down ? "-top-full" : "top-0",
       )}
     >
-      <div className="page-x-padding relative z-[51] grid grid-cols-2 items-center gap-8 border-b border-black border-opacity-20 bg-primary py-6 transition-[padding] md:grid-cols-[1fr_auto_1fr]">
+      <div className="page-x-padding relative z-[51] grid grid-cols-2 gap-8 border-b border-black border-opacity-20 bg-primary transition-[padding] child:py-6 md:grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-4">
           <button
             className="md:hidden"
@@ -66,15 +82,19 @@ const Header: React.FC<IProps> = ({}) => {
             </Link>
           ))}
         </nav>
-        <div className="flex h-full items-center justify-end gap-6">
+        <div className="flex h-full items-center justify-end gap-6 !py-0">
           <button className="">
             <SearchIcon />
           </button>
-          <div className="h-full w-0.5 bg-black/20" />
-          <div className="flex items-center gap-6">
+          <div className="h-full py-6">
+            <div className="h-full w-0.5 bg-black/20" />
+          </div>
+          <div className="flex h-full gap-6">
             <Link
               href={route(session ? "account" : "login")}
               className="hidden items-center gap-4 xs:flex"
+              onMouseEnter={() => toggleAccountDropdown(true)}
+              onMouseLeave={() => toggleAccountDropdown(false)}
             >
               <AccountIcon />
               <span className="hidden text-xl lg:block">Account</span>
@@ -91,6 +111,42 @@ const Header: React.FC<IProps> = ({}) => {
         show={showMobileMenu.value}
         onClose={() => (showMobileMenu.value = false)}
       />
+      {session && (
+        <ul
+          data-show={showAccountDropdown.value}
+          className="absolute right-0 top-full z-50 hidden w-[19rem] origin-top -translate-y-[150%] bg-primary py-4 transition-transform duration-300 ease-in-out data-[show=true]:-translate-y-1 data-[show=true]:shadow-xl lg:block"
+          onMouseEnter={() => toggleAccountDropdown(true)}
+          onMouseLeave={() => toggleAccountDropdown(false)}
+        >
+          {accountDropdownItems.map((item) => (
+            <li key={item.path}>
+              <Link
+                href={item.path}
+                className="group grid grid-cols-[1.5rem_1fr] gap-4 px-6 py-4 text-xl"
+              >
+                <div className="grid h-full place-content-center">
+                  <item.Icon />
+                </div>
+                <div className="flex w-fit flex-col">
+                  <span className="">{item.name}</span>
+                  <span className="h-0.5 w-[80%] origin-left scale-x-0 bg-black transition-transform duration-300 ease-in-out group-hover:scale-x-100 group-data-[active=true]:scale-x-100" />
+                </div>
+              </Link>
+            </li>
+          ))}
+          <li>
+            <button className="group grid w-full grid-cols-[1.5rem_1fr] gap-4 px-6 py-4 text-xl">
+              <div className="grid h-full place-content-center">
+                <LogoutIcon />
+              </div>
+              <div className="flex w-fit flex-col">
+                <span className="">Logout</span>
+                <span className="h-0.5 w-[80%] origin-left scale-x-0 bg-black transition-transform duration-300 ease-in-out group-hover:scale-x-100 group-data-[active=true]:scale-x-100" />
+              </div>
+            </button>
+          </li>
+        </ul>
+      )}
     </header>
   );
 };

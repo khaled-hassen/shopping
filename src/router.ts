@@ -13,6 +13,11 @@ const routes = {
   category: { path: "/categories/:slug", access: Access.Public },
   products: { path: "/:slug/products", access: Access.Public },
   account: { path: "/account", access: Access.Authenticated },
+  security: { path: "/account/security", access: Access.Authenticated },
+  billing: { path: "/account/billing", access: Access.Authenticated },
+  orders: { path: "/account/orders", access: Access.Authenticated },
+  wishlist: { path: "/account/wishlist", access: Access.Authenticated },
+  store: { path: "/account/store", access: Access.Authenticated },
 };
 
 type Route = keyof typeof routes;
