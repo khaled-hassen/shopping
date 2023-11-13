@@ -25,4 +25,28 @@ public static class AuthHelpers {
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public static bool ValidateToken(string token) {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(AppConfig.JwtKey);
+        try {
+            tokenHandler.ValidateToken(
+                token,
+                new TokenValidationParameters {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = AppConfig.JwtIssuer,
+                    ValidateAudience = true,
+                    ValidAudiences = AppConfig.JwtAudience,
+                    ValidateLifetime = true
+                },
+                out _
+            );
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
 }

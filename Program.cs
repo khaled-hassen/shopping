@@ -100,9 +100,10 @@ if (app.Environment.IsDevelopment()) {
 
 app.UseCors(
     cors => {
-        cors.AllowAnyHeader();
-        cors.AllowAnyMethod();
-        cors.AllowAnyOrigin();
+        cors.AllowAnyHeader()
+            .WithMethods("POST")
+            .WithOrigins(app.Configuration.GetSection("Jwt:WebClient").Value ?? "")
+            .AllowCredentials();
     }
 );
 

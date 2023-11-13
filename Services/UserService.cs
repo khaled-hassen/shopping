@@ -55,7 +55,7 @@ public class UserService : IUserService {
             LastName = lastName,
             Email = email.ToLower(),
             PhoneNumber = phoneNumber,
-            AccessToken = new AccessToken(accessToken, accessTokenExpireDate.ToString(CultureInfo.InvariantCulture))
+            AccessToken = new AccessToken(accessToken, accessTokenExpireDate.AddMicroseconds(-2).ToString(CultureInfo.InvariantCulture))
         };
         return new UserAuthResult {
             Result = result,
@@ -87,11 +87,31 @@ public class UserService : IUserService {
             LastName = user.LastName,
             Email = email.ToLower(),
             PhoneNumber = user.PhoneNumber,
-            AccessToken = new AccessToken(accessToken, accessTokenExpireDate.ToString(CultureInfo.InvariantCulture))
+            AccessToken = new AccessToken(accessToken, accessTokenExpireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture))
         };
         return new UserAuthResult {
             Result = result,
             RefreshToken = refreshToken
         };
+    }
+
+    public async Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken) {
+        var valid = AuthHelpers.ValidateToken(refreshToken);
+        if (!valid) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        var foundToken = await _users.Find(
+            Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(c => c.Id, userId),
+                Builders<User>.Filter.ElemMatch(c => c.RefreshTokens, c => c.Value.Equals(refreshToken))
+            )
+        ).FirstOrDefaultAsync();
+        if (foundToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+
+        var claims = new List<Claim> {
+            new(ClaimTypes.Sid, userId.ToString()!)
+        };
+        var expireDate = DateTime.Now.AddMinutes(15);
+        var token = AuthHelpers.CreateToken(expireDate, claims);
+
+        return new AccessToken(token, expireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture));
     }
 }
