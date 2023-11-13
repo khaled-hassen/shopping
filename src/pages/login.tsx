@@ -9,6 +9,7 @@ import PasswordInput from "@/components/form/PasswordInput";
 import { signIn } from "next-auth/react";
 import { useSignal } from "@preact/signals-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLoginLazyQuery } from "@/__generated__/client";
 
 interface IProps {}
 
@@ -32,12 +33,20 @@ const Login: React.FC<IProps> = ({}) => {
 
   const router = useRouter();
   const params = useSearchParams();
+  const [login] = useLoginLazyQuery();
 
   async function loginUser(data: LoginSchema) {
     const callbackUrl = params.get("callbackUrl") || route("home");
+    const { data: res, error } = await login({ variables: data });
+    if (error) {
+      // @ts-ignore
+      const errorMessage = error?.networkError?.result?.errors?.[0]?.message;
+      loginError.value = errorMessage ?? null;
+      return;
+    }
 
     const response = await signIn("credentials", {
-      ...data,
+      user: JSON.stringify(res?.login ?? null),
       redirect: false,
     });
     loginError.value = response?.error ?? null;

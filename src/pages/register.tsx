@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordInput from "@/components/form/PasswordInput";
+import { useSignal } from "@preact/signals-react";
+import { useRouter } from "next/navigation";
+import { useRegisterUserMutation } from "@/__generated__/client";
+import { signIn } from "next-auth/react";
 
 interface IProps {}
 
@@ -44,8 +48,27 @@ const Register: React.FC<IProps> = ({}) => {
     trigger,
     formState: { errors, isSubmitting },
   } = useForm<RegisterSchema>({ resolver: zodResolver(registerSchema) });
+  const registerErrors = useSignal<string[] | null>(null);
 
-  function createNewUser(data: RegisterSchema) {}
+  const router = useRouter();
+  const [registerUser] = useRegisterUserMutation();
+
+  async function createNewUser(data: RegisterSchema) {
+    const { data: res } = await registerUser({ variables: data });
+    const user = res?.createUser.userResult;
+    const errors = res?.createUser.errors;
+    if (errors) {
+      registerErrors.value = errors.map((e) => e.message);
+      return;
+    }
+
+    const response = await signIn("credentials", {
+      user: JSON.stringify(user ?? null),
+      redirect: false,
+    });
+    registerErrors.value = response?.error ? [response?.error] : null;
+    if (response?.ok) router.replace(route("home"));
+  }
 
   return (
     <div className="pt-20">
@@ -57,6 +80,7 @@ const Register: React.FC<IProps> = ({}) => {
         formActionText="Create account"
         loading={isSubmitting}
         onSubmit={handleSubmit(createNewUser)}
+        errors={registerErrors.value ?? []}
       >
         <Input
           label="First name"

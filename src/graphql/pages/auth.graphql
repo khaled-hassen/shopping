@@ -10,3 +10,42 @@ query Login($email: String!, $password: String!) {
         }
     }
 }
+
+mutation RegisterUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $phoneNumber: String!, $passwordConfirmation: String!) {
+    createUser(input: {
+        firstName: $firstName,
+        lastName: $lastName,
+        email: $email,
+        phoneNumber: $phoneNumber,
+        password: $password,
+        passwordConfirmation: $passwordConfirmation
+    }) {
+        userResult {
+            email
+            firstName
+            lastName
+            phoneNumber
+            accessToken {
+                value
+                expires
+            }
+        }
+
+        errors {
+            ... on UserExistError {
+                message
+            }
+
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
+    }
+}
+
+query RefreshAccessToken {
+    refreshAccessToken {
+        value
+        expires
+    }
+}

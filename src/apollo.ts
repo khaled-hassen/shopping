@@ -31,12 +31,14 @@ function createApolloLink(context?: GetSessionParams) {
     // server
     link = new HttpLink({
       uri: process.env.API_URL + "/graphql",
+      credentials: "include",
     });
   } else {
     // client
     link = createUploadLink({
       uri: process.env.NEXT_PUBLIC_API_URL + "/graphql",
       headers: { "GraphQL-Preflight": "true" },
+      credentials: "include",
     });
   }
 
