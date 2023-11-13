@@ -1,7 +1,10 @@
-﻿using Backend.Exceptions;
+﻿using Backend.Attributes;
+using Backend.Exceptions;
 using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
+using Backend.Types;
 using Backend.Validation;
+using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.UserResolver;
 
@@ -44,5 +47,23 @@ public class UserMutation {
         };
         httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
         return user.Result;
+    }
+
+    [Authorize]
+    [UseUser]
+    public async Task<AccessToken> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor, [GetUser] UserResult user) {
+        var refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+        if (refreshToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        return await _userService.RefreshAccessTokenAsync(user.Id, refreshToken);
+    }
+
+    [UseMutationConvention(PayloadFieldName = "success")]
+    [Authorize]
+    [UseUser]
+    public async Task<bool> Logout([Service] IHttpContextAccessor httpContextAccessor, [GetUser] UserResult user) {
+        var refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+        await _userService.LogoutAsync(user.Id, refreshToken);
+        httpContextAccessor.HttpContext?.Response.Cookies.Delete("refreshToken");
+        return true;
     }
 }

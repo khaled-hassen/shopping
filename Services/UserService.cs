@@ -99,12 +99,27 @@ public class UserService : IUserService {
         var valid = AuthHelpers.ValidateToken(refreshToken);
         if (!valid) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
         var foundToken = await _users.Find(
-            Builders<User>.Filter.And(
-                Builders<User>.Filter.Eq(c => c.Id, userId),
-                Builders<User>.Filter.ElemMatch(c => c.RefreshTokens, c => c.Value.Equals(refreshToken))
+                Builders<User>.Filter.And(
+                    Builders<User>.Filter.Eq(c => c.Id, userId),
+                    Builders<User>.Filter.ElemMatch(c => c.RefreshTokens, c => c.Value.Equals(refreshToken))
+                )
+            ).Project<RefreshToken>(
+                Builders<User>.Projection
+                    .Include(c => c.RefreshTokens)
             )
-        ).FirstOrDefaultAsync();
+            .FirstOrDefaultAsync();
         if (foundToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+
+        if (foundToken.ExpireDate < DateTime.Now) {
+            await _users.UpdateOneAsync(
+                c => c.Id.Equals(userId),
+                Builders<User>.Update.PullFilter(
+                    c => c.RefreshTokens,
+                    Builders<RefreshToken>.Filter.Eq(c => c.Value, refreshToken)
+                )
+            );
+            throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        }
 
         var claims = new List<Claim> {
             new(ClaimTypes.Sid, userId.ToString()!)
@@ -113,5 +128,16 @@ public class UserService : IUserService {
         var token = AuthHelpers.CreateToken(expireDate, claims);
 
         return new AccessToken(token, expireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture));
+    }
+
+    public async Task LogoutAsync(ObjectId userId, string? refreshToken) {
+        if (refreshToken is null) return;
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(userId),
+            Builders<User>.Update.PullFilter(
+                c => c.RefreshTokens,
+                Builders<RefreshToken>.Filter.Eq(c => c.Value, refreshToken)
+            )
+        );
     }
 }

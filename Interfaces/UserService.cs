@@ -10,4 +10,5 @@ public interface IUserService {
     Task<UserAuthResult?> LoginAsync(string email, string password);
 
     Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken);
+    Task LogoutAsync(ObjectId userId, string? refreshToken);
 }
