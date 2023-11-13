@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
-import { useRefreshAccessTokenLazyQuery } from "@/__generated__/client";
 import { useSession, signOut } from "next-auth/react";
+import { useRefreshAccessTokenMutation } from "@/__generated__/client";
 
 interface IProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ interface IProps {
 
 const Layout: React.FC<IProps> = ({ children }) => {
   const { data: session, update } = useSession();
-  const [refreshAccessToken] = useRefreshAccessTokenLazyQuery();
+  const [refreshAccessToken] = useRefreshAccessTokenMutation();
   const timer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Layout: React.FC<IProps> = ({ children }) => {
     async function refresh() {
       try {
         const { data } = await refreshAccessToken();
-        const token = data?.refreshAccessToken;
+        const token = data?.refreshAccessToken.accessToken;
         await update({ ...session, token });
       } catch (e) {
         await signOut();

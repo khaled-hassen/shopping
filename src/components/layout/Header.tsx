@@ -13,11 +13,12 @@ import {
   useScrollDirection,
 } from "@/hooks/useScrollDirection";
 import { clsx } from "clsx";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import SettingsIcon from "@/components/icons/SettingsIcon";
 import WishlistIcon from "@/components/icons/WishlistIcon";
 import OrdersIcon from "@/components/icons/OrdersIcon";
 import LogoutIcon from "@/components/icons/LogoutIcon";
+import { useLogoutMutation } from "@/__generated__/client";
 
 interface IProps {}
 
@@ -39,10 +40,16 @@ const Header: React.FC<IProps> = ({}) => {
   const direction = useScrollDirection();
   const { data: session } = useSession();
   const showAccountDropdown = useSignal(false);
+  const [logout] = useLogoutMutation();
 
   function toggleAccountDropdown(value: boolean) {
     if (!session) return;
     showAccountDropdown.value = value;
+  }
+
+  async function logoutUser() {
+    await logout();
+    await signOut();
   }
 
   return (
@@ -135,7 +142,10 @@ const Header: React.FC<IProps> = ({}) => {
             </li>
           ))}
           <li>
-            <button className="group grid w-full grid-cols-[1.5rem_1fr] gap-4 px-6 py-4 text-xl">
+            <button
+              className="group grid w-full grid-cols-[1.5rem_1fr] gap-4 px-6 py-4 text-xl"
+              onClick={logoutUser}
+            >
               <div className="grid h-full place-content-center">
                 <LogoutIcon />
               </div>

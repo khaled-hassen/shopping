@@ -43,9 +43,17 @@ mutation RegisterUser($firstName: String!, $lastName: String!, $email: String!, 
     }
 }
 
-query RefreshAccessToken {
+mutation RefreshAccessToken {
     refreshAccessToken {
-        value
-        expires
+        accessToken {
+            expires
+            value
+        }
+    }
+}
+
+mutation Logout {
+    logout {
+        success
     }
 }
