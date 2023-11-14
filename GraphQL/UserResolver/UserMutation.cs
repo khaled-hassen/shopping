@@ -16,16 +16,16 @@ public class UserMutation {
         _userService = userService;
     }
 
+    [UseMutationConvention(PayloadFieldName = "emailSent")]
     [Error<InvalidInputExceptions>]
     [Error<UserExistException>]
-    public async Task<UserResult> CreateUser(
+    public async Task<bool> CreateUser(
         string firstName,
         string lastName,
         string email,
         string phoneNumber,
         string password,
-        string passwordConfirmation,
-        [Service] IHttpContextAccessor httpContextAccessor
+        string passwordConfirmation
     ) {
         Validator<UserRegisterValidator, UserInput>.ValidateAndThrow(
             new UserInput {
@@ -37,16 +37,8 @@ public class UserMutation {
                 PasswordConfirmation = passwordConfirmation
             }
         );
-        var user = await _userService.CreateUserAsync(firstName, lastName, email, phoneNumber, password);
-        if (httpContextAccessor.HttpContext is null) return user.Result;
-
-        var refreshToken = user.RefreshToken;
-        var cookieOptions = new CookieOptions {
-            HttpOnly = true,
-            Expires = refreshToken.ExpireDate
-        };
-        httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
-        return user.Result;
+        await _userService.CreateUserAsync(firstName, lastName, email, phoneNumber, password);
+        return true;
     }
 
     [Authorize]

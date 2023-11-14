@@ -11,7 +11,7 @@ public class HttpResponseFormatter : DefaultHttpResponseFormatter {
         if (errors.Any(e => e.Code == ErrorCodes.UnauthorizedCode))
             return HttpStatusCode.Unauthorized;
 
-        if (errors.Any(e => e.Code == ErrorCodes.WrongCredentials))
+        if (errors.Any(e => e.Code == ErrorCodes.WrongCredentials || e.Code == ErrorCodes.EmailNotVerified))
             return HttpStatusCode.Forbidden;
 
         return base.OnDetermineStatusCode(result, format, proposedStatusCode);

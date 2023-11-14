@@ -24,4 +24,9 @@ public class UserQuery {
         httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
         return user.Result;
     }
+
+    public async Task<bool> SendEmailVerification(string email) {
+        await _userService.SendEmailVerificationAsync(email);
+        return true;
+    }
 }

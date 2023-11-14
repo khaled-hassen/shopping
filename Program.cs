@@ -8,6 +8,7 @@ using Backend.GraphQL.UserResolver;
 using Backend.Interfaces;
 using Backend.Services;
 using Backend.Settings;
+using Fluid;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
@@ -54,11 +55,14 @@ builder.Services.AddHttpResponseFormatter<HttpResponseFormatter>();
 builder.Services.Configure<DataBaseSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddSingleton<DatabaseService>();
 
+builder.Services.AddSingleton<FluidParser>();
+
 // dependency injection
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 builder.Services.AddScoped<IConfigService, ConfigService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMailService, MailService>();
 
 // setup admin
 builder.Services.AddHostedService<AdminHostedService>();
