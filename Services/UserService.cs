@@ -1,14 +1,11 @@
 ﻿using System.Globalization;
 using System.Security.Claims;
-using System.Text;
 using Backend.Exceptions;
 using Backend.GraphQL.UserResolver.Types;
 using Backend.Helpers;
 using Backend.Interfaces;
 using Backend.Models;
-using Backend.Settings;
 using Backend.Types;
-using Fluid;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -16,16 +13,14 @@ namespace Backend.Services;
 
 public class UserService : IUserService {
     private readonly IMailService _mailService;
-    private readonly FluidParser _parser;
     private readonly IMongoCollection<User> _users;
 
-    public UserService(DatabaseService db, IMailService service, FluidParser parser) {
+    public UserService(DatabaseService db, IMailService service) {
         _users = db.GetUsersCollection();
         _mailService = service;
-        _parser = parser;
     }
 
-    public async Task CreateUserAsync(string firstName, string lastName, string email, string phoneNumber, string password) {
+    public async Task CreateAccountAsync(string firstName, string lastName, string email, string phoneNumber, string password) {
         var user = await _users.Find(c => c.Email == email.ToLower()).FirstOrDefaultAsync();
         if (user is not null) throw new UserExistException();
 
@@ -43,8 +38,8 @@ public class UserService : IUserService {
             }
         );
 
-        var emailBody = GenerateEmailVerification(id.ToString()!, email, firstName);
-        await _mailService.SendMailAsync(email, "Email verification", emailBody);
+        var emailBody = _mailService.GenerateEmailVerification(id.ToString()!, email, firstName);
+        await _mailService.SendMailAsync(email, firstName, "Email verification", emailBody);
     }
 
     public async Task<UserAuthResult?> LoginAsync(string email, string password) {
@@ -53,8 +48,8 @@ public class UserService : IUserService {
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password)) return null;
 
         if (user.EmailVerifiedAt is null) {
-            var emailBody = GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
-            await _mailService.SendMailAsync(email, "Email verification", emailBody);
+            var emailBody = _mailService.GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
+            await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
             throw new GraphQLException(new Error("Email not verified", ErrorCodes.EmailNotVerified));
         }
 
@@ -135,26 +130,7 @@ public class UserService : IUserService {
         var user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
         if (user is null) return;
 
-        var emailBody = GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
-        await _mailService.SendMailAsync(email, "Email verification", emailBody);
-    }
-
-    private string GenerateEmailVerification(string userId, string email, string firstname) {
-        var claims = new List<Claim> {
-            new(ClaimTypes.Sid, userId),
-            new(ClaimTypes.Email, email)
-        };
-        var token = AuthHelpers.CreateToken(DateTime.Now.AddMinutes(10), claims);
-        var template = File.ReadAllText("Email/templates/email-verification.html");
-        StringBuilder builder = new(AppConfig.WebClient);
-        builder.Append($"/very-email?token={token}");
-        var verificationLink = builder.ToString();
-        var model = new { Firstname = firstname, VerificationLink = verificationLink };
-        if (_parser.TryParse(template, out var body, out var error)) {
-            var context = new TemplateContext(model);
-            return body.Render(context);
-        }
-
-        throw new GraphQLException(error);
+        var emailBody = _mailService.GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
+        await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
     }
 }

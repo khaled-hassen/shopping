@@ -24,6 +24,6 @@ public class UserRegisterValidator : AbstractValidator<UserInput> {
             .WithMessage("Password must be at least 8 characters");
         RuleFor(c => c.PasswordConfirmation)
             .NotEmpty().WithMessage("Password confirmation is required")
-            .Equal(c => c.Password).WithMessage("Confirm password do not match");
+            .Equal(c => c.Password).WithMessage("Password confirmation do not match");
     }
 }

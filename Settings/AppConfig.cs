@@ -5,14 +5,17 @@ public static class AppConfig {
     public static string JwtIssuer { get; private set; } = null!;
     public static List<string> JwtAudience { get; private set; } = null!;
     public static string WebClient { get; private set; } = null!;
+    public static string NoReplySenderEmail { get; private set; } = null!;
 
     public static void Configure(IConfiguration config) {
-        JwtKey = config.GetSection("Jwt:Key").Value ?? "";
-        JwtIssuer = config.GetSection("Jwt:Issuer").Value ?? "";
+        var jwtSection = config.GetSection("Jwt");
+        JwtKey = jwtSection.GetSection("Key").Value ?? "";
+        JwtIssuer = jwtSection.GetSection("Issuer").Value ?? "";
+        WebClient = jwtSection.GetSection("WebClient").Value ?? "";
         JwtAudience = new List<string> {
-            config.GetSection("Jwt:AdminPanel").Value ?? "",
-            config.GetSection("Jwt:WebClient").Value ?? ""
+            jwtSection.GetSection("AdminPanel").Value ?? "",
+            WebClient
         };
-        WebClient = config.GetSection("Jwt:WebClient").Value ?? "";
+        NoReplySenderEmail = config.GetSection("MailConfig:NoReplaySender").Value ?? "";
     }
 }

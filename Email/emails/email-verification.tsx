@@ -11,6 +11,7 @@ export const EmailVerificationEmail = ({}) => {
 						colors: {
 							"light-orange": "#EADBC8",
 							primary: "#F1EFEF",
+							'dark-gray': "#4D5157",
 						},
 					},
 				},
@@ -53,12 +54,14 @@ export const EmailVerificationEmail = ({}) => {
 							<Text>
 								Please click on the following link to confirm your email:
 							</Text>
-							<Button href="{{VerificationLink}}">Verification link</Button>
+							<Button href="{{VerificationLink}}" className="px-6 py-4 bg-dark-gray text-primary font-bold">
+								Verification link
+							</Button>
 							<Text>
 								If the above link does not work, you can copy and paste the
 								following URL into your browser:
 							</Text>
-							<Link href="{{VerificationLink}}">{"{{VerificationLink}}"}</Link>
+							<Link href="{{VerificationLink}}" className="break-all">{"{{VerificationLink}}"}</Link>
 							<Text>
 								Please note that this link is valid for the next 10 minutes. If
 								you do not verify your email within this time frame, you may

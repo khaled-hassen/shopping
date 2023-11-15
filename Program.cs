@@ -12,6 +12,8 @@ using Fluid;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
+using sib_api_v3_sdk.Api;
+using sib_api_v3_sdk.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 AppConfig.Configure(builder.Configuration);
@@ -55,7 +57,12 @@ builder.Services.AddHttpResponseFormatter<HttpResponseFormatter>();
 builder.Services.Configure<DataBaseSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddSingleton<DatabaseService>();
 
+// setup email template parser
 builder.Services.AddSingleton<FluidParser>();
+
+// setup mailing service
+Configuration.Default.ApiKey.Add("api-key", builder.Configuration.GetSection("BrevoMailConfig:ApiKey").Value);
+builder.Services.AddSingleton<TransactionalEmailsApi>();
 
 // dependency injection
 builder.Services.AddScoped<ICategoryService, CategoryService>();

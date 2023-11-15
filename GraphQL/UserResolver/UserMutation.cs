@@ -19,7 +19,7 @@ public class UserMutation {
     [UseMutationConvention(PayloadFieldName = "emailSent")]
     [Error<InvalidInputExceptions>]
     [Error<UserExistException>]
-    public async Task<bool> CreateUser(
+    public async Task<bool> CreateAccount(
         string firstName,
         string lastName,
         string email,
@@ -37,7 +37,7 @@ public class UserMutation {
                 PasswordConfirmation = passwordConfirmation
             }
         );
-        await _userService.CreateUserAsync(firstName, lastName, email, phoneNumber, password);
+        await _userService.CreateAccountAsync(firstName, lastName, email, phoneNumber, password);
         return true;
     }
 
