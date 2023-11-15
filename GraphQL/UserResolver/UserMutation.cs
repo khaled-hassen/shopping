@@ -58,4 +58,11 @@ public class UserMutation {
         httpContextAccessor.HttpContext?.Response.Cookies.Delete("refreshToken");
         return true;
     }
+
+    [UseMutationConvention(PayloadFieldName = "success")]
+    [Error<InvalidInputExceptions>]
+    public async Task<bool> VerifyEmail(string token) {
+        await _userService.VerifyEmailAsync(token);
+        return true;
+    }
 }

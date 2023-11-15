@@ -26,11 +26,11 @@ public static class AuthHelpers {
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public static bool ValidateToken(string token) {
+    public static ClaimsPrincipal? ValidateToken(string token) {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(AppConfig.JwtKey);
         try {
-            tokenHandler.ValidateToken(
+            return tokenHandler.ValidateToken(
                 token,
                 new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,
@@ -43,10 +43,9 @@ public static class AuthHelpers {
                 },
                 out _
             );
-            return true;
         }
         catch (Exception e) {
-            return false;
+            return null;
         }
     }
 }

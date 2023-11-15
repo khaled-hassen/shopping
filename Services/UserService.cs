@@ -81,8 +81,8 @@ public class UserService : IUserService {
     }
 
     public async Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken) {
-        var valid = AuthHelpers.ValidateToken(refreshToken);
-        if (!valid) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        var claimsPrincipal = AuthHelpers.ValidateToken(refreshToken);
+        if (claimsPrincipal is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
         var foundToken = await _users.Find(
                 Builders<User>.Filter.And(
                     Builders<User>.Filter.Eq(c => c.Id, userId),
@@ -132,5 +132,26 @@ public class UserService : IUserService {
 
         var emailBody = _mailService.GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
         await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
+    }
+
+    public async Task VerifyEmailAsync(string token) {
+        var claimsPrincipal = AuthHelpers.ValidateToken(token);
+        if (claimsPrincipal is null) throw new UnauthorizedException();
+
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value;
+        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
+
+        var foundUser = await _users.Find(
+            Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(c => c.Id, ObjectId.Parse(userId)),
+                Builders<User>.Filter.Eq(c => c.Email, email?.ToLower())
+            )
+        ).FirstOrDefaultAsync();
+        if (foundUser is null) throw new UnauthorizedException();
+
+        await _users.UpdateOneAsync(
+            c => c.Id.ToString() == userId,
+            Builders<User>.Update.Set(c => c.EmailVerifiedAt, DateTime.Now)
+        );
     }
 }

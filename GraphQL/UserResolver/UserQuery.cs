@@ -25,8 +25,7 @@ public class UserQuery {
         return user.Result;
     }
 
-    public async Task<bool> SendEmailVerification(string email) {
+    public async Task SendEmailVerification(string email) {
         await _userService.SendEmailVerificationAsync(email);
-        return true;
     }
 }

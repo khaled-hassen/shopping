@@ -12,4 +12,5 @@ public interface IUserService {
     Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken);
     Task LogoutAsync(ObjectId userId, string? refreshToken);
     Task SendEmailVerificationAsync(string email);
+    Task VerifyEmailAsync(string token);
 }
