@@ -4,6 +4,7 @@ query Login($email: String!, $password: String!) {
         firstName
         lastName
         phoneNumber
+        emailVerified
         accessToken {
             value
             expires
@@ -33,51 +34,15 @@ mutation CreateAccount($firstName: String!, $lastName: String!, $email: String!,
     }
 }
 
-mutation RefreshAccessToken {
+query RefreshAccessToken {
     refreshAccessToken {
-        accessToken {
-            expires
-            value
-        }
+        value
+        expires
     }
 }
 
 mutation Logout {
     logout {
         success
-    }
-}
-
-query SendEmailVerificationEmail($email: String!) {
-    sendEmailVerificationEmail(email: $email)
-}
-
-mutation VerifyEmailAddress($token: String!) {
-    verifyEmail(input: {token: $token}) {
-        success
-        errors {
-            ... on UnauthorizedError {
-                message
-            }
-        }
-    }
-}
-
-query RequestPasswordRest($email: String!) {
-    sendPasswordResetEmail(email: $email)
-}
-
-mutation ResetPassword($token: String!, $password: String!, $passwordConfirmation: String!) {
-    resetPassword(input: {token: $token, newPassword: $password, newPasswordConfirmation: $passwordConfirmation}) {
-        success
-        errors {
-            ... on InvalidInputExceptions {
-                message
-            }
-
-            ... on UnauthorizedError {
-                message
-            }
-        }
     }
 }

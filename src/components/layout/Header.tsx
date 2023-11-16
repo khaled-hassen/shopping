@@ -136,7 +136,7 @@ const Header: React.FC<IProps> = ({}) => {
                 </div>
                 <div className="flex w-fit flex-col">
                   <span className="">{item.name}</span>
-                  <span className="h-0.5 w-[80%] origin-left scale-x-0 bg-black transition-transform duration-300 ease-in-out group-hover:scale-x-100 group-data-[active=true]:scale-x-100" />
+                  <span className="h-0.5 w-[80%] origin-left scale-x-0 bg-black transition-transform duration-300 ease-in-out group-hover:scale-x-100" />
                 </div>
               </Link>
             </li>

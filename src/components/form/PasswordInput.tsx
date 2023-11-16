@@ -27,7 +27,7 @@ const PasswordInput = forwardRef<HTMLInputElement, IProps>(
             </Form.Message>
           )}
         </div>
-        <div className="flex items-center gap-4 border border-darkGray border-opacity-50 bg-transparent px-4 py-3 text-xl">
+        <div className="border-dark-gray flex items-center gap-4 border border-opacity-50 bg-transparent px-4 py-3 text-xl">
           <Form.Control asChild className="flex-1">
             <input
               type={show.value ? "text" : "password"}

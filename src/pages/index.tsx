@@ -16,7 +16,7 @@ type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Home: React.FC<PageProps> = ({ data }) => {
   return (
-    <div className="-mb-20 flex flex-col gap-20">
+    <div className="-mb-20 -mt-10 flex flex-col gap-20">
       <section className="remove-page-right-padding remove-page-left-padding flex flex-col items-center justify-between gap-10 lg:ml-0 lg:flex-row">
         <div className="hidden flex-col gap-12 lg:flex">
           <div className="flex flex-col gap-1">

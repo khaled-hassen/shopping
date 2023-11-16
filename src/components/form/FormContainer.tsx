@@ -10,6 +10,7 @@ interface CommonProps {
   children: React.ReactNode;
   loading?: boolean;
   errors?: string[];
+  extraInfo?: React.ReactNode;
 }
 
 interface PropsWithSubtitle {
@@ -35,11 +36,12 @@ const FormContainer: React.FC<Props> = ({
   loading,
   errors,
   children,
+  extraInfo,
   onSubmit,
 }) => {
   return (
     <Form.Root
-      className="mx-auto flex max-w-2xl flex-col gap-10"
+      className="mx-auto flex w-full max-w-2xl flex-col gap-10"
       onSubmit={onSubmit}
     >
       <div className="flex flex-col gap-2">
@@ -61,6 +63,7 @@ const FormContainer: React.FC<Props> = ({
               {error}
             </p>
           ))}
+        {extraInfo}
       </div>
       <div className="flex flex-col gap-6">{children}</div>
       <Form.Submit asChild className="self-end">

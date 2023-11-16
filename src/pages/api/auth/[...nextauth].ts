@@ -31,6 +31,7 @@ export const authOptions: AuthOptions = {
         const accessToken = (session as Session).token;
         token.value = accessToken.value;
         token.expires = accessToken.expires;
+        token.user = (session as Session).user;
       }
       return token;
     },
@@ -43,6 +44,7 @@ export const authOptions: AuthOptions = {
   session: { strategy: "jwt" },
   pages: {
     signIn: route("login"),
+    signOut: route("home"),
   },
 };
 

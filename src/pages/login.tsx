@@ -61,7 +61,7 @@ const Login: React.FC<IProps> = ({}) => {
   }
 
   return (
-    <div className="pt-20">
+    <div className="pt-10">
       <FormContainer
         title="Login to your account"
         subtitle="Don’t have an account yet?"

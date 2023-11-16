@@ -22,6 +22,10 @@ const routes = {
     path: "/verification-email-sent",
     access: Access.NotAuthenticated,
   },
+  verifyEmail: {
+    path: "/verify-email",
+    access: Access.NotAuthenticated,
+  },
   forgotPassword: {
     path: "/forgot-password",
     access: Access.NotAuthenticated,

@@ -32,8 +32,8 @@ const Button: React.FC<IProps> = ({
       className={twMerge(
         "relative flex w-fit items-center px-14 py-4 text-2xl font-medium",
         clsx({
-          "bg-darkGray text-primary": color === "gray",
-          "bg-primary text-darkGray": color === "white",
+          "bg-dark-gray text-primary": color === "gray",
+          "text-dark-gray bg-primary": color === "white",
           "select-none opacity-50": loading || disabled,
           group: !loading && !disabled,
         }),
@@ -70,7 +70,7 @@ const Button: React.FC<IProps> = ({
           "absolute left-0 top-0 h-full w-full border-0 transition-[border] group-hover:border-[8px]",
           {
             "border-primary": color === "gray",
-            "border-darkGray": color === "white",
+            "border-dark-gray": color === "white",
           },
         )}
       />

@@ -66,7 +66,7 @@ const Register: React.FC<IProps> = ({}) => {
   }
 
   return (
-    <div className="pt-20">
+    <div className="pt-10">
       <FormContainer
         title="Create a new account"
         subtitle="Already have an account?"

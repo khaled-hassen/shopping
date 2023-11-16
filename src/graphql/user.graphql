@@ -1,0 +1,48 @@
+query SendEmailVerificationEmail($email: String!) {
+    sendEmailVerificationEmail(email: $email)
+}
+
+mutation VerifyEmailAddress($token: String!) {
+    verifyEmail(input: {token: $token}) {
+        success
+        errors {
+            ... on UnauthorizedError {
+                message
+            }
+        }
+    }
+}
+
+query RequestPasswordRest($email: String!) {
+    sendPasswordResetEmail(email: $email)
+}
+
+mutation ResetPassword($token: String!, $password: String!, $passwordConfirmation: String!) {
+    resetPassword(input: {token: $token, newPassword: $password, newPasswordConfirmation: $passwordConfirmation}) {
+        success
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+
+            ... on UnauthorizedError {
+                message
+            }
+        }
+    }
+}
+
+mutation UpdatePersonalInfo($email: String!, $firstName:String!, $lastName: String!, $phoneNumber: String!) {
+    editPersonalData(input: {email: $email, firstName: $firstName, lastName: $lastName, phoneNumber: $phoneNumber}) {
+        personalDataEditResult {
+            success
+            emailChanged
+        }
+
+        errors {
+            ...on InvalidInputExceptions{
+                message
+            }
+        }
+    }
+}

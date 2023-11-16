@@ -26,7 +26,7 @@ const Input = forwardRef<HTMLInputElement, IProps>(
           <input
             ref={ref}
             name={name}
-            className="border border-darkGray border-opacity-50 bg-transparent px-4 py-3 text-xl focus:outline-0"
+            className="border-dark-gray border border-opacity-50 bg-transparent px-4 py-3 text-xl focus:outline-0"
             placeholder={placeholder}
             onChange={onChange}
             onBlur={onBlur}

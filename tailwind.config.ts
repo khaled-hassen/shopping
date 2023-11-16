@@ -18,7 +18,7 @@ const config: Config = {
       },
       colors: {
         primary: "#F1EFEF",
-        darkGray: "#4D5157",
+        "dark-gray": "#4D5157",
       },
       keyframes: {
         reveal: {

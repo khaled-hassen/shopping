@@ -22,7 +22,7 @@ type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Category: React.FC<PageProps> = ({ data }) => {
   return (
-    <div className="flex flex-col gap-20">
+    <div className="-mt-10 flex flex-col gap-20">
       <section className="remove-page-right-padding remove-page-left-padding lg:page-left-padding flex flex-col items-center justify-between gap-10 bg-[#EAEBEF] lg:flex-row">
         <div className="hidden flex-col gap-12 lg:flex">
           <div className="flex flex-col gap-1">

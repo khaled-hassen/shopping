@@ -26,7 +26,7 @@ const Categories: React.FC<PageProps> = ({ data }) => {
   );
 
   return (
-    <div className="flex flex-col gap-20">
+    <div className="-mt-10 flex flex-col gap-20">
       <section
         style={{ backgroundColor: data?.config?.heroBgColor }}
         className="remove-page-right-padding remove-page-left-padding lg:page-right-padding flex flex-col items-center justify-between gap-10 lg:flex-row"
