@@ -34,17 +34,35 @@ public class MailService : IMailService {
         }
     }
 
-    public string GenerateEmailVerification(string userId, string email, string firstname) {
-        var claims = new List<Claim> {
-            new(ClaimTypes.Sid, userId),
-            new(ClaimTypes.Email, email)
-        };
-        var token = AuthHelpers.CreateToken(DateTime.Now.AddMinutes(10), claims);
+    public string GenerateEmailVerificationEmail(string userId, string email, string firstname) {
+        var token = CreateUserToken(userId, email);
         var template = File.ReadAllText("Email/templates/email-verification.html");
         StringBuilder builder = new(AppConfig.WebClient);
         builder.Append($"/verify-email?token={token}");
         var verificationLink = builder.ToString();
         var model = new { Firstname = firstname, VerificationLink = verificationLink };
+        return ParseEmailTemplate(template, model);
+    }
+
+    public string GeneratePasswordResetEmail(string userId, string email, string firstname) {
+        var template = File.ReadAllText("Email/templates/password-reset.html");
+        StringBuilder builder = new(AppConfig.WebClient);
+        var token = CreateUserToken(userId, email);
+        builder.Append($"/reset-password?token={token}");
+        var resetLink = builder.ToString();
+        var model = new { Firstname = firstname, ResetLink = resetLink };
+        return ParseEmailTemplate(template, model);
+    }
+
+    private string CreateUserToken(string userId, string email) {
+        var claims = new List<Claim> {
+            new(ClaimTypes.Sid, userId),
+            new(ClaimTypes.Email, email)
+        };
+        return AuthHelpers.CreateToken(DateTime.Now.AddMinutes(10), claims);
+    }
+
+    private string ParseEmailTemplate(string template, object model) {
         if (_parser.TryParse(template, out var body, out var error)) {
             var context = new TemplateContext(model);
             return body.Render(context);

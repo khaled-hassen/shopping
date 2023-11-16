@@ -38,7 +38,7 @@ public class UserService : IUserService {
             }
         );
 
-        var emailBody = _mailService.GenerateEmailVerification(id.ToString()!, email, firstName);
+        var emailBody = _mailService.GenerateEmailVerificationEmail(id.ToString()!, email, firstName);
         await _mailService.SendMailAsync(email, firstName, "Email verification", emailBody);
     }
 
@@ -48,7 +48,7 @@ public class UserService : IUserService {
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password)) return null;
 
         if (user.EmailVerifiedAt is null) {
-            var emailBody = _mailService.GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
+            var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, user.FirstName);
             await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
             throw new GraphQLException(new Error("Email not verified", ErrorCodes.EmailNotVerified));
         }
@@ -126,11 +126,11 @@ public class UserService : IUserService {
         );
     }
 
-    public async Task SendEmailVerificationAsync(string email) {
+    public async Task SendEmailVerificationEmailAsync(string email) {
         var user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
         if (user is null) return;
 
-        var emailBody = _mailService.GenerateEmailVerification(user.Id.ToString()!, email, user.FirstName);
+        var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, user.FirstName);
         await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
     }
 
@@ -152,6 +152,36 @@ public class UserService : IUserService {
         await _users.UpdateOneAsync(
             c => c.Id.ToString() == userId,
             Builders<User>.Update.Set(c => c.EmailVerifiedAt, DateTime.Now)
+        );
+    }
+
+    public async Task SendPasswordResetEmailAsync(string email) {
+        var user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
+        if (user is null) return;
+
+        var emailBody = _mailService.GeneratePasswordResetEmail(user.Id.ToString()!, email, user.FirstName);
+        await _mailService.SendMailAsync(email, user.FirstName, "Reset password", emailBody);
+    }
+
+    public async Task ResetPasswordAsync(string token, string newPassword) {
+        var claimsPrincipal = AuthHelpers.ValidateToken(token);
+        if (claimsPrincipal is null) throw new UnauthorizedException();
+
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value;
+        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
+
+        var foundUser = await _users.Find(
+            Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(c => c.Id, ObjectId.Parse(userId)),
+                Builders<User>.Filter.Eq(c => c.Email, email?.ToLower())
+            )
+        ).FirstOrDefaultAsync();
+        if (foundUser is null) throw new UnauthorizedException();
+
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await _users.UpdateOneAsync(
+            c => c.Id.ToString() == userId,
+            Builders<User>.Update.Set(c => c.Password, hashedPassword)
         );
     }
 }

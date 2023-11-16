@@ -5,12 +5,14 @@ using MongoDB.Bson;
 namespace Backend.Interfaces;
 
 public interface IUserService {
-    Task CreateAccountAsync(string firstName, string lastName, string email, string phoneNumber, string password);
+    public Task CreateAccountAsync(string firstName, string lastName, string email, string phoneNumber, string password);
 
-    Task<UserAuthResult?> LoginAsync(string email, string password);
+    public Task<UserAuthResult?> LoginAsync(string email, string password);
 
-    Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken);
-    Task LogoutAsync(ObjectId userId, string? refreshToken);
-    Task SendEmailVerificationAsync(string email);
-    Task VerifyEmailAsync(string token);
+    public Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken);
+    public Task LogoutAsync(ObjectId userId, string? refreshToken);
+    public Task SendEmailVerificationEmailAsync(string email);
+    public Task VerifyEmailAsync(string token);
+    public Task SendPasswordResetEmailAsync(string email);
+    public Task ResetPasswordAsync(string token, string newPassword);
 }

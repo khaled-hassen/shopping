@@ -60,9 +60,22 @@ public class UserMutation {
     }
 
     [UseMutationConvention(PayloadFieldName = "success")]
-    [Error<InvalidInputExceptions>]
+    [Error<UnauthorizedException>]
     public async Task<bool> VerifyEmail(string token) {
         await _userService.VerifyEmailAsync(token);
+        return true;
+    }
+
+    [UseMutationConvention(PayloadFieldName = "success")]
+    [Error<InvalidInputExceptions>]
+    [Error<UnauthorizedException>]
+    public async Task<bool> ResetPassword(string token, string newPassword, string newPasswordConfirmation) {
+        Validator<PasswordResetValidator, PasswordResetValidatorInput>.ValidateAndThrow(
+            new PasswordResetValidatorInput {
+                Password = newPassword, PasswordConfirmation = newPasswordConfirmation
+            }
+        );
+        await _userService.ResetPasswordAsync(token, newPassword);
         return true;
     }
 }
