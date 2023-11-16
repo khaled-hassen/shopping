@@ -185,14 +185,22 @@ public class UserService : IUserService {
         );
     }
 
-    public async Task<PersonalDataEditResult> UpdatePersonalData(UserResult user, string firstName, string lastName, string email) {
+    public async Task<PersonalDataEditResult> UpdatePersonalData(
+        UserResult user,
+        string firstName,
+        string lastName,
+        string phoneNumber,
+        string email
+    ) {
         if (user.Email == email.ToLower() && user.FirstName == firstName && user.LastName == lastName)
             return new PersonalDataEditResult {
                 Success = true,
                 EmailChanged = false
             };
 
-        var update = Builders<User>.Update.Set(c => c.FirstName, firstName).Set(c => c.LastName, lastName);
+        var update = Builders<User>.Update.Set(c => c.FirstName, firstName)
+            .Set(c => c.LastName, lastName)
+            .Set(c => c.PhoneNumber, phoneNumber);
 
         if (user.Email != email.ToLower()) {
             var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, firstName);

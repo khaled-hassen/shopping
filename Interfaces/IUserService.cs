@@ -15,5 +15,5 @@ public interface IUserService {
     public Task VerifyEmailAsync(string token);
     public Task SendPasswordResetEmailAsync(string email);
     public Task ResetPasswordAsync(string token, string newPassword);
-    Task<PersonalDataEditResult> UpdatePersonalData(UserResult user, string firstName, string lastName, string email);
+    Task<PersonalDataEditResult> UpdatePersonalData(UserResult user, string firstName, string lastName, string phoneNumber, string email);
 }

@@ -73,10 +73,17 @@ public class UserMutation {
     [Authorize]
     [UseUser]
     [Error<InvalidInputExceptions>]
-    public async Task<PersonalDataEditResult> EditPersonalData(string firstName, string lastName, string email, [GetUser] UserResult user) {
+    public async Task<PersonalDataEditResult> EditPersonalData(
+        string firstName,
+        string lastName,
+        string email,
+        string phoneNumber,
+        [GetUser] UserResult user
+    ) {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(firstName, "First name is required");
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(lastName, "Last name is required");
         Validator<EmailValidator, string>.ValidateAndThrow(email);
-        return await _userService.UpdatePersonalData(user, firstName, lastName, email);
+        Validator<PhoneNumberValidator, string>.ValidateAndThrow(phoneNumber);
+        return await _userService.UpdatePersonalData(user, firstName, lastName, phoneNumber, email);
     }
 }
