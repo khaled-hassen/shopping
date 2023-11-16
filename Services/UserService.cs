@@ -72,6 +72,7 @@ public class UserService : IUserService {
             LastName = user.LastName,
             Email = email.ToLower(),
             PhoneNumber = user.PhoneNumber,
+            EmailVerified = user.EmailVerifiedAt is not null,
             AccessToken = new AccessToken(accessToken, accessTokenExpireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture))
         };
         return new UserAuthResult {
@@ -183,5 +184,27 @@ public class UserService : IUserService {
             c => c.Id.ToString() == userId,
             Builders<User>.Update.Set(c => c.Password, hashedPassword)
         );
+    }
+
+    public async Task<PersonalDataEditResult> UpdatePersonalData(UserResult user, string firstName, string lastName, string email) {
+        if (user.Email == email.ToLower() && user.FirstName == firstName && user.LastName == lastName)
+            return new PersonalDataEditResult {
+                Success = true,
+                EmailChanged = false
+            };
+
+        var update = Builders<User>.Update.Set(c => c.FirstName, firstName).Set(c => c.LastName, lastName);
+
+        if (user.Email != email.ToLower()) {
+            var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, firstName);
+            await _mailService.SendMailAsync(email, firstName, "Email verification", emailBody);
+            update = update.Set(c => c.Email, email.ToLower()).Set(c => c.EmailVerifiedAt, null);
+        }
+
+        await _users.UpdateOneAsync(c => c.Id.Equals(user.Id), update);
+        return new PersonalDataEditResult {
+            Success = true,
+            EmailChanged = user.Email != email.ToLower()
+        };
     }
 }
