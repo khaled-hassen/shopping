@@ -1,5 +1,8 @@
-﻿using Backend.GraphQL.UserResolver.Types;
+﻿using Backend.Attributes;
+using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
+using Backend.Types;
+using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.UserResolver;
 
@@ -23,6 +26,14 @@ public class UserQuery {
         };
         httpContextAccessor.HttpContext.Response.Cookies.Append("refreshToken", refreshToken.Value, cookieOptions);
         return user.Result;
+    }
+
+    [Authorize]
+    [UseUser]
+    public async Task<AccessToken> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor, [GetUser] UserResult user) {
+        var refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+        if (refreshToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        return await _userService.RefreshAccessTokenAsync(user.Id, refreshToken);
     }
 
     public async Task<bool> SendEmailVerificationEmail(string email) {

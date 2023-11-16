@@ -84,16 +84,15 @@ public class UserService : IUserService {
     public async Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken) {
         var claimsPrincipal = AuthHelpers.ValidateToken(refreshToken);
         if (claimsPrincipal is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
-        var foundToken = await _users.Find(
+        var user = await _users.Find(
                 Builders<User>.Filter.And(
                     Builders<User>.Filter.Eq(c => c.Id, userId),
                     Builders<User>.Filter.ElemMatch(c => c.RefreshTokens, c => c.Value.Equals(refreshToken))
                 )
-            ).Project<RefreshToken>(
-                Builders<User>.Projection
-                    .Include(c => c.RefreshTokens)
             )
             .FirstOrDefaultAsync();
+        if (user is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        var foundToken = user.RefreshTokens.Where(c => c.Value == refreshToken).FirstOrDefault();
         if (foundToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
 
         if (foundToken.ExpireDate < DateTime.Now) {
