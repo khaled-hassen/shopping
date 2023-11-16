@@ -22,6 +22,14 @@ const routes = {
     path: "/verification-email-sent",
     access: Access.NotAuthenticated,
   },
+  forgotPassword: {
+    path: "/forgot-password",
+    access: Access.NotAuthenticated,
+  },
+  resetPassword: {
+    path: "/reset-password",
+    access: Access.NotAuthenticated,
+  },
 };
 
 type Route = keyof typeof routes;

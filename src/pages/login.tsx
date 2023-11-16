@@ -10,6 +10,7 @@ import { signIn } from "next-auth/react";
 import { useSignal } from "@preact/signals-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLoginLazyQuery } from "@/__generated__/client";
+import Link from "next/link";
 
 interface IProps {}
 
@@ -77,12 +78,20 @@ const Login: React.FC<IProps> = ({}) => {
           error={errors.email?.message}
           {...register("email")}
         />
-        <PasswordInput
-          label="Password"
-          placeholder="Password"
-          error={errors.password?.message}
-          {...register("password")}
-        />
+        <div className="flex flex-col gap-2">
+          <PasswordInput
+            label="Password"
+            placeholder="Password"
+            error={errors.password?.message}
+            {...register("password")}
+          />
+          <Link
+            href={route("forgotPassword")}
+            className="self-end text-lg font-medium uppercase"
+          >
+            forgot your password ?
+          </Link>
+        </div>
       </FormContainer>
     </div>
   );

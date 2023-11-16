@@ -62,3 +62,22 @@ mutation VerifyEmailAddress($token: String!) {
         }
     }
 }
+
+query RequestPasswordRest($email: String!) {
+    sendPasswordResetEmail(email: $email)
+}
+
+mutation ResetPassword($token: String!, $password: String!, $passwordConfirmation: String!) {
+    resetPassword(input: {token: $token, newPassword: $password, newPasswordConfirmation: $passwordConfirmation}) {
+        success
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+
+            ... on UnauthorizedError {
+                message
+            }
+        }
+    }
+}
