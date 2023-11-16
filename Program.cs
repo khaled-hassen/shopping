@@ -65,6 +65,7 @@ Configuration.Default.ApiKey.Add("api-key", builder.Configuration.GetSection("Br
 builder.Services.AddSingleton<TransactionalEmailsApi>();
 
 // dependency injection
+builder.Services.AddSingleton<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 builder.Services.AddScoped<IConfigService, ConfigService>();

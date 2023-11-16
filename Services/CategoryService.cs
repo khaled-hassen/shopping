@@ -8,18 +8,20 @@ using MongoDB.Driver;
 namespace Backend.Services;
 
 public class CategoryService : ICategoryService {
-    private readonly IMongoCollection<Category> _collection;
-    private readonly IMongoCollection<Subcategory> _subcategoryCollection;
+    private readonly IMongoCollection<Category> _categories;
+    private readonly IFileUploadService _fileUploadService;
+    private readonly IMongoCollection<Subcategory> _subcategories;
 
-    public CategoryService(DatabaseService database) {
-        _collection = database.GetCategoriesCollection();
-        _subcategoryCollection = database.GetSubcategoriesCollection();
+    public CategoryService(DatabaseService database, IFileUploadService fileUploadService) {
+        _fileUploadService = fileUploadService;
+        _categories = database.GetCategoriesCollection();
+        _subcategories = database.GetSubcategoriesCollection();
     }
 
     public async Task<List<CategoryResult>> GetCategoriesAsync() {
-        return await _collection.Aggregate()
+        return await _categories.Aggregate()
             .Lookup<Category, Subcategory, CategoryResult>(
-                _subcategoryCollection,
+                _subcategories,
                 category => category.SubcategoriesIds,
                 subcategory => subcategory.Id,
                 categoryResult => categoryResult.Subcategories
@@ -28,9 +30,9 @@ public class CategoryService : ICategoryService {
     }
 
     public async Task<List<CategoryResult>> GetTopCategoriesAsync() {
-        return await _collection.Aggregate()
+        return await _categories.Aggregate()
             .Lookup<Category, Subcategory, CategoryResult>(
-                _subcategoryCollection,
+                _subcategories,
                 category => category.SubcategoriesIds,
                 subcategory => subcategory.Id,
                 categoryResult => categoryResult.Subcategories
@@ -40,11 +42,11 @@ public class CategoryService : ICategoryService {
     }
 
     public async Task<CategoryResult?> GetCategoryAsync(string id) {
-        return await _collection
+        return await _categories
             .Aggregate()
             .Match(c => c.Slug == id || c.Id.ToString() == id)
             .Lookup<Category, Subcategory, CategoryResult>(
-                _subcategoryCollection,
+                _subcategories,
                 category => category.SubcategoriesIds,
                 subcategory => subcategory.Id,
                 categoryResult => categoryResult.Subcategories
@@ -54,7 +56,7 @@ public class CategoryService : ICategoryService {
 
     public async Task<CreatedCategory> CreateCategoryAsync(string name, IFile image) {
         var id = ObjectId.GenerateNewId();
-        var path = await FileUploadHelper.UploadFile(image, id.ToString()!, id.ToString()!);
+        var path = await _fileUploadService.UploadFile(image, id.ToString()!, id.ToString()!);
 
         var category = new Category {
             Id = id,
@@ -63,32 +65,32 @@ public class CategoryService : ICategoryService {
             Slug = StringUtils.CreateSlug(name.Trim())
         };
 
-        await _collection.InsertOneAsync(category);
+        await _categories.InsertOneAsync(category);
         return new CreatedCategory(id.ToString()!, name, path);
     }
 
     public async Task<bool> UpdateCategoryAsync(string id, string name, IFile? image) {
-        var category = await _collection.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        var category = await _categories.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (category is null) return false;
 
         var update = Builders<Category>.Update
             .Set(c => c.Name, name.Trim())
             .Set(c => c.Slug, StringUtils.CreateSlug(name.Trim()));
         if (image is not null) {
-            FileUploadHelper.DeleteFile(category.Image);
-            var path = await FileUploadHelper.UploadFile(image, id, id);
+            _fileUploadService.DeleteFile(category.Image);
+            var path = await _fileUploadService.UploadFile(image, id, id);
             update = update.Set(c => c.Image, path);
         }
 
-        var res = await _collection.UpdateOneAsync(c => c.Id.ToString() == id, update);
+        var res = await _categories.UpdateOneAsync(c => c.Id.ToString() == id, update);
         return res is not null && res.ModifiedCount != 0;
     }
 
     public async Task<bool> DeleteCategoryAsync(string id) {
-        var res = await _collection.DeleteOneAsync(c => c.Id.ToString() == id);
+        var res = await _categories.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
-        await _subcategoryCollection.DeleteManyAsync(c => c.CategoryId.ToString() == id);
-        FileUploadHelper.DeleteDirectory(id);
+        await _subcategories.DeleteManyAsync(c => c.CategoryId.ToString() == id);
+        _fileUploadService.DeleteDirectory(id);
         return true;
     }
 }
