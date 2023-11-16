@@ -11,6 +11,8 @@ interface IProps {
   title: string;
   style?: React.CSSProperties;
   loading?: boolean;
+  disabled?: boolean;
+  onClick?(): void;
 }
 
 const Button: React.FC<IProps> = ({
@@ -20,22 +22,25 @@ const Button: React.FC<IProps> = ({
   color = "gray",
   type = "button",
   loading,
+  disabled,
+  onClick,
 }) => {
   return (
     <button
       type={type}
-      disabled={loading}
+      disabled={loading || disabled}
       className={twMerge(
         "relative flex w-fit items-center px-14 py-4 text-2xl font-medium",
         clsx({
           "bg-darkGray text-primary": color === "gray",
           "bg-primary text-darkGray": color === "white",
-          "select-none opacity-50": loading,
-          group: !loading,
+          "select-none opacity-50": loading || disabled,
+          group: !loading && !disabled,
         }),
         className,
       )}
       style={style}
+      onClick={loading || disabled ? undefined : onClick}
     >
       {loading && (
         <svg

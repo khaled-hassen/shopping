@@ -18,6 +18,10 @@ const routes = {
   orders: { path: "/account/orders", access: Access.Authenticated },
   wishlist: { path: "/account/wishlist", access: Access.Authenticated },
   store: { path: "/account/store", access: Access.Authenticated },
+  verificationEmailSent: {
+    path: "/verification-email-sent",
+    access: Access.NotAuthenticated,
+  },
 };
 
 type Route = keyof typeof routes;

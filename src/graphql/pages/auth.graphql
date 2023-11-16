@@ -11,8 +11,8 @@ query Login($email: String!, $password: String!) {
     }
 }
 
-mutation RegisterUser($firstName: String!, $lastName: String!, $email: String!, $password: String!, $phoneNumber: String!, $passwordConfirmation: String!) {
-    createUser(input: {
+mutation CreateAccount($firstName: String!, $lastName: String!, $email: String!, $password: String!, $phoneNumber: String!, $passwordConfirmation: String!) {
+    createAccount(input: {
         firstName: $firstName,
         lastName: $lastName,
         email: $email,
@@ -20,17 +20,7 @@ mutation RegisterUser($firstName: String!, $lastName: String!, $email: String!, 
         password: $password,
         passwordConfirmation: $passwordConfirmation
     }) {
-        userResult {
-            email
-            firstName
-            lastName
-            phoneNumber
-            accessToken {
-                value
-                expires
-            }
-        }
-
+        emailSent
         errors {
             ... on UserExistError {
                 message
@@ -55,5 +45,20 @@ mutation RefreshAccessToken {
 mutation Logout {
     logout {
         success
+    }
+}
+
+query SendEmailVerificationEmail($email: String!) {
+    sendEmailVerificationEmail(email: $email)
+}
+
+mutation VerifyEmailAddress($token: String!) {
+    verifyEmail(input: {token: $token}) {
+        success
+        errors {
+            ... on UnauthorizedError {
+                message
+            }
+        }
     }
 }

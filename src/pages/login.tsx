@@ -40,7 +40,13 @@ const Login: React.FC<IProps> = ({}) => {
     const { data: res, error } = await login({ variables: data });
     if (error) {
       // @ts-ignore
-      const errorMessage = error?.networkError?.result?.errors?.[0]?.message;
+      const errorResponse = error?.networkError?.result?.errors?.[0];
+      const errorMessage = errorResponse?.message;
+      const errorCode = errorResponse?.extensions?.code;
+      if (errorCode === "EMAIL_NOT_VERIFIED")
+        return router.push(
+          route("verificationEmailSent") + `?email=${data.email}`,
+        );
       loginError.value = errorMessage ?? null;
       return;
     }

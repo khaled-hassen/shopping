@@ -8,8 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordInput from "@/components/form/PasswordInput";
 import { useSignal } from "@preact/signals-react";
 import { useRouter } from "next/navigation";
-import { useRegisterUserMutation } from "@/__generated__/client";
-import { signIn } from "next-auth/react";
+import { useCreateAccountMutation } from "@/__generated__/client";
 
 interface IProps {}
 
@@ -51,23 +50,19 @@ const Register: React.FC<IProps> = ({}) => {
   const registerErrors = useSignal<string[] | null>(null);
 
   const router = useRouter();
-  const [registerUser] = useRegisterUserMutation();
+  const [createAccount] = useCreateAccountMutation();
 
-  async function createNewUser(data: RegisterSchema) {
-    const { data: res } = await registerUser({ variables: data });
-    const user = res?.createUser.userResult;
-    const errors = res?.createUser.errors;
-    if (errors) {
-      registerErrors.value = errors.map((e) => e.message);
-      return;
-    }
+  async function createNewAccount(data: RegisterSchema) {
+    const { data: res } = await createAccount({ variables: data });
+    const emailSent = res?.createAccount.emailSent;
+    const errors = res?.createAccount.errors;
 
-    const response = await signIn("credentials", {
-      user: JSON.stringify(user ?? null),
-      redirect: false,
-    });
-    registerErrors.value = response?.error ? [response?.error] : null;
-    if (response?.ok) router.replace(route("home"));
+    if (emailSent)
+      return router.replace(
+        route("verificationEmailSent") + `?email=${data.email}`,
+      );
+
+    if (errors) registerErrors.value = errors.map((e) => e.message);
   }
 
   return (
@@ -79,7 +74,7 @@ const Register: React.FC<IProps> = ({}) => {
         subtitleActionHref={route("login")}
         formActionText="Create account"
         loading={isSubmitting}
-        onSubmit={handleSubmit(createNewUser)}
+        onSubmit={handleSubmit(createNewAccount)}
         errors={registerErrors.value ?? []}
       >
         <Input
@@ -118,7 +113,9 @@ const Register: React.FC<IProps> = ({}) => {
           label="Confirm password"
           placeholder="Repeat your password"
           error={errors.passwordConfirmation?.message}
-          {...register("passwordConfirmation")}
+          {...register("passwordConfirmation", {
+            onBlur: () => trigger("passwordConfirmation"),
+          })}
         />
       </FormContainer>
     </div>
