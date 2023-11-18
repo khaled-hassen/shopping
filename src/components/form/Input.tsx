@@ -13,8 +13,8 @@ interface IProps {
 const Input = forwardRef<HTMLInputElement, IProps>(
   ({ label, placeholder, error, name, onBlur, onChange }, ref) => {
     return (
-      <Form.Field className="flex flex-col gap-4" name={name}>
-        <div className="flex items-center justify-between gap-4">
+      <Form.Field className="@container flex flex-col gap-4" name={name}>
+        <div className="@xs:flex-row @xs:items-center flex flex-col justify-between gap-4">
           <Form.Label className="text-xl font-bold">{label}</Form.Label>
           {!!error && (
             <Form.Message className="font-bold text-red-600">
@@ -26,7 +26,7 @@ const Input = forwardRef<HTMLInputElement, IProps>(
           <input
             ref={ref}
             name={name}
-            className="border-dark-gray border border-opacity-50 bg-transparent px-4 py-3 text-xl focus:outline-0"
+            className="border border-dark-gray border-opacity-50 bg-transparent px-4 py-3 text-xl focus:outline-0"
             placeholder={placeholder}
             onChange={onChange}
             onBlur={onBlur}

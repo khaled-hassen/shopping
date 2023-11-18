@@ -67,6 +67,9 @@ devDependencies:
   '@parcel/watcher':
     specifier: ^2.3.0
     version: 2.3.0
+  '@tailwindcss/container-queries':
+    specifier: ^0.1.1
+    version: 0.1.1(tailwindcss@3.3.5)
   '@types/apollo-upload-client':
     specifier: ^17.0.4
     version: 17.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -1982,6 +1985,14 @@ packages:
     dependencies:
       tslib: 2.6.2
     dev: false
+
+  /@tailwindcss/container-queries@0.1.1(tailwindcss@3.3.5):
+    resolution: {integrity: sha512-p18dswChx6WnTSaJCSGx6lTmrGzNNvm2FtXmiO6AuA1V4U5REyoqwmT6kgAsIMdjo07QdAfYXHJ4hnMtfHzWgA==}
+    peerDependencies:
+      tailwindcss: '>=3.2.0'
+    dependencies:
+      tailwindcss: 3.3.5
+    dev: true
 
   /@types/apollo-upload-client@17.0.4(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-lUoGuvesg4W4mgEk8SRiuh0tDC4mXv92Jj2ogaMEjTR2Wt6eBYCUoy1pDXVapqXv4uZGh+oKlqrtadXySKO+jQ==}

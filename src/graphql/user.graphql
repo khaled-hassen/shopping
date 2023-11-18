@@ -77,3 +77,14 @@ mutation UpdatePassword($oldPassword: String!, $password: String!, $passwordConf
         }
     }
 }
+
+mutation UpdateBillingDetails($billingDetails: BillingDetailsInput!) {
+    updateBillingDetails(input: {details: $billingDetails}) {
+        updated
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
+    }
+}

@@ -36,6 +36,7 @@ const config: Config = {
       addVariant("child", "& > *");
       addVariant("children", "& *");
     },
+    require("@tailwindcss/container-queries"),
   ],
 };
 export default config;

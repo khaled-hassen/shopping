@@ -5,7 +5,6 @@ import Input from "@/components/form/Input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignal } from "@preact/signals-react";
 import { useSession } from "@/hooks/useSession";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getServerSession } from "next-auth";
@@ -57,27 +56,18 @@ const Account: React.FC<PageProps> = ({
     resolver: zodResolver(editProfileSchema),
     defaultValues: { email, firstName, lastName, phoneNumber },
   });
-  const editErrors = useSignal<string[] | null>(null);
-  const [editPersonalData] = useUpdatePersonalInfoMutation();
-  const success = useSignal(false);
-  const emailUpdated = useSignal(false);
+  const [editPersonalData, { data }] = useUpdatePersonalInfoMutation();
 
   async function saveChange(data: EditProfileSchema) {
     const { data: response } = await editPersonalData({ variables: data });
-    if (response?.updatePersonalData?.errors) {
-      editErrors.value = response.updatePersonalData.errors.map(
-        (error) => error.message,
-      );
-      return;
-    }
-
-    success.value =
-      !!response?.updatePersonalData.personalDataEditResult?.success;
-    const emailChanged =
-      !!response?.updatePersonalData.personalDataEditResult?.emailChanged;
-    emailUpdated.value = emailChanged;
-    editErrors.value = null;
-    await update({ user: { ...data, emailVerified: !emailChanged } });
+    if (response?.updatePersonalData?.errors) return;
+    await update({
+      user: {
+        ...data,
+        emailVerified:
+          !response?.updatePersonalData.personalDataEditResult?.emailChanged,
+      },
+    });
   }
 
   return (
@@ -88,15 +78,17 @@ const Account: React.FC<PageProps> = ({
         formActionText="Save"
         loading={isSubmitting}
         onSubmit={handleSubmit(saveChange)}
-        errors={editErrors.value ?? []}
+        errors={(data?.updatePersonalData?.errors || []).map(
+          (error) => error.message,
+        )}
         extraInfo={
           <>
-            {success.value && (
+            {data?.updatePersonalData.personalDataEditResult?.success && (
               <p className="font-bold text-green-600">
                 Personal data updated successfully
               </p>
             )}
-            {emailUpdated.value && (
+            {data?.updatePersonalData.personalDataEditResult?.emailChanged && (
               <p className="font-bold text-green-600">
                 Check your email inbox for to verify your new email address
               </p>
