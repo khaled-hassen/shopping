@@ -10,9 +10,7 @@ namespace Backend.GraphQL;
 public class Mutation {
     private readonly IConfigService _service;
 
-    public Mutation(IConfigService service) {
-        _service = service;
-    }
+    public Mutation(IConfigService service) => _service = service;
 
     [Authorize(Roles = new[] { "Admin" })]
     [Error<InvalidInputExceptions>]

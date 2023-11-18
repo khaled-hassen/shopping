@@ -6,13 +6,11 @@ using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.CategoryResolver;
 
-[ExtendObjectType(typeof(Mutation))]
+[ExtendObjectType<Mutation>]
 public class CategoryMutation {
     private readonly ICategoryService _categoryService;
 
-    public CategoryMutation(ICategoryService categoryService) {
-        _categoryService = categoryService;
-    }
+    public CategoryMutation(ICategoryService categoryService) => _categoryService = categoryService;
 
     [Authorize(Roles = new[] { "Admin" })]
     [Error<InvalidInputExceptions>]
@@ -31,7 +29,5 @@ public class CategoryMutation {
 
     [Authorize(Roles = new[] { "Admin" })]
     [UseMutationConvention(PayloadFieldName = "deleted")]
-    public async Task<bool> DeleteCategory(string id) {
-        return await _categoryService.DeleteCategoryAsync(id);
-    }
+    public async Task<bool> DeleteCategory(string id) => await _categoryService.DeleteCategoryAsync(id);
 }

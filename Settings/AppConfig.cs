@@ -6,9 +6,10 @@ public static class AppConfig {
     public static List<string> JwtAudience { get; private set; } = null!;
     public static string WebClient { get; private set; } = null!;
     public static string NoReplySenderEmail { get; private set; } = null!;
+    public static decimal StoreFee { get; private set; }
 
     public static void Configure(IConfiguration config) {
-        var jwtSection = config.GetSection("Jwt");
+        IConfigurationSection jwtSection = config.GetSection("Jwt");
         JwtKey = jwtSection.GetSection("Key").Value ?? "";
         JwtIssuer = jwtSection.GetSection("Issuer").Value ?? "";
         WebClient = jwtSection.GetSection("WebClient").Value ?? "";
@@ -17,5 +18,6 @@ public static class AppConfig {
             WebClient
         };
         NoReplySenderEmail = config.GetSection("MailConfig:NoReplaySender").Value ?? "";
+        StoreFee = Convert.ToDecimal(config.GetSection("StoreConfig:Fee").Value);
     }
 }

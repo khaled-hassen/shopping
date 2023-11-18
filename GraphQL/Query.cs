@@ -6,11 +6,7 @@ namespace Backend.GraphQL;
 public class Query {
     private readonly IConfigService _service;
 
-    public Query(IConfigService service) {
-        _service = service;
-    }
+    public Query(IConfigService service) => _service = service;
 
-    public async Task<ConfigResult?> GetConfig() {
-        return await _service.GetConfigAsync();
-    }
+    public async Task<ConfigResult?> GetConfig() => await _service.GetConfigAsync();
 }

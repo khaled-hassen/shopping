@@ -2,27 +2,26 @@
 using System.Security.Claims;
 using Backend.Helpers;
 using Backend.Interfaces;
+using Backend.Models;
 using Backend.Types;
 
 namespace Backend.GraphQL.AdminResolver;
 
-[ExtendObjectType(typeof(Query))]
+[ExtendObjectType<Query>]
 public class AdminQuery {
     private readonly IAdminService _adminService;
 
-    public AdminQuery(IAdminService adminService) {
-        _adminService = adminService;
-    }
+    public AdminQuery(IAdminService adminService) => _adminService = adminService;
 
     public async Task<AccessToken> LoginAdmin(string email, string password) {
-        var admin = await _adminService.GetAdminAsync(email, password);
+        Admin? admin = await _adminService.GetAdminAsync(email, password);
         if (admin is null) throw new GraphQLException(new Error("Wrong credentials", ErrorCodes.WrongCredentials));
 
         var claims = new List<Claim> {
             new(ClaimTypes.Role, "Admin")
         };
-        var expires = DateTime.Now.AddHours(1);
-        var token = AuthHelpers.CreateToken(expires, claims);
+        DateTime expires = DateTime.Now.AddHours(1);
+        string token = AuthHelpers.CreateToken(expires, claims);
         return new AccessToken(token, expires.ToString(CultureInfo.InvariantCulture));
     }
 }

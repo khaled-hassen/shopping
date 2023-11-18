@@ -3,6 +3,7 @@ using Backend.Formatter;
 using Backend.GraphQL;
 using Backend.GraphQL.AdminResolver;
 using Backend.GraphQL.CategoryResolver;
+using Backend.GraphQL.StoreResolver;
 using Backend.GraphQL.SubcategoryResolver;
 using Backend.GraphQL.UserResolver;
 using Backend.Interfaces;
@@ -15,7 +16,7 @@ using MongoDB.Bson;
 using sib_api_v3_sdk.Api;
 using sib_api_v3_sdk.Client;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 AppConfig.Configure(builder.Configuration);
 
 // Add services to the container.
@@ -31,7 +32,7 @@ builder.Services
     )
     .AddJwtBearer(
         o => {
-            var config = builder.Configuration.GetSection("Jwt");
+            IConfigurationSection config = builder.Configuration.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("Key").Value ?? ""));
 
             o.TokenValidationParameters = new TokenValidationParameters {
@@ -71,6 +72,7 @@ builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
 builder.Services.AddScoped<IConfigService, ConfigService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IStoreService, StoreService>();
 
 // setup admin
 builder.Services.AddHostedService<AdminHostedService>();
@@ -95,14 +97,16 @@ builder.Services.AddGraphQLServer()
     .AddType<UploadType>()
     .AddType<AdminQuery>()
     .AddType<UserQuery>()
-    .AddType<UserMutation>();
+    .AddType<UserMutation>()
+    .AddType<StoreQuery>()
+    .AddType<StoreMutation>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {

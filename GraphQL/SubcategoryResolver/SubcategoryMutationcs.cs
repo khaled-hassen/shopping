@@ -6,13 +6,11 @@ using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.SubcategoryResolver;
 
-[ExtendObjectType(typeof(Mutation))]
+[ExtendObjectType<Mutation>]
 public class SubcategoryMutation {
     private readonly ISubcategoryService _subcategoryService;
 
-    public SubcategoryMutation(ISubcategoryService subcategoryService) {
-        _subcategoryService = subcategoryService;
-    }
+    public SubcategoryMutation(ISubcategoryService subcategoryService) => _subcategoryService = subcategoryService;
 
     [Authorize(Roles = new[] { "Admin" })]
     [Error<InvalidInputExceptions>]
@@ -48,7 +46,5 @@ public class SubcategoryMutation {
 
     [Authorize(Roles = new[] { "Admin" })]
     [UseMutationConvention(PayloadFieldName = "deleted")]
-    public async Task<bool> DeleteSubcategory(string id) {
-        return await _subcategoryService.DeleteSubcategoryAsync(id);
-    }
+    public async Task<bool> DeleteSubcategory(string id) => await _subcategoryService.DeleteSubcategoryAsync(id);
 }

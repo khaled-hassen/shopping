@@ -8,7 +8,7 @@ using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.UserResolver;
 
-[ExtendObjectType(typeof(Mutation))]
+[ExtendObjectType<Mutation>]
 public class UserMutation {
     private readonly IUserService _userService;
 

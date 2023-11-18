@@ -6,7 +6,7 @@ using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.UserResolver;
 
-[ExtendObjectType(typeof(Query))]
+[ExtendObjectType<Query>]
 public class UserQuery {
     private readonly IUserService _userService;
 
