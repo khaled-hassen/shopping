@@ -3,6 +3,7 @@ using Backend.GraphQL.UserResolver.Types;
 using Backend.Models;
 using Backend.Services;
 using HotChocolate.Resolvers;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Backend.Middleware;
@@ -18,37 +19,37 @@ public class UserMiddleware {
     }
 
     public async Task Invoke(IMiddlewareContext context, DatabaseService db) {
-        var claimsPrincipal = context.GetUser();
+        ClaimsPrincipal? claimsPrincipal = context.GetUser();
         if (claimsPrincipal is null) {
             await _next(context);
             return;
         }
 
-        var claim = claimsPrincipal.FindFirst(ClaimTypes.Sid);
+        Claim? claim = claimsPrincipal.FindFirst(ClaimTypes.Sid);
         if (claim is null) {
             await _next(context);
             return;
         }
 
-        var id = claim.Value;
-        var user = await _users.Find(c => c.Id.ToString() == id)
-            .Project<UserResult>(
-                Builders<User>.Projection
-                    .Include(c => c.Id)
-                    .Include(c => c.FirstName)
-                    .Include(c => c.LastName)
-                    .Include(c => c.Email)
-                    .Include(c => c.PhoneNumber)
-                    .Include(c => c.EmailVerifiedAt)
-                    .Include(c => c.BillingDetails)
-            )
-            .FirstOrDefaultAsync();
+        string id = claim.Value;
+        User? user = await _users.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (user is null) {
             await _next(context);
             return;
         }
 
-        context.ContextData.Add(UserContextDataKey, user);
+        context.ContextData.Add(
+            UserContextDataKey,
+            new UserResult {
+                Id = user.Id ?? ObjectId.Empty,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                EmailVerified = user.EmailVerifiedAt is not null,
+                BillingDetails = user.BillingDetails
+            }
+        );
         await _next(context);
     }
 }

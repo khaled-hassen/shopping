@@ -186,7 +186,7 @@ public class UserService : IUserService {
         );
     }
 
-    public async Task<PersonalDataEditResult> UpdatePersonalData(
+    public async Task<PersonalDataEditResult> UpdatePersonalDataAsync(
         UserResult authUser,
         string firstName,
         string lastName,
@@ -216,9 +216,21 @@ public class UserService : IUserService {
         };
     }
 
-    public async Task UpdateBillingDetails(UserResult user, BillingDetails details) =>
+    public async Task UpdateBillingDetailsAsync(UserResult user, BillingDetails details) =>
         await _users.UpdateOneAsync(
             c => c.Id.Equals(user.Id),
             Builders<User>.Update.Set(c => c.BillingDetails, details)
         );
+
+    public async Task UpdatePasswordAsync(UserResult user, string oldPassword, string newPassword) {
+        string? userPassword = await _users.Find(c => c.Id.Equals(user.Id))
+            .Project(c => c.Password).FirstOrDefaultAsync();
+
+        if (userPassword is null) throw new InvalidInputExceptions("Old password is incorrect");
+        if (!BCrypt.Net.BCrypt.Verify(oldPassword, userPassword)) throw new InvalidInputExceptions("Old password is incorrect");
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.Set(c => c.Password, BCrypt.Net.BCrypt.HashPassword(newPassword))
+        );
+    }
 }

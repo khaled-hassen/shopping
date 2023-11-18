@@ -60,8 +60,8 @@ public class UserMutation {
     [Error<InvalidInputExceptions>]
     [Error<UnauthorizedException>]
     public async Task<bool> ResetPassword(string token, string newPassword, string newPasswordConfirmation) {
-        Validator<PasswordResetValidator, PasswordResetValidatorInput>.ValidateAndThrow(
-            new PasswordResetValidatorInput {
+        Validator<PasswordUpdateValidator, PasswordUpdateValidatorInput>.ValidateAndThrow(
+            new PasswordUpdateValidatorInput {
                 Password = newPassword, PasswordConfirmation = newPasswordConfirmation
             }
         );
@@ -83,7 +83,7 @@ public class UserMutation {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(lastName, "Last name is required");
         Validator<EmailValidator, string>.ValidateAndThrow(email);
         Validator<PhoneNumberValidator, string>.ValidateAndThrow(phoneNumber);
-        return await _userService.UpdatePersonalData(user, firstName, lastName, phoneNumber, email);
+        return await _userService.UpdatePersonalDataAsync(user, firstName, lastName, phoneNumber, email);
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]
@@ -92,7 +92,23 @@ public class UserMutation {
     [UseUser]
     public async Task<bool> UpdateBillingDetails(BillingDetails details, [GetUser] UserResult user) {
         Validator<BillingDetailsValidator, BillingDetails>.ValidateAndThrow(details);
-        await _userService.UpdateBillingDetails(user, details);
+        await _userService.UpdateBillingDetailsAsync(user, details);
+        return true;
+    }
+
+    [UseMutationConvention(PayloadFieldName = "updated")]
+    [Error<InvalidInputExceptions>]
+    [Authorize]
+    [UseUser]
+    public async Task<bool> UpdatePassword(string oldPassword, string newPassword, string newPasswordConfirmation, [GetUser] UserResult user) {
+        Validator<NonEmptyStringValidator, string>.ValidateAndThrow(oldPassword, "Old password is required");
+        Validator<PasswordUpdateValidator, PasswordUpdateValidatorInput>.ValidateAndThrow(
+            new PasswordUpdateValidatorInput {
+                Password = newPassword,
+                PasswordConfirmation = newPasswordConfirmation
+            }
+        );
+        await _userService.UpdatePasswordAsync(user, oldPassword, newPassword);
         return true;
     }
 }
