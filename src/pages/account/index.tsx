@@ -64,17 +64,17 @@ const Account: React.FC<PageProps> = ({
 
   async function saveChange(data: EditProfileSchema) {
     const { data: response } = await editPersonalData({ variables: data });
-    if (response?.editPersonalData?.errors) {
-      editErrors.value = response.editPersonalData.errors.map(
+    if (response?.updatePersonalData?.errors) {
+      editErrors.value = response.updatePersonalData.errors.map(
         (error) => error.message,
       );
       return;
     }
 
     success.value =
-      !!response?.editPersonalData.personalDataEditResult?.success;
+      !!response?.updatePersonalData.personalDataEditResult?.success;
     const emailChanged =
-      !!response?.editPersonalData.personalDataEditResult?.emailChanged;
+      !!response?.updatePersonalData.personalDataEditResult?.emailChanged;
     emailUpdated.value = emailChanged;
     editErrors.value = null;
     await update({ user: { ...data, emailVerified: !emailChanged } });

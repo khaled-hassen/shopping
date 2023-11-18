@@ -1,16 +1,16 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import { AccessToken, UserResult } from "@/__generated__/ssr";
+import { AccessToken, AuthUserResult } from "@/__generated__/ssr";
 
 declare module "next-auth" {
   /**
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
 
-  type User = UserResult;
+  type User = AuthUserResult;
 
   interface Session extends DefaultSession {
-    user: UserResult;
+    user: AuthUserResult;
     token: AccessToken;
   }
 }
@@ -18,6 +18,6 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT extends AccessToken {
-    user: UserResult;
+    user: AuthUserResult;
   }
 }

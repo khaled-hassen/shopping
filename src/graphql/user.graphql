@@ -33,7 +33,7 @@ mutation ResetPassword($token: String!, $password: String!, $passwordConfirmatio
 }
 
 mutation UpdatePersonalInfo($email: String!, $firstName:String!, $lastName: String!, $phoneNumber: String!) {
-    editPersonalData(input: {email: $email, firstName: $firstName, lastName: $lastName, phoneNumber: $phoneNumber}) {
+    updatePersonalData(input: {email: $email, firstName: $firstName, lastName: $lastName, phoneNumber: $phoneNumber}) {
         personalDataEditResult {
             success
             emailChanged
@@ -41,6 +41,37 @@ mutation UpdatePersonalInfo($email: String!, $firstName:String!, $lastName: Stri
 
         errors {
             ...on InvalidInputExceptions{
+                message
+            }
+        }
+    }
+}
+
+query GetUser {
+    me {
+        id
+        email
+        firstName
+        lastName
+        phoneNumber
+        emailVerified
+        billingDetails {
+            lastName
+            firstName
+            country
+            address
+            state
+            city
+            postalCode
+        }
+    }
+}
+
+mutation UpdatePassword($oldPassword: String!, $password: String!, $passwordConfirmation: String!) {
+    updatePassword(input: {oldPassword: $oldPassword, newPassword: $password, newPasswordConfirmation: $passwordConfirmation}) {
+        updated
+        errors {
+            ... on InvalidInputExceptions {
                 message
             }
         }

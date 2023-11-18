@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
 import { signOut } from "next-auth/react";
 import {
+  useGetUserQuery,
   useLogoutMutation,
   useRefreshAccessTokenLazyQuery,
 } from "@/__generated__/client";
@@ -16,6 +17,11 @@ const Layout: React.FC<IProps> = ({ children }) => {
   const [refreshAccessToken] = useRefreshAccessTokenLazyQuery();
   const timer = useRef<NodeJS.Timeout>();
   const [logout] = useLogoutMutation();
+  useGetUserQuery({
+    async onCompleted(data) {
+      await update({ user: data.me as any });
+    },
+  });
 
   useEffect(() => {
     if (!session) return;

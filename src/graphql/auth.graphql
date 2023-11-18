@@ -9,6 +9,15 @@ query Login($email: String!, $password: String!) {
             value
             expires
         }
+        billingDetails {
+            lastName
+            firstName
+            country
+            address
+            state
+            city
+            postalCode
+        }
     }
 }
 

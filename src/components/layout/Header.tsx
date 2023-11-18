@@ -19,6 +19,7 @@ import WishlistIcon from "@/components/icons/WishlistIcon";
 import OrdersIcon from "@/components/icons/OrdersIcon";
 import LogoutIcon from "@/components/icons/LogoutIcon";
 import { useLogoutMutation } from "@/__generated__/client";
+import StoreIcon from "@/components/icons/StoreIcon";
 
 interface IProps {}
 
@@ -32,6 +33,7 @@ const accountDropdownItems = [
   { name: "Settings", path: route("account"), Icon: SettingsIcon },
   { name: "Orders", path: route("orders"), Icon: OrdersIcon },
   { name: "Wishlist", path: route("wishlist"), Icon: WishlistIcon },
+  { name: "Store", path: route("store"), Icon: StoreIcon },
 ];
 
 const Header: React.FC<IProps> = ({}) => {
