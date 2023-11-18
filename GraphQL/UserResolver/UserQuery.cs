@@ -10,16 +10,19 @@ namespace Backend.GraphQL.UserResolver;
 public class UserQuery {
     private readonly IUserService _userService;
 
-    public UserQuery(IUserService userService) {
-        _userService = userService;
-    }
+    public UserQuery(IUserService userService) => _userService = userService;
 
-    public async Task<UserResult> Login(string email, string password, [Service] IHttpContextAccessor httpContextAccessor) {
-        var user = await _userService.LoginAsync(email, password);
+
+    [Authorize]
+    [UseUser]
+    public UserResult GetMe([GetUser] UserResult user) => user;
+
+    public async Task<AuthUserResult> Login(string email, string password, [Service] IHttpContextAccessor httpContextAccessor) {
+        LoginResult? user = await _userService.LoginAsync(email, password);
         if (user is null) throw new GraphQLException(new Error("Wrong credentials", ErrorCodes.WrongCredentials));
         if (httpContextAccessor.HttpContext is null) return user.Result;
 
-        var refreshToken = user.RefreshToken;
+        RefreshToken refreshToken = user.RefreshToken;
         var cookieOptions = new CookieOptions {
             HttpOnly = true,
             Expires = refreshToken.ExpireDate
@@ -31,7 +34,7 @@ public class UserQuery {
     [Authorize]
     [UseUser]
     public async Task<AccessToken> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor, [GetUser] UserResult user) {
-        var refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+        string? refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
         if (refreshToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
         return await _userService.RefreshAccessTokenAsync(user.Id, refreshToken);
     }

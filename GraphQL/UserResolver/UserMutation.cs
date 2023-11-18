@@ -2,6 +2,7 @@
 using Backend.Exceptions;
 using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
+using Backend.Models;
 using Backend.Validation;
 using HotChocolate.Authorization;
 
@@ -11,9 +12,7 @@ namespace Backend.GraphQL.UserResolver;
 public class UserMutation {
     private readonly IUserService _userService;
 
-    public UserMutation(IUserService userService) {
-        _userService = userService;
-    }
+    public UserMutation(IUserService userService) => _userService = userService;
 
     [UseMutationConvention(PayloadFieldName = "emailSent")]
     [Error<InvalidInputExceptions>]
@@ -44,7 +43,7 @@ public class UserMutation {
     [Authorize]
     [UseUser]
     public async Task<bool> Logout([Service] IHttpContextAccessor httpContextAccessor, [GetUser] UserResult user) {
-        var refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
+        string? refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
         await _userService.LogoutAsync(user.Id, refreshToken);
         httpContextAccessor.HttpContext?.Response.Cookies.Delete("refreshToken");
         return true;
@@ -73,7 +72,7 @@ public class UserMutation {
     [Authorize]
     [UseUser]
     [Error<InvalidInputExceptions>]
-    public async Task<PersonalDataEditResult> EditPersonalData(
+    public async Task<PersonalDataEditResult> UpdatePersonalData(
         string firstName,
         string lastName,
         string email,
@@ -85,5 +84,15 @@ public class UserMutation {
         Validator<EmailValidator, string>.ValidateAndThrow(email);
         Validator<PhoneNumberValidator, string>.ValidateAndThrow(phoneNumber);
         return await _userService.UpdatePersonalData(user, firstName, lastName, phoneNumber, email);
+    }
+
+    [UseMutationConvention(PayloadFieldName = "updated")]
+    [Error<InvalidInputExceptions>]
+    [Authorize]
+    [UseUser]
+    public async Task<bool> UpdateBillingDetails(BillingDetails details, [GetUser] UserResult user) {
+        Validator<BillingDetailsValidator, BillingDetails>.ValidateAndThrow(details);
+        await _userService.UpdateBillingDetails(user, details);
+        return true;
     }
 }

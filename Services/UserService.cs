@@ -21,11 +21,11 @@ public class UserService : IUserService {
     }
 
     public async Task CreateAccountAsync(string firstName, string lastName, string email, string phoneNumber, string password) {
-        var user = await _users.Find(c => c.Email == email.ToLower()).FirstOrDefaultAsync();
+        User? user = await _users.Find(c => c.Email == email.ToLower()).FirstOrDefaultAsync();
         if (user is not null) throw new UserExistException();
 
         var id = ObjectId.GenerateNewId();
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+        string? hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
         await _users.InsertOneAsync(
             new User {
                 Id = id,
@@ -38,22 +38,22 @@ public class UserService : IUserService {
             }
         );
 
-        var emailBody = _mailService.GenerateEmailVerificationEmail(id.ToString()!, email, firstName);
+        string emailBody = _mailService.GenerateEmailVerificationEmail(id.ToString()!, email, firstName);
         await _mailService.SendMailAsync(email, firstName, "Email verification", emailBody);
     }
 
-    public async Task<UserAuthResult?> LoginAsync(string email, string password) {
-        var user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
+    public async Task<LoginResult?> LoginAsync(string email, string password) {
+        User? user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
         if (user is null) return null;
         if (!BCrypt.Net.BCrypt.Verify(password, user.Password)) return null;
 
         if (user.EmailVerifiedAt is null) {
-            var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, user.FirstName);
+            string emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, user.FirstName);
             await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
             throw new GraphQLException(new Error("Email not verified", ErrorCodes.EmailNotVerified));
         }
 
-        var refreshTokenExpireDate = DateTime.Now.AddDays(30);
+        DateTime refreshTokenExpireDate = DateTime.Now.AddDays(30);
         var refreshToken = new RefreshToken {
             ExpireDate = refreshTokenExpireDate,
             Value = AuthHelpers.CreateToken(refreshTokenExpireDate)
@@ -63,28 +63,29 @@ public class UserService : IUserService {
         var claims = new List<Claim> {
             new(ClaimTypes.Sid, user.Id.ToString()!)
         };
-        var accessTokenExpireDate = DateTime.Now.AddMinutes(15);
-        var accessToken = AuthHelpers.CreateToken(accessTokenExpireDate, claims);
+        DateTime accessTokenExpireDate = DateTime.Now.AddMinutes(15);
+        string accessToken = AuthHelpers.CreateToken(accessTokenExpireDate, claims);
 
-        var result = new UserResult {
+        var result = new AuthUserResult {
             Id = user.Id ?? ObjectId.Empty,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = email.ToLower(),
             PhoneNumber = user.PhoneNumber,
             EmailVerified = user.EmailVerifiedAt is not null,
-            AccessToken = new AccessToken(accessToken, accessTokenExpireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture))
+            AccessToken = new AccessToken(accessToken, accessTokenExpireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture)),
+            BillingDetails = user.BillingDetails
         };
-        return new UserAuthResult {
+        return new LoginResult {
             Result = result,
             RefreshToken = refreshToken
         };
     }
 
     public async Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken) {
-        var claimsPrincipal = AuthHelpers.ValidateToken(refreshToken);
+        ClaimsPrincipal? claimsPrincipal = AuthHelpers.ValidateToken(refreshToken);
         if (claimsPrincipal is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
-        var user = await _users.Find(
+        User? user = await _users.Find(
                 Builders<User>.Filter.And(
                     Builders<User>.Filter.Eq(c => c.Id, userId),
                     Builders<User>.Filter.ElemMatch(c => c.RefreshTokens, c => c.Value.Equals(refreshToken))
@@ -92,7 +93,7 @@ public class UserService : IUserService {
             )
             .FirstOrDefaultAsync();
         if (user is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
-        var foundToken = user.RefreshTokens.Where(c => c.Value == refreshToken).FirstOrDefault();
+        RefreshToken? foundToken = user.RefreshTokens.Where(c => c.Value == refreshToken).FirstOrDefault();
         if (foundToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
 
         if (foundToken.ExpireDate < DateTime.Now) {
@@ -109,8 +110,8 @@ public class UserService : IUserService {
         var claims = new List<Claim> {
             new(ClaimTypes.Sid, userId.ToString()!)
         };
-        var expireDate = DateTime.Now.AddMinutes(15);
-        var token = AuthHelpers.CreateToken(expireDate, claims);
+        DateTime expireDate = DateTime.Now.AddMinutes(15);
+        string token = AuthHelpers.CreateToken(expireDate, claims);
 
         return new AccessToken(token, expireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture));
     }
@@ -127,21 +128,21 @@ public class UserService : IUserService {
     }
 
     public async Task SendEmailVerificationEmailAsync(string email) {
-        var user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
+        User? user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
         if (user is null) return;
 
-        var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, user.FirstName);
+        string emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, user.FirstName);
         await _mailService.SendMailAsync(email, user.FirstName, "Email verification", emailBody);
     }
 
     public async Task VerifyEmailAsync(string token) {
-        var claimsPrincipal = AuthHelpers.ValidateToken(token);
+        ClaimsPrincipal? claimsPrincipal = AuthHelpers.ValidateToken(token);
         if (claimsPrincipal is null) throw new UnauthorizedException();
 
-        var userId = claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value;
-        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
+        string? userId = claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value;
+        string? email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
 
-        var foundUser = await _users.Find(
+        User? foundUser = await _users.Find(
             Builders<User>.Filter.And(
                 Builders<User>.Filter.Eq(c => c.Id, ObjectId.Parse(userId)),
                 Builders<User>.Filter.Eq(c => c.Email, email?.ToLower())
@@ -156,21 +157,21 @@ public class UserService : IUserService {
     }
 
     public async Task SendPasswordResetEmailAsync(string email) {
-        var user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
+        User? user = await _users.Find(c => c.Email.Equals(email.ToLower())).FirstOrDefaultAsync();
         if (user is null) return;
 
-        var emailBody = _mailService.GeneratePasswordResetEmail(user.Id.ToString()!, email, user.FirstName);
+        string emailBody = _mailService.GeneratePasswordResetEmail(user.Id.ToString()!, email, user.FirstName);
         await _mailService.SendMailAsync(email, user.FirstName, "Reset password", emailBody);
     }
 
     public async Task ResetPasswordAsync(string token, string newPassword) {
-        var claimsPrincipal = AuthHelpers.ValidateToken(token);
+        ClaimsPrincipal? claimsPrincipal = AuthHelpers.ValidateToken(token);
         if (claimsPrincipal is null) throw new UnauthorizedException();
 
-        var userId = claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value;
-        var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
+        string? userId = claimsPrincipal.FindFirst(ClaimTypes.Sid)?.Value;
+        string? email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value;
 
-        var foundUser = await _users.Find(
+        User? foundUser = await _users.Find(
             Builders<User>.Filter.And(
                 Builders<User>.Filter.Eq(c => c.Id, ObjectId.Parse(userId)),
                 Builders<User>.Filter.Eq(c => c.Email, email?.ToLower())
@@ -178,7 +179,7 @@ public class UserService : IUserService {
         ).FirstOrDefaultAsync();
         if (foundUser is null) throw new UnauthorizedException();
 
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        string? hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
         await _users.UpdateOneAsync(
             c => c.Id.ToString() == userId,
             Builders<User>.Update.Set(c => c.Password, hashedPassword)
@@ -186,32 +187,38 @@ public class UserService : IUserService {
     }
 
     public async Task<PersonalDataEditResult> UpdatePersonalData(
-        UserResult user,
+        UserResult authUser,
         string firstName,
         string lastName,
         string phoneNumber,
         string email
     ) {
-        if (user.Email == email.ToLower() && user.FirstName == firstName && user.LastName == lastName)
+        if (authUser.Email == email.ToLower() && authUser.FirstName == firstName && authUser.LastName == lastName)
             return new PersonalDataEditResult {
                 Success = true,
                 EmailChanged = false
             };
 
-        var update = Builders<User>.Update.Set(c => c.FirstName, firstName)
+        UpdateDefinition<User>? update = Builders<User>.Update.Set(c => c.FirstName, firstName)
             .Set(c => c.LastName, lastName)
             .Set(c => c.PhoneNumber, phoneNumber);
 
-        if (user.Email != email.ToLower()) {
-            var emailBody = _mailService.GenerateEmailVerificationEmail(user.Id.ToString()!, email, firstName);
+        if (authUser.Email != email.ToLower()) {
+            string emailBody = _mailService.GenerateEmailVerificationEmail(authUser.Id.ToString()!, email, firstName);
             await _mailService.SendMailAsync(email, firstName, "Email verification", emailBody);
             update = update.Set(c => c.Email, email.ToLower()).Set(c => c.EmailVerifiedAt, null);
         }
 
-        await _users.UpdateOneAsync(c => c.Id.Equals(user.Id), update);
+        await _users.UpdateOneAsync(c => c.Id.Equals(authUser.Id), update);
         return new PersonalDataEditResult {
             Success = true,
-            EmailChanged = user.Email != email.ToLower()
+            EmailChanged = authUser.Email != email.ToLower()
         };
     }
+
+    public async Task UpdateBillingDetails(UserResult user, BillingDetails details) =>
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.Set(c => c.BillingDetails, details)
+        );
 }

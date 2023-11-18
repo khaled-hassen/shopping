@@ -39,6 +39,8 @@ public class UserMiddleware {
                     .Include(c => c.LastName)
                     .Include(c => c.Email)
                     .Include(c => c.PhoneNumber)
+                    .Include(c => c.EmailVerifiedAt)
+                    .Include(c => c.BillingDetails)
             )
             .FirstOrDefaultAsync();
         if (user is null) {

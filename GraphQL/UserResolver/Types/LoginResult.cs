@@ -2,7 +2,7 @@
 
 namespace Backend.GraphQL.UserResolver.Types;
 
-public class UserAuthResult {
-    public UserResult Result { get; set; } = null!;
+public class LoginResult {
+    public AuthUserResult Result { get; set; } = null!;
     public RefreshToken RefreshToken { get; set; } = null!;
 }
