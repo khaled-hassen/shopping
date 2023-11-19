@@ -52,7 +52,7 @@ const CreateNewStore: React.FC<IProps> = ({ onCreated }) => {
       onSubmit={handleSubmit(createNewStore)}
     >
       <ImageUpload
-        label="Store image"
+        label="Index image"
         error={errors.imageUploaded?.message}
         onUpload={(file) => {
           image.value = file;
@@ -60,14 +60,14 @@ const CreateNewStore: React.FC<IProps> = ({ onCreated }) => {
         }}
       />
       <Input
-        label="Store name"
-        placeholder="Store name"
+        label="Index name"
+        placeholder="Index name"
         {...register("name")}
         error={errors.name?.message}
       />
       <TextArea
         label="Description"
-        placeholder="Store description"
+        placeholder="Index description"
         {...register("description")}
         error={errors.description?.message}
       />

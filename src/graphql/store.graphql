@@ -9,6 +9,8 @@ query GetStore {
             totalSales
         }
     }
+
+    storeFree
 }
 
 mutation CreateStore($name: String!, $description: String!, $image: Upload!) {
