@@ -2,15 +2,17 @@ import React from "react";
 import UploadIcon from "@/components/icons/UploadIcon";
 import { useSignal } from "@preact/signals-react";
 import { clsx } from "clsx";
+import OptimizedImage from "@/components/shared/OptimizedImage";
 
 interface IProps {
   label: string;
   error?: string;
+  defaultValue?: string;
   onUpload(file: File | null): void;
 }
 
-const Input: React.FC<IProps> = ({ label, error, onUpload }) => {
-  const previewUrl = useSignal<string>("");
+const Input: React.FC<IProps> = ({ label, error, defaultValue, onUpload }) => {
+  const previewUrl = useSignal<string>(defaultValue || "");
 
   function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const image = event.target.files;
@@ -33,7 +35,7 @@ const Input: React.FC<IProps> = ({ label, error, onUpload }) => {
         )}
       >
         {previewUrl.value ? (
-          <img
+          <OptimizedImage
             src={previewUrl.value}
             alt=""
             className="aspect-auto h-auto w-full object-contain"

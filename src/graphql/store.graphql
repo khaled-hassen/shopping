@@ -33,3 +33,14 @@ mutation CreateStore($name: String!, $description: String!, $image: Upload!) {
         }
     }
 }
+
+mutation UpdateStoreDetails($name: String!, $description: String!, $image: Upload!) {
+    updateStore(input: {name: $name, description: $description, image: $image}) {
+        updated
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
+    }
+}
