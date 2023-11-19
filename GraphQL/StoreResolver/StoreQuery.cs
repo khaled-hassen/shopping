@@ -2,6 +2,7 @@
 using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
+using Backend.Settings;
 using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.StoreResolver;
@@ -11,6 +12,9 @@ public class StoreQuery {
     private readonly IStoreService _storeService;
 
     public StoreQuery(IStoreService storeService) => _storeService = storeService;
+
+    [Authorize]
+    public decimal GetStoreFree() => AppConfig.StoreFee;
 
     [Authorize]
     [UseUser]
