@@ -1,0 +1,33 @@
+query GetStore {
+    store {
+        id
+        image
+        name
+        description
+        balance {
+            balance
+            totalSales
+        }
+    }
+}
+
+mutation CreateStore($name: String!, $description: String!, $image: Upload!) {
+    createStore(input: {name: $name, description: $description, image: $image}) {
+        store {
+            id
+            image
+            name
+            description
+            balance {
+                balance
+                totalSales
+            }
+        }
+
+        errors {
+            ... on InvalidInputExceptions {
+                message
+            }
+        }
+    }
+}

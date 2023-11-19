@@ -34,11 +34,6 @@ const billingDetailsSchema = z.object({
     .min(1, "Required")
     .refine((val) => /^\d+$/.test(val), { message: "Must be a number" })
     .refine((val) => parseInt(val) !== 0, { message: "Cannot be 0" }),
-
-  // postalCode: z
-  //   .number({ invalid_type_error: "Must be a number" })
-  //   .int({ message: "Must be an integer" })
-  //   .min(1, "Required"),
 });
 type BillingDetailsSchema = z.infer<typeof billingDetailsSchema>;
 
