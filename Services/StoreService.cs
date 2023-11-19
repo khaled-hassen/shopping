@@ -19,7 +19,7 @@ public class StoreService : IStoreService {
 
     public async Task<Store> CreateStoreAsync(UserResult user, string name, string description, IFile image) {
         var id = ObjectId.GenerateNewId();
-        string imagePath = await _fileUploadService.UploadFile(image, "stores", id.ToString()!);
+        string imagePath = await _fileUploadService.UploadFileAsync(image, "stores", id.ToString()!);
 
         var store = new Store {
             Id = ObjectId.GenerateNewId(),
@@ -35,5 +35,19 @@ public class StoreService : IStoreService {
 
         await _stores.InsertOneAsync(store);
         return store;
+    }
+
+    public async Task UpdateStoreAsync(UserResult user, string name, string description, IFile image) {
+        Store? store = await _stores.Find(c => c.Owner.Equals(user.Id)).FirstOrDefaultAsync();
+        if (store is null) return;
+
+        _fileUploadService.DeleteFile(store.Image);
+        string imagePath = await _fileUploadService.UploadFileAsync(image, "stores", store.Id.ToString()!);
+        await _stores.UpdateOneAsync(
+            c => c.Id.Equals(store.Id),
+            Builders<Store>.Update.Set(c => c.Name, name)
+                .Set(c => c.Description, description)
+                .Set(c => c.Image, imagePath)
+        );
     }
 }

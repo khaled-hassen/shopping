@@ -22,4 +22,15 @@ public class StoreMutation {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(description, "Store description is required");
         return await _storeService.CreateStoreAsync(user, name, description, image);
     }
+
+    [Authorize]
+    [UseUser]
+    [Error<InvalidInputExceptions>]
+    [UseMutationConvention(PayloadFieldName = "updated")]
+    public async Task<bool> UpdateStore(string name, string description, IFile image, [GetUser] UserResult user) {
+        Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Store name is required");
+        Validator<NonEmptyStringValidator, string>.ValidateAndThrow(description, "Store description is required");
+        await _storeService.UpdateStoreAsync(user, name, description, image);
+        return true;
+    }
 }

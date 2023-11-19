@@ -18,8 +18,8 @@ public class CategoryService : ICategoryService {
         _subcategories = database.GetSubcategoriesCollection();
     }
 
-    public async Task<List<CategoryResult>> GetCategoriesAsync() {
-        return await _categories.Aggregate()
+    public async Task<List<CategoryResult>> GetCategoriesAsync() =>
+        await _categories.Aggregate()
             .Lookup<Category, Subcategory, CategoryResult>(
                 _subcategories,
                 category => category.SubcategoriesIds,
@@ -27,10 +27,9 @@ public class CategoryService : ICategoryService {
                 categoryResult => categoryResult.Subcategories
             )
             .ToListAsync();
-    }
 
-    public async Task<List<CategoryResult>> GetTopCategoriesAsync() {
-        return await _categories.Aggregate()
+    public async Task<List<CategoryResult>> GetTopCategoriesAsync() =>
+        await _categories.Aggregate()
             .Lookup<Category, Subcategory, CategoryResult>(
                 _subcategories,
                 category => category.SubcategoriesIds,
@@ -39,10 +38,9 @@ public class CategoryService : ICategoryService {
             )
             .Limit(4)
             .ToListAsync();
-    }
 
-    public async Task<CategoryResult?> GetCategoryAsync(string id) {
-        return await _categories
+    public async Task<CategoryResult?> GetCategoryAsync(string id) =>
+        await _categories
             .Aggregate()
             .Match(c => c.Slug == id || c.Id.ToString() == id)
             .Lookup<Category, Subcategory, CategoryResult>(
@@ -52,11 +50,10 @@ public class CategoryService : ICategoryService {
                 categoryResult => categoryResult.Subcategories
             )
             .FirstOrDefaultAsync();
-    }
 
     public async Task<CreatedCategory> CreateCategoryAsync(string name, IFile image) {
         var id = ObjectId.GenerateNewId();
-        var path = await _fileUploadService.UploadFile(image, id.ToString()!, id.ToString()!);
+        string path = await _fileUploadService.UploadFileAsync(image, id.ToString()!, id.ToString()!);
 
         var category = new Category {
             Id = id,
@@ -70,24 +67,24 @@ public class CategoryService : ICategoryService {
     }
 
     public async Task<bool> UpdateCategoryAsync(string id, string name, IFile? image) {
-        var category = await _categories.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        Category? category = await _categories.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (category is null) return false;
 
-        var update = Builders<Category>.Update
+        UpdateDefinition<Category>? update = Builders<Category>.Update
             .Set(c => c.Name, name.Trim())
             .Set(c => c.Slug, StringUtils.CreateSlug(name.Trim()));
         if (image is not null) {
             _fileUploadService.DeleteFile(category.Image);
-            var path = await _fileUploadService.UploadFile(image, id, id);
+            string path = await _fileUploadService.UploadFileAsync(image, id, id);
             update = update.Set(c => c.Image, path);
         }
 
-        var res = await _categories.UpdateOneAsync(c => c.Id.ToString() == id, update);
+        UpdateResult? res = await _categories.UpdateOneAsync(c => c.Id.ToString() == id, update);
         return res is not null && res.ModifiedCount != 0;
     }
 
     public async Task<bool> DeleteCategoryAsync(string id) {
-        var res = await _categories.DeleteOneAsync(c => c.Id.ToString() == id);
+        DeleteResult? res = await _categories.DeleteOneAsync(c => c.Id.ToString() == id);
         if (res is null || res.DeletedCount == 0) return false;
         await _subcategories.DeleteManyAsync(c => c.CategoryId.ToString() == id);
         _fileUploadService.DeleteDirectory(id);

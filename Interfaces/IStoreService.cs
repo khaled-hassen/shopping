@@ -6,4 +6,5 @@ namespace Backend.Interfaces;
 public interface IStoreService {
     Task<Store?> GetStoreAsync(UserResult user);
     Task<Store> CreateStoreAsync(UserResult user, string name, string description, IFile image);
+    Task UpdateStoreAsync(UserResult user, string name, string description, IFile image);
 }
