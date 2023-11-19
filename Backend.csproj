@@ -23,6 +23,7 @@
         <Folder Include="Email\static\"/>
         <Folder Include="wwwroot\"/>
         <Folder Include="wwwroot\Storage\"/>
+        <Folder Include="wwwroot\Storage\stores\"/>
     </ItemGroup>
 
     <ItemGroup>

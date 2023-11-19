@@ -15,7 +15,7 @@ public class StoreService : IStoreService {
         _stores = db.GetStoresCollection();
     }
 
-    public async Task<Store?> GetStoreAsync(UserResult user) => await _stores.Find(c => c.Id.Equals(user.Id)).FirstOrDefaultAsync();
+    public async Task<Store?> GetStoreAsync(UserResult user) => await _stores.Find(c => c.Owner.Equals(user.Id)).FirstOrDefaultAsync();
 
     public async Task<Store> CreateStoreAsync(UserResult user, string name, string description, IFile image) {
         var id = ObjectId.GenerateNewId();
