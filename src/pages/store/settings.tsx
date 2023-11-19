@@ -1,7 +1,7 @@
 import React from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { ssrGetStore, Store } from "@/__generated__/ssr";
+import { ssrGetStore } from "@/__generated__/ssr";
 import AccountPageHeader from "@/components/pages/AccountPageHeader";
 import { useSignal } from "@preact/signals-react";
 import ImageUpload from "@/components/form/ImageUpload";
