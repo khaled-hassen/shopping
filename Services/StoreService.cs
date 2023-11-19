@@ -23,7 +23,7 @@ public class StoreService : IStoreService {
 
         var store = new Store {
             Id = ObjectId.GenerateNewId(),
-            Owner = id,
+            Owner = user.Id,
             Name = name,
             Description = description,
             Image = imagePath,
