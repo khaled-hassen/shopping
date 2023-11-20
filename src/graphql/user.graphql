@@ -21,7 +21,7 @@ mutation ResetPassword($token: String!, $password: String!, $passwordConfirmatio
     resetPassword(input: {token: $token, newPassword: $password, newPasswordConfirmation: $passwordConfirmation}) {
         success
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
 
@@ -40,7 +40,7 @@ mutation UpdatePersonalInfo($email: String!, $firstName:String!, $lastName: Stri
         }
 
         errors {
-            ...on InvalidInputExceptions{
+            ...on InvalidInputError{
                 message
             }
         }
@@ -71,7 +71,7 @@ mutation UpdatePassword($oldPassword: String!, $password: String!, $passwordConf
     updatePassword(input: {oldPassword: $oldPassword, newPassword: $password, newPasswordConfirmation: $passwordConfirmation}) {
         updated
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }
@@ -82,7 +82,7 @@ mutation UpdateBillingDetails($billingDetails: BillingDetailsInput!) {
     updateBillingDetails(input: {details: $billingDetails}) {
         updated
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }

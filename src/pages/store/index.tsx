@@ -21,14 +21,12 @@ const Store: React.FC<PageProps> = ({ data }) => {
   if (!store.value)
     return (
       <div className="flex flex-col gap-10">
-        <AccountPageHeader />
         <CreateNewStore onCreated={(s) => (store.value = s)} />
       </div>
     );
 
   return (
     <div className="flex flex-col gap-10">
-      <AccountPageHeader />
       <StoreDetailsContainer store={store.value as Store}>
         <PageTitle title="Products" />
       </StoreDetailsContainer>

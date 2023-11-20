@@ -27,7 +27,7 @@ mutation CreateStore($name: String!, $description: String!, $image: Upload!) {
         }
 
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }
@@ -38,7 +38,19 @@ mutation UpdateStoreDetails($name: String!, $description: String!, $image: Uploa
     updateStore(input: {name: $name, description: $description, image: $image}) {
         updated
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
+                message
+            }
+        }
+    }
+}
+
+mutation CreateNewProduct($product: ProductInput!) {
+    createNewProduct(input: {product: $product}) {
+        created
+
+        errors {
+            ... on InvalidInputError {
                 message
             }
         }

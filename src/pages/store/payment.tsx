@@ -2,7 +2,6 @@ import React from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
 import { ssrGetStore, Store } from "@/__generated__/ssr";
-import AccountPageHeader from "@/components/pages/AccountPageHeader";
 import StoreDetailsContainer from "@/components/pages/store/StoreDetailsContainer";
 import { Format } from "@/utils/format";
 import { useComputed } from "@preact/signals-react";
@@ -22,7 +21,6 @@ const Payment: React.FC<PageProps> = ({ data }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      <AccountPageHeader />
       <StoreDetailsContainer hideDetails store={data.store as Store}>
         <div className="flex flex-col justify-between gap-10 sm:max-w-2xl sm:flex-row sm:items-start">
           <div className="flex items-center gap-10">

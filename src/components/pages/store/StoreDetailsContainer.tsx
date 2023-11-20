@@ -31,7 +31,7 @@ const StoreDetailsContainer: React.FC<Props> = ({
   return (
     <div className="flex flex-col gap-10">
       {!onlyNavigation && (
-        <div className="remove-page-right-padding remove-page-left-padding">
+        <div className="remove-page-right-padding remove-page-left-padding -mt-10">
           <OptimizedImage
             src={asset(store.image)}
             alt=""

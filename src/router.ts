@@ -37,6 +37,7 @@ const routes = {
   storePayment: { path: "/store/payment", access: Access.Authenticated },
   storeOrders: { path: "/store/orders", access: Access.Authenticated },
   storeSettings: { path: "/store/settings", access: Access.Authenticated },
+  storeNewProduct: { path: "/store/new-product", access: Access.Authenticated },
 };
 
 type Route = keyof typeof routes;

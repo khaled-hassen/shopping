@@ -2,7 +2,6 @@ import React from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
 import { ssrGetStore } from "@/__generated__/ssr";
-import AccountPageHeader from "@/components/pages/AccountPageHeader";
 import { useSignal } from "@preact/signals-react";
 import ImageUpload from "@/components/form/ImageUpload";
 import Input from "@/components/form/Input";
@@ -60,10 +59,8 @@ const Settings: React.FC<PageProps> = ({ data: storeData }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      <AccountPageHeader />
       <StoreDetailsContainer onlyNavigation>
         <PageTitle title="Products" />
-
         <FormContainer
           title="Edit store details"
           formActionText="Save changes"
