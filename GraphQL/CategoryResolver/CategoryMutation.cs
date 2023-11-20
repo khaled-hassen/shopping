@@ -13,14 +13,14 @@ public class CategoryMutation {
     public CategoryMutation(ICategoryService categoryService) => _categoryService = categoryService;
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     public async Task<CreatedCategory> CreateCategory(string name, IFile image) {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Category name cannot be empty");
         return await _categoryService.CreateCategoryAsync(name, image);
     }
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateCategory(string id, string name, IFile? image) {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Category name cannot be empty");

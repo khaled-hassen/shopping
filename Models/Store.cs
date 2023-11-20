@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Backend.Attributes;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Backend.Models;
@@ -13,8 +14,8 @@ public class Store {
     [GraphQLNonNullType]
     public ObjectId? Id { get; set; }
 
-    [GraphQLNonNullType]
-    public ObjectId? Owner { get; set; }
+    [UniqueField]
+    public ObjectId OwnerId { get; set; }
 
     public string Name { get; set; } = null!;
     public string Image { get; set; } = null!;

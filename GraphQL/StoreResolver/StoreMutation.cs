@@ -16,7 +16,7 @@ public class StoreMutation {
 
     [Authorize]
     [UseUser]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     public async Task<Store> CreateStore(string name, string description, IFile image, [GetUser] UserResult user) {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Store name is required");
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(description, "Store description is required");
@@ -25,7 +25,7 @@ public class StoreMutation {
 
     [Authorize]
     [UseUser]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateStore(string name, string description, IFile image, [GetUser] UserResult user) {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Store name is required");

@@ -15,7 +15,7 @@ public class StoreService : IStoreService {
         _stores = db.GetStoresCollection();
     }
 
-    public async Task<Store?> GetStoreAsync(UserResult user) => await _stores.Find(c => c.Owner.Equals(user.Id)).FirstOrDefaultAsync();
+    public async Task<Store?> GetStoreAsync(UserResult user) => await _stores.Find(c => c.OwnerId.Equals(user.Id)).FirstOrDefaultAsync();
 
     public async Task<Store> CreateStoreAsync(UserResult user, string name, string description, IFile image) {
         var id = ObjectId.GenerateNewId();
@@ -23,7 +23,7 @@ public class StoreService : IStoreService {
 
         var store = new Store {
             Id = ObjectId.GenerateNewId(),
-            Owner = user.Id,
+            OwnerId = user.Id,
             Name = name,
             Description = description,
             Image = imagePath,
@@ -38,7 +38,7 @@ public class StoreService : IStoreService {
     }
 
     public async Task UpdateStoreAsync(UserResult user, string name, string description, IFile image) {
-        Store? store = await _stores.Find(c => c.Owner.Equals(user.Id)).FirstOrDefaultAsync();
+        Store? store = await _stores.Find(c => c.OwnerId.Equals(user.Id)).FirstOrDefaultAsync();
         if (store is null) return;
 
         _fileUploadService.DeleteFile(store.Image);

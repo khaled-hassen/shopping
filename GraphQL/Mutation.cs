@@ -13,7 +13,7 @@ public class Mutation {
     public Mutation(IConfigService service) => _service = service;
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateConfig(
         string homeHeroCategoryId,

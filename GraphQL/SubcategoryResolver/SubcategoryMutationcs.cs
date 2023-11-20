@@ -13,14 +13,14 @@ public class SubcategoryMutation {
     public SubcategoryMutation(ISubcategoryService subcategoryService) => _subcategoryService = subcategoryService;
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     public async Task<Subcategory?> CreateSubcategory(string categoryId, Subcategory subcategory, IFile image) {
         Validator<SubcategoryValidator, Subcategory>.ValidateAndThrow(subcategory);
         return await _subcategoryService.CreateSubcategoryAsync(categoryId, subcategory, image);
     }
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateSubcategory(string id, string name, IFile? image) {
         Validator<NonEmptyStringValidator, string>.ValidateAndThrow(name, "Subcategory name cannot be empty");
@@ -28,7 +28,7 @@ public class SubcategoryMutation {
     }
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateSubcategoryProductTypes(string id, HashSet<string> types) {
         Validator<NonEmptyProductTypesValidator, HashSet<string>>.ValidateAndThrow(types);
@@ -37,7 +37,7 @@ public class SubcategoryMutation {
 
 
     [Authorize(Roles = new[] { "Admin" })]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [UseMutationConvention(PayloadFieldName = "updated")]
     public async Task<bool> UpdateSubcategoryFilters(string id, HashSet<Filter> filters) {
         Validator<NonEmptyFiltersValidator, HashSet<Filter>>.ValidateAndThrow(filters);

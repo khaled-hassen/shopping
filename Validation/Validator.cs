@@ -1,5 +1,6 @@
 ﻿using Backend.Exceptions;
 using FluentValidation;
+using FluentValidation.Results;
 
 namespace Backend.Validation;
 
@@ -11,10 +12,10 @@ namespace Backend.Validation;
 public static class Validator<V, T> where V : AbstractValidator<T> {
     public static void ValidateAndThrow(T obj, string? errorMessage = null) {
         var validator = Activator.CreateInstance<V>();
-        var result = validator.Validate(obj);
+        ValidationResult? result = validator.Validate(obj);
         if (!result.IsValid) {
-            var errors = new List<InvalidInputExceptions>();
-            result.Errors.ForEach(e => errors.Add(new InvalidInputExceptions(errorMessage ?? e.ErrorMessage)));
+            var errors = new List<InvalidInputException>();
+            result.Errors.ForEach(e => errors.Add(new InvalidInputException(errorMessage ?? e.ErrorMessage)));
             throw new AggregateException(errors);
         }
     }

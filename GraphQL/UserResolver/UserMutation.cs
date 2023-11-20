@@ -15,7 +15,7 @@ public class UserMutation {
     public UserMutation(IUserService userService) => _userService = userService;
 
     [UseMutationConvention(PayloadFieldName = "emailSent")]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [Error<UserExistException>]
     public async Task<bool> CreateAccount(
         string firstName,
@@ -57,7 +57,7 @@ public class UserMutation {
     }
 
     [UseMutationConvention(PayloadFieldName = "success")]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [Error<UnauthorizedException>]
     public async Task<bool> ResetPassword(string token, string newPassword, string newPasswordConfirmation) {
         Validator<PasswordUpdateValidator, PasswordUpdateValidatorInput>.ValidateAndThrow(
@@ -71,7 +71,7 @@ public class UserMutation {
 
     [Authorize]
     [UseUser]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     public async Task<PersonalDataEditResult> UpdatePersonalData(
         string firstName,
         string lastName,
@@ -87,7 +87,7 @@ public class UserMutation {
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [Authorize]
     [UseUser]
     public async Task<bool> UpdateBillingDetails(BillingDetails details, [GetUser] UserResult user) {
@@ -97,7 +97,7 @@ public class UserMutation {
     }
 
     [UseMutationConvention(PayloadFieldName = "updated")]
-    [Error<InvalidInputExceptions>]
+    [Error<InvalidInputException>]
     [Authorize]
     [UseUser]
     public async Task<bool> UpdatePassword(string oldPassword, string newPassword, string newPasswordConfirmation, [GetUser] UserResult user) {

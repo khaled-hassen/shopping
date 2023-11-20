@@ -3,6 +3,7 @@ using Backend.Formatter;
 using Backend.GraphQL;
 using Backend.GraphQL.AdminResolver;
 using Backend.GraphQL.CategoryResolver;
+using Backend.GraphQL.ProductResolver;
 using Backend.GraphQL.StoreResolver;
 using Backend.GraphQL.SubcategoryResolver;
 using Backend.GraphQL.UserResolver;
@@ -73,6 +74,7 @@ builder.Services.AddScoped<IConfigService, ConfigService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IStoreService, StoreService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // setup admin
 builder.Services.AddHostedService<AdminHostedService>();
@@ -99,7 +101,9 @@ builder.Services.AddGraphQLServer()
     .AddType<UserQuery>()
     .AddType<UserMutation>()
     .AddType<StoreQuery>()
-    .AddType<StoreMutation>();
+    .AddType<StoreMutation>()
+    .AddType<ProductQuery>()
+    .AddType<ProductMutation>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

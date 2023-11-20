@@ -226,8 +226,8 @@ public class UserService : IUserService {
         string? userPassword = await _users.Find(c => c.Id.Equals(user.Id))
             .Project(c => c.Password).FirstOrDefaultAsync();
 
-        if (userPassword is null) throw new InvalidInputExceptions("Old password is incorrect");
-        if (!BCrypt.Net.BCrypt.Verify(oldPassword, userPassword)) throw new InvalidInputExceptions("Old password is incorrect");
+        if (userPassword is null) throw new InvalidInputException("Old password is incorrect");
+        if (!BCrypt.Net.BCrypt.Verify(oldPassword, userPassword)) throw new InvalidInputException("Old password is incorrect");
         await _users.UpdateOneAsync(
             c => c.Id.Equals(user.Id),
             Builders<User>.Update.Set(c => c.Password, BCrypt.Net.BCrypt.HashPassword(newPassword))

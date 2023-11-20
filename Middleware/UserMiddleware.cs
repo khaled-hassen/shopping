@@ -10,12 +10,15 @@ namespace Backend.Middleware;
 
 public class UserMiddleware {
     public const string UserContextDataKey = "User";
+    public const string UserStoreContextDataKey = "UserStore";
     private readonly FieldDelegate _next;
+    private readonly IMongoCollection<Store> _stores;
     private readonly IMongoCollection<User> _users;
 
     public UserMiddleware(FieldDelegate next, DatabaseService db) {
         _next = next;
         _users = db.GetUsersCollection();
+        _stores = db.GetStoresCollection();
     }
 
     public async Task Invoke(IMiddlewareContext context, DatabaseService db) {
@@ -50,6 +53,10 @@ public class UserMiddleware {
                 BillingDetails = user.BillingDetails
             }
         );
+
+        Store? store = await _stores.Find(c => c.OwnerId.Equals(user.Id)).FirstOrDefaultAsync();
+        if (store is not null) context.ContextData.Add(UserStoreContextDataKey, store);
+
         await _next(context);
     }
 }
