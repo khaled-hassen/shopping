@@ -31,3 +31,31 @@
         @apply xs:-ml-10 lg:-ml-16 -ml-6;
     }
 }
+
+.tox.tox-tinymce {
+    border-radius: 0;
+    border: solid 1px rgba(77, 81, 87, 0.5);
+}
+
+.tox .tox-menu {
+    border-radius: 0 !important;
+}
+
+.tox .tox-editor-header,
+.tox .tox-menubar,
+.tox .tox-toolbar-overlord,
+.tox .tox-toolbar__primary,
+.tox .tox-statusbar,
+.tox .tox-menu,
+.tox .tox-collection--list .tox-collection__group,
+.tox .tox-collection--list .tox-collection__item--enabled {
+    background-color: #F1EFEF !important;
+}
+
+.tox .tox-collection--list .tox-collection__item--active {
+    background-color: #cccccc !important;
+}
+
+.tox .tox-collection--list .tox-collection__item--active .tox-collection__item-label * {
+    background-color: #cccccc !important;
+}

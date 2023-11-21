@@ -2,22 +2,17 @@ import React from "react";
 import * as Form from "@radix-ui/react-form";
 import Button from "@/components/shared/Button";
 import Input from "@/components/form/Input";
-import TextArea from "@/components/form/TextArea";
 import RickTextEditor from "@/components/form/RickTextEditor";
+import ProductImagesUpload from "@/components/form/ProductImagesUpload";
 
 interface IProps {}
-
-interface Image {
-  file: File;
-  preview: string;
-  cover: boolean;
-}
 
 const NewProduct: React.FC<IProps> = ({}) => {
   return (
     <div className="flex flex-col gap-10">
       <h1 className="text-4xl font-bold">Create a new product</h1>
       <Form.Root className="flex flex-col gap-10">
+        <ProductImagesUpload label="Product images" onUpload={() => {}} />
         <Input label="Produt name" placeholder="Product name" />
         <Input
           label="Product brief description"
