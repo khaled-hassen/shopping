@@ -26,4 +26,5 @@ public class Product {
     public string CoverImage { get; set; } = null!;
     public HashSet<string> Images { get; set; } = null!;
     public object Details { get; set; } = null!;
+    public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 }
