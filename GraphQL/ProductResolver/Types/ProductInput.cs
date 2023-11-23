@@ -8,12 +8,14 @@ public class ProductInput {
     public string Description { get; set; } = null!;
     public decimal Price { get; set; }
     public decimal? Discount { get; set; }
-    public decimal? DiscountedPrice { get; set; }
     public decimal? ShipmentPrice { get; set; }
     public ObjectId CategoryId { get; set; }
     public ObjectId SubcategoryId { get; set; }
     public string ProductType { get; set; } = null!;
     public IFile CoverImage { get; set; } = null!;
     public HashSet<IFile> Images { get; set; } = null!;
+
+    [GraphQLType<AnyType>]
+    [GraphQLNonNullType]
     public object Details { get; set; } = null!;
 }

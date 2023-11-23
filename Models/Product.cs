@@ -1,5 +1,4 @@
-﻿using Backend.Attributes;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Backend.Models;
@@ -9,9 +8,7 @@ public class Product {
     [GraphQLNonNullType]
     public ObjectId? Id { get; set; }
 
-    [UniqueField]
     public ObjectId SellerId { get; set; }
-
     public string Name { get; set; } = null!;
     public string BriefDescription { get; set; } = null!;
     public string Description { get; set; } = null!;

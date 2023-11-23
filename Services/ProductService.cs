@@ -40,10 +40,10 @@ public class ProductService : IProductService {
                 Details = product.Details,
                 Discount = product.Discount,
                 Price = product.Price,
-                DiscountedPrice = product.DiscountedPrice,
+                DiscountedPrice = product.Discount is null ? null : product.Discount * product.Price,
                 CategoryId = product.CategoryId,
                 SubcategoryId = product.SubcategoryId,
-                ProductType = product.ProductType,
+                ProductType = product.ProductType.ToLower(),
                 ShipmentPrice = product.ShipmentPrice
             }
         );
