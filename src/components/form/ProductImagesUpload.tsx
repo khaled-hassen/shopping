@@ -18,7 +18,12 @@ export interface Image {
   cover: boolean;
 }
 
-const Input: React.FC<IProps> = ({ label, error, defaultValues, onUpload }) => {
+const ProductImagesUpload: React.FC<IProps> = ({
+  label,
+  error,
+  defaultValues,
+  onUpload,
+}) => {
   const images = useSignal<Image[]>(defaultValues || []);
   const selectedImage = useSignal<Image | null>(null);
 
@@ -109,15 +114,17 @@ const Input: React.FC<IProps> = ({ label, error, defaultValues, onUpload }) => {
           />
         </label>
       </div>
-      <Checkbox
-        key={selectedImage.value?.preview}
-        label="Cover image"
-        name="cover"
-        defaultChecked={selectedImage.value?.cover}
-        onCheck={changeCoverImage}
-      />
+      {images.value.length > 0 && (
+        <Checkbox
+          key={selectedImage.value?.preview}
+          label="Cover image"
+          name="cover"
+          defaultChecked={selectedImage.value?.cover}
+          onCheck={changeCoverImage}
+        />
+      )}
     </div>
   );
 };
 
-export default Input;
+export default ProductImagesUpload;

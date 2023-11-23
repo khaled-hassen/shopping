@@ -4,9 +4,16 @@ import { Editor } from "@tinymce/tinymce-react";
 interface IProps {
   label: string;
   error?: string;
+  defaultValue?: string;
+  onChange?(content: string): void;
 }
 
-const RickTextEditor: React.FC<IProps> = ({ label, error }) => {
+const RickTextEditor: React.FC<IProps> = ({
+  label,
+  error,
+  defaultValue,
+  onChange,
+}) => {
   return (
     <div className="flex flex-col gap-4 @container">
       <div className="flex flex-col justify-between gap-4 @xs:flex-row @xs:items-center">
@@ -14,6 +21,7 @@ const RickTextEditor: React.FC<IProps> = ({ label, error }) => {
         {!!error && <p className="font-bold text-red-600">{error}</p>}
       </div>
       <Editor
+        initialValue={defaultValue}
         apiKey={process.env.NEXT_PUBLIC_TINY_API_KEY}
         init={{
           content_style: "body { background-color: #F1EFEF; }",
@@ -41,6 +49,7 @@ const RickTextEditor: React.FC<IProps> = ({ label, error }) => {
             "alignright alignjustify | bullist numlist outdent indent | " +
             "removeformat",
         }}
+        onEditorChange={onChange}
       />
     </div>
   );

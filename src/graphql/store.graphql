@@ -56,3 +56,36 @@ mutation CreateNewProduct($product: ProductInput!) {
         }
     }
 }
+
+query GetNewProductInitialData {
+    storeFree
+    categories {
+        id
+        name
+    }
+}
+
+query GetSubcategories($categoryId: String!) {
+    subcategories(categoryId: $categoryId) {
+        id
+        name
+        productTypes
+        filters {
+            name
+            type
+            unit
+            productTypes
+        }
+    }
+}
+
+mutation AddNewProduct($product: ProductInput!) {
+    createNewProduct(input: {product: $product}) {
+        created
+        errors {
+            ... on InvalidInputError {
+                message
+            }
+        }
+    }
+}

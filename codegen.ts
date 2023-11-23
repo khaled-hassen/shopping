@@ -13,6 +13,9 @@ const config: CodegenConfig = {
       ],
       config: {
         preResolveTypes: true,
+        scalars: {
+          Decimal: "number",
+        },
       },
     },
     "src/__generated__/ssr.tsx": {
@@ -27,6 +30,9 @@ const config: CodegenConfig = {
         reactApolloVersion: 3,
         gqlImport: "@apollo/client#gql",
         withHooks: true,
+        scalars: {
+          Decimal: "number",
+        },
       },
     },
   },

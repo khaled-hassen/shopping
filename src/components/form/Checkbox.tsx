@@ -38,7 +38,9 @@ const Checkbox = forwardRef<HTMLInputElement, IProps>(
           <div className="grid h-6 w-6 place-content-center border border-dark-gray border-opacity-50 bg-transparent p-2">
             {checked.value && <CheckIcon />}
           </div>
-          <Form.Label className="text-xl">{label}</Form.Label>
+          <Form.Label className="text-xl first-letter:uppercase">
+            {label}
+          </Form.Label>
         </div>
         {!!error && (
           <Form.Message className="font-bold text-red-600">

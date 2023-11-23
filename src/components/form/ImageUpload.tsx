@@ -11,7 +11,12 @@ interface IProps {
   onUpload(file: File | null): void;
 }
 
-const Input: React.FC<IProps> = ({ label, error, defaultValue, onUpload }) => {
+const ImageUpload: React.FC<IProps> = ({
+  label,
+  error,
+  defaultValue,
+  onUpload,
+}) => {
   const previewUrl = useSignal<string>(defaultValue || "");
 
   function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -57,4 +62,4 @@ const Input: React.FC<IProps> = ({ label, error, defaultValue, onUpload }) => {
   );
 };
 
-export default Input;
+export default ImageUpload;
