@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Select from "@/components/form/Select";
 import {
   FilterType,
+  useDeleteProductMutation,
   useEditProductMutation,
   useGetSubcategoriesLazyQuery,
   usePublishProductMutation,
@@ -28,7 +29,7 @@ import { useSignal } from "@preact/signals-react";
 import { route } from "@/router";
 import { asset } from "@/utils/assets";
 import OutlinedButton from "@/components/shared/OutlinedButton";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import EyeIcon from "@/components/icons/EyeIcon";
 import PublishIcon from "@/components/icons/PublishIcon";
 import TrashIcon from "@/components/icons/TrashIcon";
@@ -120,6 +121,8 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
     },
   });
   const params = useParams();
+  const router = useRouter();
+
   const [fetchSubcategories, { data: subcategories }] =
     useGetSubcategoriesLazyQuery();
   const [editProduct, { data: editProductData }] = useEditProductMutation();
@@ -127,6 +130,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
     usePublishProductMutation();
   const [unPublishProduct, { data: unPublishProductData }] =
     useUnPublishProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
   const published = useSignal(false);
   const images = useSignal<Image[]>([]);
@@ -254,6 +258,11 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
     published.value = !published.value;
   }
 
+  async function removeProduct() {
+    await deleteProduct({ variables: { id: params.id as string } });
+    router.replace(route("store"));
+  }
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-4">
@@ -304,7 +313,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
               {published.value ? "Unpublished" : "Published"}
             </span>
           </button>
-          <button className="flex items-center gap-2">
+          <button className="flex items-center gap-2" onClick={removeProduct}>
             <TrashIcon />
             <span className="text-danger text-xl font-medium">Delete</span>
           </button>
