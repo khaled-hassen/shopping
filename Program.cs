@@ -122,7 +122,10 @@ app.UseCors(
     cors => {
         cors.AllowAnyHeader()
             .WithMethods("POST")
-            .WithOrigins(app.Configuration.GetSection("Jwt:WebClient").Value ?? "")
+            .WithOrigins(
+                app.Configuration.GetSection("Jwt:WebClient").Value ?? "",
+                app.Configuration.GetSection("Jwt:AdminPanel").Value ?? ""
+            )
             .AllowCredentials();
     }
 );

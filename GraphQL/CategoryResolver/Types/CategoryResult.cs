@@ -3,5 +3,5 @@
 namespace Backend.GraphQL.CategoryResolver.Types;
 
 public class CategoryResult : Category {
-    public HashSet<Subcategory> Subcategories { get; set; }
+    public HashSet<Subcategory> Subcategories { get; set; } = null!;
 }

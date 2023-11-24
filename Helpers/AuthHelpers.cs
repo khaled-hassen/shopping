@@ -28,7 +28,7 @@ public static class AuthHelpers {
 
     public static ClaimsPrincipal? ValidateToken(string token) {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(AppConfig.JwtKey);
+        byte[] key = Encoding.ASCII.GetBytes(AppConfig.JwtKey);
         try {
             return tokenHandler.ValidateToken(
                 token,
@@ -44,7 +44,7 @@ public static class AuthHelpers {
                 out _
             );
         }
-        catch (Exception e) {
+        catch (Exception) {
             return null;
         }
     }
