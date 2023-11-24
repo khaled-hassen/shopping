@@ -1,5 +1,4 @@
-﻿using Backend.Exceptions;
-using Backend.GraphQL.ProductResolver.Types;
+﻿using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
 using MongoDB.Bson;
@@ -16,15 +15,15 @@ public class ProductService : IProductService {
         _products = db.GetProductsCollection();
     }
 
-    public async Task AddProductAsync(ProductInput product, Store? store) {
-        if (store is null) throw new InvalidInputException("User must have a store to add a product");
-
+    public async Task AddProductAsync(ProductInput product, Store store) {
         var id = ObjectId.GenerateNewId();
-        string coverImgUrl = await _fileUploadService.UploadFileAsync(product.CoverImage, "products", $"cover-{id.ToString()!}");
+        var folder = $"products/{id.ToString()}";
+        string coverImgUrl = await _fileUploadService.UploadFileAsync(product.CoverImage.File!, folder, $"cover-{id.ToString()!}");
         var imagesUrls = new HashSet<string>();
         var index = 1;
-        foreach (IFile image in product.Images) {
-            string imgUrl = await _fileUploadService.UploadFileAsync(image, "products", $"iamge-{index++}-{id.ToString()!}");
+        foreach (ProductImage image in product.Images) {
+            if (image.File is null) continue;
+            string imgUrl = await _fileUploadService.UploadFileAsync(image.File, folder, $"image-{index++}-{id.ToString()!}");
             imagesUrls.Add(imgUrl);
         }
 
@@ -48,4 +47,60 @@ public class ProductService : IProductService {
             }
         );
     }
+
+    public async Task UpdateProductAsync(string id, ProductInput product, Store store) {
+        Product? oldProduct = await _products.Find(p => p.Id.ToString() == id).FirstOrDefaultAsync();
+        if (oldProduct is null) return;
+
+        var folder = $"products/{id}";
+        string? coverImgUrl = null;
+        if (product.CoverImage.File is not null && product.CoverImage.NewImage) {
+            _fileUploadService.DeleteFile(oldProduct.CoverImage);
+            coverImgUrl = await _fileUploadService.UploadFileAsync(product.CoverImage.File, folder, $"cover-{id}");
+        }
+
+        var imagesUrls = new HashSet<string>();
+        var index = 1;
+        foreach (ProductImage image in product.Images) {
+            if (image.File is null) continue;
+            if (!image.NewImage) {
+                imagesUrls.Add(oldProduct.Images.ElementAt(index - 1));
+                index++;
+                continue;
+            }
+
+            if (image.File is null) continue;
+            _fileUploadService.DeleteFile(oldProduct.Images.ElementAt(index - 1));
+            string imgUrl = await _fileUploadService.UploadFileAsync(image.File, folder, $"image-{index++}-{id}");
+            imagesUrls.Add(imgUrl);
+        }
+
+        await _products.ReplaceOneAsync(
+            p => p.Id.ToString() == id,
+            new Product {
+                Id = ObjectId.Parse(id),
+                SellerId = store.Id ?? ObjectId.Empty,
+                Name = product.Name,
+                BriefDescription = product.BriefDescription,
+                Description = product.Description,
+                CoverImage = coverImgUrl ?? oldProduct.CoverImage,
+                Images = imagesUrls,
+                Details = product.Details,
+                Discount = product.Discount,
+                Price = product.Price,
+                DiscountedPrice = product.Discount is null ? null : product.Discount * product.Price,
+                CategoryId = product.CategoryId,
+                SubcategoryId = product.SubcategoryId,
+                ProductType = product.ProductType.ToLower(),
+                ShipmentPrice = product.ShipmentPrice,
+                Reviews = oldProduct.Reviews,
+                AddedAt = oldProduct.AddedAt
+            }
+        );
+    }
+
+    public async Task<Product?> GetStoreProductAsync(string id, Store store) =>
+        await _products.Find(
+            c => c.Id.ToString() == id && c.SellerId.Equals(store.Id)
+        ).FirstOrDefaultAsync();
 }

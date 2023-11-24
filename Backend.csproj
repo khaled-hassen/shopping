@@ -30,6 +30,8 @@
         <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653558841427e3c088b23296.jpg"/>
         <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653562de9f01fcc010d3ab37.jpg"/>
         <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653566fa7b740ae12877b84a.jpg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\products\cover-655e9b561d7fbb91d8616b4a.jpg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\products\iamge-1-655e9b561d7fbb91d8616b4a.png"/>
     </ItemGroup>
 
 </Project>

@@ -22,6 +22,9 @@ public class Product {
     public HashSet<ObjectId>? Reviews { get; set; }
     public string CoverImage { get; set; } = null!;
     public HashSet<string> Images { get; set; } = null!;
+
+    [GraphQLType<AnyType>]
     public object Details { get; set; } = null!;
+
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 }

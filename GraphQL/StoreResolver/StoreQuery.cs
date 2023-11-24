@@ -14,7 +14,7 @@ public class StoreQuery {
     public StoreQuery(IStoreService storeService) => _storeService = storeService;
 
     [Authorize]
-    public decimal GetStoreFree() => AppConfig.StoreFee;
+    public decimal GetStoreFee() => AppConfig.StoreFee;
 
     [Authorize]
     [UseUser]

@@ -21,7 +21,7 @@ public class UserMiddleware {
         _stores = db.GetStoresCollection();
     }
 
-    public async Task Invoke(IMiddlewareContext context, DatabaseService db) {
+    public async Task Invoke(IMiddlewareContext context) {
         ClaimsPrincipal? claimsPrincipal = context.GetUser();
         if (claimsPrincipal is null) {
             await _next(context);
@@ -41,21 +41,22 @@ public class UserMiddleware {
             return;
         }
 
-        context.ContextData.Add(
-            UserContextDataKey,
-            new UserResult {
-                Id = user.Id ?? ObjectId.Empty,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                EmailVerified = user.EmailVerifiedAt is not null,
-                BillingDetails = user.BillingDetails
-            }
-        );
+        if (!context.ContextData.ContainsKey(UserContextDataKey))
+            context.ContextData.Add(
+                UserContextDataKey,
+                new UserResult {
+                    Id = user.Id ?? ObjectId.Empty,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    EmailVerified = user.EmailVerifiedAt is not null,
+                    BillingDetails = user.BillingDetails
+                }
+            );
 
         Store? store = await _stores.Find(c => c.OwnerId.Equals(user.Id)).FirstOrDefaultAsync();
-        if (store is not null) context.ContextData.Add(UserStoreContextDataKey, store);
+        if (store is not null && !context.ContextData.ContainsKey(UserStoreContextDataKey)) context.ContextData.Add(UserStoreContextDataKey, store);
 
         await _next(context);
     }

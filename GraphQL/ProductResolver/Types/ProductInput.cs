@@ -2,6 +2,11 @@
 
 namespace Backend.GraphQL.ProductResolver.Types;
 
+public class ProductImage {
+    public IFile? File { get; set; }
+    public bool NewImage { get; set; }
+}
+
 public class ProductInput {
     public string Name { get; set; } = null!;
     public string BriefDescription { get; set; } = null!;
@@ -12,8 +17,8 @@ public class ProductInput {
     public ObjectId CategoryId { get; set; }
     public ObjectId SubcategoryId { get; set; }
     public string ProductType { get; set; } = null!;
-    public IFile CoverImage { get; set; } = null!;
-    public HashSet<IFile> Images { get; set; } = null!;
+    public ProductImage CoverImage { get; set; } = null!;
+    public HashSet<ProductImage> Images { get; set; } = null!;
 
     [GraphQLType<AnyType>]
     [GraphQLNonNullType]
