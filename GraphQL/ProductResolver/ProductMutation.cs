@@ -58,4 +58,14 @@ public class ProductMutation {
         await _productService.UnPublishProductAsync(id, store);
         return true;
     }
+
+    [Authorize]
+    [UseUser]
+    [UseMutationConvention(PayloadFieldName = "deleted")]
+    [Error<InvalidInputException>]
+    public async Task<bool> DeleteProduct(string id, [GetUserStore] Store? store) {
+        if (store is null) throw new InvalidInputException("User must have a store to add a product");
+        await _productService.DeleteProductAsync(id, store);
+        return true;
+    }
 }

@@ -122,4 +122,12 @@ public class ProductService : IProductService {
             Builders<Product>.Update.Set(p => p.Published, false)
         );
     }
+
+    public async Task DeleteProductAsync(string id, Store store) {
+        Product? product = await GetStoreProductAsync(id, store);
+        if (product is null) throw new GraphQLException(new Error("Product not found", ErrorCodes.NotFound));
+        await _products.DeleteOneAsync(
+            p => p.Id.ToString() == id && p.SellerId.Equals(store.Id)
+        );
+    }
 }

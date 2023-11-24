@@ -9,4 +9,5 @@ public interface IProductService {
     Task<Product?> GetStoreProductAsync(string id, Store store);
     Task PublishProductAsync(string id, Store store);
     Task UnPublishProductAsync(string id, Store store);
+    Task DeleteProductAsync(string id, Store store);
 }
