@@ -87,7 +87,7 @@ const Home: React.FC<PageProps> = ({ data }) => {
           </p>
         </div>
         <div className="flex flex-col items-center gap-6 xs:flex-row md:flex-col lg:flex-row">
-          <LinkButton title="Regtister" href={route("register")} />
+          <LinkButton title="Register" href={route("register")} />
           <LinkButton title="Discover" color="white" href={route("latest")} />
         </div>
       </section>

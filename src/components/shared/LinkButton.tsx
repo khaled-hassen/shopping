@@ -25,25 +25,16 @@ const LinkButton: React.FC<IProps> = ({
       href={href}
       role="button"
       className={twMerge(
-        "group relative block w-fit px-14 py-4 text-2xl font-medium",
+        "block w-fit px-14 py-4 text-2xl font-medium",
         clsx({
           "bg-dark-gray text-primary": color === "gray",
-          "text-dark-gray bg-primary": color === "white",
+          "bg-primary text-dark-gray": color === "white",
         }),
         className,
       )}
       style={style}
     >
       <span>{title}</span>
-      <span
-        className={clsx(
-          "absolute left-0 top-0 h-full w-full border-0 transition-[border] group-hover:border-[8px]",
-          {
-            "border-primary": color === "gray",
-            "border-dark-gray": color === "white",
-          },
-        )}
-      />
     </Link>
   );
 };

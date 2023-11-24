@@ -10,7 +10,7 @@ query GetStore {
         }
     }
 
-    storeFree
+    storeFee
 }
 
 mutation CreateStore($name: String!, $description: String!, $image: Upload!) {
@@ -58,7 +58,10 @@ mutation CreateNewProduct($product: ProductInput!) {
 }
 
 query GetNewProductInitialData {
-    storeFree
+    storeFee
+    store {
+        id
+    }
     categories {
         id
         name
@@ -82,6 +85,46 @@ query GetSubcategories($categoryId: String!) {
 mutation AddNewProduct($product: ProductInput!) {
     createNewProduct(input: {product: $product}) {
         created
+        errors {
+            ... on InvalidInputError {
+                message
+            }
+        }
+    }
+}
+
+query GetStoreProduct($id: String!) {
+    storeFee
+
+    store {
+        id
+    }
+
+    categories {
+        id
+        name
+    }
+
+    storeProduct(id: $id) {
+        id
+        briefDescription
+        categoryId
+        coverImage
+        description
+        discount
+        images
+        name
+        price
+        productType
+        shipmentPrice
+        subcategoryId
+        details
+    }
+}
+
+mutation EditProduct($id: String!, $product: ProductInput!) {
+    editProduct(input: {id: $id, product: $product}) {
+        updated
         errors {
             ... on InvalidInputError {
                 message

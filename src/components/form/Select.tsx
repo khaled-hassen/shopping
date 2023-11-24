@@ -8,6 +8,7 @@ export interface SelectOption {
 
 interface IProps {
   label: string;
+  defaultValue?: SelectOption;
   placeholder?: string;
   error?: string;
   options?: SelectOption[];
@@ -31,6 +32,7 @@ const classNames: ClassNamesConfig = {
 };
 
 const Select: React.FC<IProps> = ({
+  defaultValue,
   label,
   placeholder,
   disabled,
@@ -45,6 +47,7 @@ const Select: React.FC<IProps> = ({
         {!!error && <p className="font-bold text-red-600">{error}</p>}
       </div>
       <Dropdown
+        defaultValue={defaultValue}
         menuPortalTarget={
           typeof document === "undefined" ? undefined : document.body
         }

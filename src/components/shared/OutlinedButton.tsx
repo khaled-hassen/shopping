@@ -2,12 +2,10 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 import { clsx } from "clsx";
 
-type Color = "gray" | "white";
-
 interface IProps {
   type?: "button" | "submit" | "reset";
   className?: string;
-  color?: Color;
+
   title: string;
   style?: React.CSSProperties;
   loading?: boolean;
@@ -15,11 +13,10 @@ interface IProps {
   onClick?(): void;
 }
 
-const Button: React.FC<IProps> = ({
+const OutlinedButton: React.FC<IProps> = ({
   title,
   className,
   style,
-  color = "gray",
   type = "button",
   loading,
   disabled,
@@ -30,10 +27,8 @@ const Button: React.FC<IProps> = ({
       type={type}
       disabled={loading || disabled}
       className={twMerge(
-        "flex w-fit items-center px-14 py-4 text-2xl font-medium",
+        "flex w-fit items-center border-2 border-dark-gray bg-primary px-14 py-4 text-2xl font-medium text-dark-gray",
         clsx({
-          "bg-dark-gray text-primary": color === "gray",
-          "bg-primary text-dark-gray": color === "white",
           "select-none opacity-50": loading || disabled,
         }),
         className,
@@ -43,7 +38,7 @@ const Button: React.FC<IProps> = ({
     >
       {loading && (
         <svg
-          className="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
+          className="-ml-1 mr-3 h-5 w-5 animate-spin text-dark-gray"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -68,4 +63,4 @@ const Button: React.FC<IProps> = ({
   );
 };
 
-export default Button;
+export default OutlinedButton;

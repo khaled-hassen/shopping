@@ -23,12 +23,15 @@ import {
 } from "@/__generated__/client";
 import Checkbox from "@/components/form/Checkbox";
 import { useSignal } from "@preact/signals-react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { route } from "@/router";
 
 export const getServerSideProps = (async (context) => {
   const client = initializeApolloClient(context);
-  return await ssrGetNewProductInitialData.getServerPage({}, client);
+  const result = await ssrGetNewProductInitialData.getServerPage({}, client);
+  if (!result.props.data?.store)
+    return { redirect: { destination: route("store"), permanent: false } };
+  return result;
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -129,7 +132,7 @@ const NewProduct: React.FC<PageProps> = ({ data }) => {
     const shipmentPrice = parseFloat(getValues("shipmentPrice"));
     const discountedPrice = price - (price * discount) / 100;
     const totalPrice = (discountedPrice || price) + shipmentPrice;
-    const storeFees = totalPrice * data.storeFree;
+    const storeFees = totalPrice * data.storeFee;
     const receivedPrice = totalPrice - storeFees;
 
     setValue("discountedPrice", discountedPrice.toFixed(2));
@@ -176,8 +179,8 @@ const NewProduct: React.FC<PageProps> = ({ data }) => {
           categoryId: product.categoryId,
           subcategoryId: product.subcategoryId,
           productType: product.productType,
-          coverImage,
-          images: otherImages,
+          coverImage: { newImage: true, file: coverImage },
+          images: otherImages.map((file) => ({ newImage: true, file })),
           price: parseFloat(product.price),
           discount: parseFloat(product.discount) / 100,
           shipmentPrice: parseFloat(product.shipmentPrice),
@@ -347,7 +350,7 @@ const NewProduct: React.FC<PageProps> = ({ data }) => {
               <WarningIcon />
               <p className="">
                 On every transaction{" "}
-                <strong>{Format.percent(data.storeFree)}</strong> goes to
+                <strong>{Format.percent(data.storeFee)}</strong> goes to
                 OneStopMALL.
               </p>
             </div>
