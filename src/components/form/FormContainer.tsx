@@ -59,7 +59,7 @@ const FormContainer: React.FC<Props> = ({
         {!!errors &&
           errors?.length > 0 &&
           errors.map((error, i) => (
-            <p key={i} className="font-bold text-red-600">
+            <p key={i} className="text-danger font-bold">
               {error}
             </p>
           ))}

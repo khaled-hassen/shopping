@@ -17,7 +17,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, IProps>(
         <div className="flex flex-col justify-between gap-4 @xs:flex-row @xs:items-center">
           <Form.Label className="text-xl font-bold">{label}</Form.Label>
           {!!error && (
-            <Form.Message className="font-bold text-red-600">
+            <Form.Message className="text-danger font-bold">
               {error}
             </Form.Message>
           )}

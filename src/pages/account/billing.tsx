@@ -84,7 +84,7 @@ const Billing: React.FC<PageProps> = ({ billingDetails }) => {
         )}
         extraInfo={
           data?.updateBillingDetails.updated && (
-            <p className="font-bold text-green-600">
+            <p className="text-success font-bold">
               Billing details updated successfully
             </p>
           )

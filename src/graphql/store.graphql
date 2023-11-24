@@ -119,12 +119,35 @@ query GetStoreProduct($id: String!) {
         shipmentPrice
         subcategoryId
         details
+        published
     }
 }
 
 mutation EditProduct($id: String!, $product: ProductInput!) {
     editProduct(input: {id: $id, product: $product}) {
         updated
+        errors {
+            ... on InvalidInputError {
+                message
+            }
+        }
+    }
+}
+
+mutation PublishProduct($id: String!) {
+    publishProduct(input: {id: $id}) {
+        published
+        errors {
+            ... on InvalidInputError {
+                message
+            }
+        }
+    }
+}
+
+mutation UnPublishProduct($id: String!) {
+    unPublishProduct(input: {id: $id}) {
+        unpublished
         errors {
             ... on InvalidInputError {
                 message

@@ -58,7 +58,7 @@ const Security: React.FC<IProps> = ({}) => {
         )}
         extraInfo={
           data?.updatePassword.updated && (
-            <p className="font-bold text-green-600">
+            <p className="text-success font-bold">
               Password updated successfully
             </p>
           )

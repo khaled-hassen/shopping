@@ -84,12 +84,12 @@ const Account: React.FC<PageProps> = ({
         extraInfo={
           <>
             {data?.updatePersonalData.personalDataEditResult?.success && (
-              <p className="font-bold text-green-600">
+              <p className="text-success font-bold">
                 Personal data updated successfully
               </p>
             )}
             {data?.updatePersonalData.personalDataEditResult?.emailChanged && (
-              <p className="font-bold text-green-600">
+              <p className="text-success font-bold">
                 Check your email inbox for to verify your new email address
               </p>
             )}

@@ -43,9 +43,7 @@ const Checkbox = forwardRef<HTMLInputElement, IProps>(
           </Form.Label>
         </div>
         {!!error && (
-          <Form.Message className="font-bold text-red-600">
-            {error}
-          </Form.Message>
+          <Form.Message className="text-danger font-bold">{error}</Form.Message>
         )}
       </Form.Field>
     );

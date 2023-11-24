@@ -20,6 +20,8 @@ import {
   FilterType,
   useEditProductMutation,
   useGetSubcategoriesLazyQuery,
+  usePublishProductMutation,
+  useUnPublishProductMutation,
 } from "@/__generated__/client";
 import Checkbox from "@/components/form/Checkbox";
 import { useSignal } from "@preact/signals-react";
@@ -27,6 +29,9 @@ import { route } from "@/router";
 import { asset } from "@/utils/assets";
 import OutlinedButton from "@/components/shared/OutlinedButton";
 import { useParams } from "next/navigation";
+import EyeIcon from "@/components/icons/EyeIcon";
+import PublishIcon from "@/components/icons/PublishIcon";
+import TrashIcon from "@/components/icons/TrashIcon";
 
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
@@ -118,8 +123,13 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
   const [fetchSubcategories, { data: subcategories }] =
     useGetSubcategoriesLazyQuery();
   const [editProduct, { data: editProductData }] = useEditProductMutation();
-  const images = useSignal<Image[]>([]);
+  const [publishProduct, { data: publishProductData }] =
+    usePublishProductMutation();
+  const [unPublishProduct, { data: unPublishProductData }] =
+    useUnPublishProductMutation();
 
+  const published = useSignal(false);
+  const images = useSignal<Image[]>([]);
   const productTypes = useMemo(
     () =>
       subcategories?.subcategories?.find(
@@ -167,6 +177,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
 
   useEffect(() => {
     resetForm(true).finally(() => {});
+    published.value = data.storeProduct?.published || false;
   }, []);
 
   function calculatePrices() {
@@ -233,22 +244,71 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
         },
       },
     });
+    scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function togglePublishProduct() {
+    if (published.value)
+      await unPublishProduct({ variables: { id: params.id as string } });
+    else await publishProduct({ variables: { id: params.id as string } });
+    published.value = !published.value;
   }
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-bold">Update product</h1>
-        {editProductData?.editProduct?.errors?.map((err) => (
-          <p key={err.message} className="font-bold text-red-600">
-            {err.message}
-          </p>
-        ))}
-        {editProductData?.editProduct?.updated && (
-          <p className="font-bold text-green-600">
-            Product updated successfully
-          </p>
-        )}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl font-bold">Update product</h1>
+          {editProductData?.editProduct?.errors?.map((err) => (
+            <p key={err.message} className="text-danger font-bold">
+              {err.message}
+            </p>
+          ))}
+          {publishProductData?.publishProduct?.errors?.map((err) => (
+            <p key={err.message} className="text-danger font-bold">
+              {err.message}
+            </p>
+          ))}
+          {unPublishProductData?.unPublishProduct?.errors?.map((err) => (
+            <p key={err.message} className="text-danger font-bold">
+              {err.message}
+            </p>
+          ))}
+          {editProductData?.editProduct?.updated && (
+            <p className="text-success font-bold">
+              Product updated successfully
+            </p>
+          )}
+          {publishProductData?.publishProduct?.published && (
+            <p className="text-success font-bold">
+              Product published successfully
+            </p>
+          )}
+          {unPublishProductData?.unPublishProduct?.unpublished && (
+            <p className="text-success font-bold">
+              Product unpublished successfully
+            </p>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <button className="flex items-center gap-2">
+            <EyeIcon />
+            <span className="text-xl font-medium">Preview</span>
+          </button>
+          <button
+            className="flex items-center gap-2"
+            onClick={togglePublishProduct}
+          >
+            <PublishIcon />
+            <span className="text-success text-xl font-medium">
+              {published.value ? "Unpublished" : "Published"}
+            </span>
+          </button>
+          <button className="flex items-center gap-2">
+            <TrashIcon />
+            <span className="text-danger text-xl font-medium">Delete</span>
+          </button>
+        </div>
       </div>
       <Form.Root
         className="flex flex-col gap-10"
@@ -442,7 +502,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-4 self-end">
+        <div className="flex flex-wrap items-center gap-4 self-end">
           <OutlinedButton title="Discard changes" onClick={resetForm} />
           <Form.Submit asChild>
             <Button title="Save changes" type="submit" loading={isSubmitting} />

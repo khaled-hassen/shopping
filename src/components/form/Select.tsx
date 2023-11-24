@@ -44,7 +44,7 @@ const Select: React.FC<IProps> = ({
     <div className="flex flex-col gap-4 @container">
       <div className="flex flex-col justify-between gap-4 @xs:flex-row @xs:items-center">
         <p className="text-xl font-bold">{label}</p>
-        {!!error && <p className="font-bold text-red-600">{error}</p>}
+        {!!error && <p className="text-danger font-bold">{error}</p>}
       </div>
       <Dropdown
         defaultValue={defaultValue}

@@ -22,12 +22,12 @@ const PasswordInput = forwardRef<HTMLInputElement, IProps>(
         <div className="flex items-center justify-between gap-4">
           <Form.Label className="text-xl font-bold">{label}</Form.Label>
           {!!error && (
-            <Form.Message className="font-bold text-red-600">
+            <Form.Message className="text-danger font-bold">
               {error}
             </Form.Message>
           )}
         </div>
-        <div className="border-dark-gray flex items-center gap-4 border border-opacity-50 bg-transparent px-4 py-3 text-xl">
+        <div className="flex items-center gap-4 border border-dark-gray border-opacity-50 bg-transparent px-4 py-3 text-xl">
           <Form.Control asChild className="flex-1">
             <input
               type={show.value ? "text" : "password"}

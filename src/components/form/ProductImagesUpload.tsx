@@ -66,7 +66,7 @@ const ProductImagesUpload: React.FC<IProps> = ({
     <div className="flex flex-col gap-4 @container">
       <div className="flex flex-col justify-between gap-4 @xs:flex-row @xs:items-center">
         <p className="text-xl font-bold">{label}</p>
-        {!!error && <p className="font-bold text-red-600">{error}</p>}
+        {!!error && <p className="text-danger font-bold">{error}</p>}
       </div>
 
       <div className="flex flex-wrap items-center gap-6">
@@ -83,7 +83,7 @@ const ProductImagesUpload: React.FC<IProps> = ({
             )}
             {selectedImage.value?.preview === image.preview && (
               <button
-                className="absolute right-3 top-3 bg-primary px-3 py-0.5 text-sm font-medium text-red-600"
+                className="text-danger absolute right-3 top-3 bg-primary px-3 py-0.5 text-sm font-medium"
                 onClick={() => removeImage(index)}
               >
                 Delete

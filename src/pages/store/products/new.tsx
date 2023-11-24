@@ -196,7 +196,7 @@ const NewProduct: React.FC<PageProps> = ({ data }) => {
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold">Create a new product</h1>
         {addProductData?.createNewProduct?.errors?.map((err) => (
-          <p key={err.message} className="font-bold text-red-600">
+          <p key={err.message} className="text-danger font-bold">
             {err.message}
           </p>
         ))}

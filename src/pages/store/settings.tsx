@@ -69,7 +69,7 @@ const Settings: React.FC<PageProps> = ({ data: storeData }) => {
           onSubmit={handleSubmit(saveChanges)}
           extraInfo={
             data?.updateStore?.updated && (
-              <p className="font-bold text-green-600">
+              <p className="text-success font-bold">
                 Store details updated successfully
               </p>
             )

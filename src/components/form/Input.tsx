@@ -13,11 +13,11 @@ interface IProps {
 const Input = forwardRef<HTMLInputElement, IProps>(
   ({ label, placeholder, error, name, onBlur, onChange }, ref) => {
     return (
-      <Form.Field className="@container flex flex-col gap-4" name={name}>
-        <div className="@xs:flex-row @xs:items-center flex flex-col justify-between gap-4">
+      <Form.Field className="flex flex-col gap-4 @container" name={name}>
+        <div className="flex flex-col justify-between gap-4 @xs:flex-row @xs:items-center">
           <Form.Label className="text-xl font-bold">{label}</Form.Label>
           {!!error && (
-            <Form.Message className="font-bold text-red-600">
+            <Form.Message className="text-danger font-bold">
               {error}
             </Form.Message>
           )}
