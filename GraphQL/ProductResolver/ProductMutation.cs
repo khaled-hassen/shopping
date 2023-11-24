@@ -38,4 +38,24 @@ public class ProductMutation {
         await _productService.UpdateProductAsync(id, product, store);
         return true;
     }
+
+    [Authorize]
+    [UseUser]
+    [UseMutationConvention(PayloadFieldName = "published")]
+    [Error<InvalidInputException>]
+    public async Task<bool> PublishProduct(string id, [GetUserStore] Store? store) {
+        if (store is null) throw new InvalidInputException("User must have a store to add a product");
+        await _productService.PublishProductAsync(id, store);
+        return true;
+    }
+
+    [Authorize]
+    [UseUser]
+    [UseMutationConvention(PayloadFieldName = "unpublished")]
+    [Error<InvalidInputException>]
+    public async Task<bool> UnPublishProduct(string id, [GetUserStore] Store? store) {
+        if (store is null) throw new InvalidInputException("User must have a store to add a product");
+        await _productService.UnPublishProductAsync(id, store);
+        return true;
+    }
 }

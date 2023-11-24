@@ -27,4 +27,5 @@ public class Product {
     public object Details { get; set; } = null!;
 
     public DateTime AddedAt { get; set; } = DateTime.UtcNow;
+    public bool Published { get; set; } = false;
 }

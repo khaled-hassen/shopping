@@ -49,7 +49,7 @@ public class ProductService : IProductService {
     }
 
     public async Task UpdateProductAsync(string id, ProductInput product, Store store) {
-        Product? oldProduct = await _products.Find(p => p.Id.ToString() == id).FirstOrDefaultAsync();
+        Product? oldProduct = await _products.Find(p => p.Id.ToString() == id && p.SellerId.Equals(store.Id)).FirstOrDefaultAsync();
         if (oldProduct is null) return;
 
         var folder = $"products/{id}";
@@ -94,7 +94,8 @@ public class ProductService : IProductService {
                 ProductType = product.ProductType.ToLower(),
                 ShipmentPrice = product.ShipmentPrice,
                 Reviews = oldProduct.Reviews,
-                AddedAt = oldProduct.AddedAt
+                AddedAt = oldProduct.AddedAt,
+                Published = false
             }
         );
     }
@@ -103,4 +104,22 @@ public class ProductService : IProductService {
         await _products.Find(
             c => c.Id.ToString() == id && c.SellerId.Equals(store.Id)
         ).FirstOrDefaultAsync();
+
+    public async Task PublishProductAsync(string id, Store store) {
+        Product? product = await GetStoreProductAsync(id, store);
+        if (product is null) throw new GraphQLException(new Error("Product not found", ErrorCodes.NotFound));
+        await _products.UpdateOneAsync(
+            p => p.Id.ToString() == id && p.SellerId.Equals(store.Id),
+            Builders<Product>.Update.Set(p => p.Published, true)
+        );
+    }
+
+    public async Task UnPublishProductAsync(string id, Store store) {
+        Product? product = await GetStoreProductAsync(id, store);
+        if (product is null) throw new GraphQLException(new Error("Product not found", ErrorCodes.NotFound));
+        await _products.UpdateOneAsync(
+            p => p.Id.ToString() == id && p.SellerId.Equals(store.Id),
+            Builders<Product>.Update.Set(p => p.Published, false)
+        );
+    }
 }
