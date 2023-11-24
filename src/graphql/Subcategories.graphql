@@ -36,7 +36,7 @@ mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: 
         }
 
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }
@@ -64,7 +64,7 @@ mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!
         updated
 
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }
@@ -74,7 +74,7 @@ mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!
         updated
 
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }
@@ -84,7 +84,7 @@ mutation UpdateSubcategory($id: String!, $name: String!, $productTypes: [String!
         updated
 
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }

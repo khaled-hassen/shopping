@@ -18,7 +18,7 @@ mutation UpdateCategory($id: String!, $name: String!, $image: Upload) {
         updated
 
         errors {
-            ...on InvalidInputExceptions {
+            ...on InvalidInputError {
                 message
             }
         }
@@ -32,7 +32,7 @@ mutation CreateNewCategory($name: String!, $image: Upload!) {
         }
 
         errors {
-            ... on InvalidInputExceptions {
+            ... on InvalidInputError {
                 message
             }
         }
