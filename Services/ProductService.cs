@@ -107,13 +107,20 @@ public class ProductService : IProductService {
                 Published = false
             }
         );
-        _cache.Remove($"ProductUnits-{id}");
+        _cache.Remove($"product-units-{id}");
     }
 
-    public async Task<Product?> GetStoreProductAsync(string id, Store store) =>
-        await _products.Find(
+    public async Task<ProductResult?> GetStoreProductAsync(string id, Store store) {
+        Product? product = await _products.Find(
             c => c.Id.ToString() == id && c.SellerId.Equals(store.Id)
         ).FirstOrDefaultAsync();
+        if (product is null) return null;
+
+        return new ProductResult(product) {
+            Description = _sanitizer.Sanitize(product.Description),
+            Units = await GetProductUnitsAsync(id)
+        };
+    }
 
     public async Task PublishProductAsync(string id, Store store) {
         Product? product = await GetStoreProductAsync(id, store);
@@ -154,7 +161,7 @@ public class ProductService : IProductService {
             )
             .AsExecutable();
 
-    public async Task<Dictionary<string, string>?> GetProductUnitsAsync(string id) {
+    private async Task<Dictionary<string, string>?> GetProductUnitsAsync(string id) {
         Product? product = await _products.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (product is null) return null;
         if (_cache.TryGetValue($"ProductUnits-{id}", out Dictionary<string, string>? units)) return units;
@@ -169,7 +176,7 @@ public class ProductService : IProductService {
             units.Add(filter.Name, filter.Unit);
         }
 
-        _cache.Set($"ProductUnits-{id}", units, TimeSpan.FromDays(30));
+        _cache.Set($"product-units-{id}", units, TimeSpan.FromDays(30));
         return units;
     }
 }

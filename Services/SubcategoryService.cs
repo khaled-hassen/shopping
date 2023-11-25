@@ -1,29 +1,39 @@
 ﻿using Backend.Helpers;
 using Backend.Interfaces;
 using Backend.Models;
+using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Backend.Services;
 
 public class SubcategoryService : ISubcategoryService {
+    private readonly IMemoryCache _cache;
     private readonly IMongoCollection<Category> _categories;
     private readonly IFileUploadService _fileUploadService;
     private readonly IMongoCollection<Subcategory> _subcategories;
 
-    public SubcategoryService(DatabaseService database, IFileUploadService fileUploadService) {
+    public SubcategoryService(DatabaseService database, IFileUploadService fileUploadService, IMemoryCache cache) {
         _fileUploadService = fileUploadService;
+        _cache = cache;
         _subcategories = database.GetSubcategoriesCollection();
         _categories = database.GetCategoriesCollection();
     }
 
-    public async Task<Subcategory?> GetSubcategoryAsync(string id) =>
-        await _subcategories.Find(c => c.Slug == id || c.Id.ToString() == id).FirstOrDefaultAsync();
+    public async Task<Subcategory?> GetSubcategoryAsync(string id) {
+        if (_cache.TryGetValue($"subcategory-{id}", out Subcategory? subcategory)) return subcategory;
+        subcategory = await _subcategories.Find(c => c.Slug == id || c.Id.ToString() == id).FirstOrDefaultAsync();
+        _cache.Set($"subcategory-{id}", subcategory, TimeSpan.FromDays(30));
+        return subcategory;
+    }
 
     public async Task<List<Subcategory>?> GetSubcategoriesAsync(string categoryId) {
+        if (_cache.TryGetValue($"{categoryId}-subcategories", out List<Subcategory>? subcategories)) return subcategories;
         Category? cat = _categories.Find(c => c.Id.ToString() == categoryId).FirstOrDefault();
         if (cat is null) return null;
-        return await _subcategories.Find(c => c.CategoryId.ToString() == categoryId).ToListAsync();
+        subcategories = await _subcategories.Find(c => c.CategoryId.ToString() == categoryId).ToListAsync();
+        _cache.Set($"{categoryId}-subcategories", subcategories, TimeSpan.FromDays(30));
+        return subcategories;
     }
 
     public async Task<Subcategory?> CreateSubcategoryAsync(string categoryId, Subcategory subcategory, IFile image) {
@@ -61,6 +71,7 @@ public class SubcategoryService : ISubcategoryService {
         if (updated is null || updated.ModifiedCount == 0) return null;
 
         await _subcategories.InsertOneAsync(subcategory);
+        _cache.Remove($"{categoryId}-subcategories");
         return subcategory;
     }
 
@@ -81,6 +92,7 @@ public class SubcategoryService : ISubcategoryService {
             c => c.Id.ToString() == id,
             update
         );
+        _cache.Remove($"subcategory-{id}");
         return updated is not null && updated.ModifiedCount > 0;
     }
 
@@ -92,6 +104,7 @@ public class SubcategoryService : ISubcategoryService {
                 StringUtils.ToLowerCase(productTypes)
             )
         );
+        _cache.Remove($"subcategory-{id}");
         return updated is not null && updated.ModifiedCount > 0;
     }
 
@@ -115,6 +128,7 @@ public class SubcategoryService : ISubcategoryService {
             c => c.Id.ToString() == id,
             Builders<Subcategory>.Update.Set(c => c.Filters, lowercaseFilters)
         );
+        _cache.Remove($"subcategory-{id}");
         return updated is not null && updated.ModifiedCount > 0;
     }
 
@@ -134,6 +148,7 @@ public class SubcategoryService : ISubcategoryService {
         DeleteResult? deleted = await _subcategories.DeleteOneAsync(c => c.Id.ToString() == id);
 
         _fileUploadService.DeleteFile(subcategory.Image ?? "");
+        _cache.Remove($"subcategory-{id}");
         return deleted is not null && deleted.DeletedCount > 0;
     }
 }

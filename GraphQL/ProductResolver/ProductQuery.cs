@@ -14,7 +14,7 @@ public class ProductQuery {
 
     [Authorize]
     [UseUser]
-    public async Task<Product?> GetStoreProduct(string id, [GetUserStore] Store? store) {
+    public async Task<ProductResult?> GetStoreProduct(string id, [GetUserStore] Store? store) {
         if (store is null) return null;
         return await _productService.GetStoreProductAsync(id, store);
     }
@@ -26,6 +26,4 @@ public class ProductQuery {
         if (store is null) return null;
         return _productService.GetStoreProductsAsync(store);
     }
-
-    public async Task<Dictionary<string, string>?> GetProductUnits(string id) => await _productService.GetProductUnitsAsync(id);
 }
