@@ -3,9 +3,11 @@ import { Store } from "@/__generated__/client";
 import OptimizedImage from "@/components/shared/OptimizedImage";
 import { asset } from "@/utils/assets";
 import StoreDetailsNavigation from "@/components/pages/store/StoreDetailsNavigation";
+import { twMerge } from "tailwind-merge";
 
 interface CommonProps {
   children?: React.ReactNode | React.ReactNode[];
+  className?: string;
 }
 
 interface OnlyNavigationProps {
@@ -26,10 +28,11 @@ const StoreDetailsContainer: React.FC<Props> = ({
   onlyNavigation,
   store,
   hideDetails,
+  className,
   children,
 }) => {
   return (
-    <div className="flex flex-col gap-10">
+    <div className={twMerge("flex flex-col gap-10", className)}>
       {!onlyNavigation && (
         <div className="remove-page-right-padding remove-page-left-padding -mt-10">
           <OptimizedImage

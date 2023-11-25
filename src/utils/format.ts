@@ -12,8 +12,8 @@ export class Format {
   }
 
   static percent(value: number | undefined): string {
-    if (!value) return "0%";
-    if (value < 1) return `${value * 100}%`;
-    return `${value}%`;
+    let percent = value || 0;
+    if (percent < 1) percent = percent * 100;
+    return `${Math.round(percent)}%`;
   }
 }

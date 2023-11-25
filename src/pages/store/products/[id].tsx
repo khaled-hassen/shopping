@@ -107,7 +107,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
       briefDescription: data.storeProduct?.briefDescription,
       description: data.storeProduct?.description,
       price: data.storeProduct?.price.toString(),
-      discount: data.storeProduct?.discount?.toString() || "0",
+      discount: formatDiscount(data.storeProduct?.discount),
       shipmentPrice: data.storeProduct?.shipmentPrice?.toString() || "0",
       categoryId: data.storeProduct?.categoryId,
       subcategoryId: data.storeProduct?.subcategoryId,
@@ -122,6 +122,11 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
   });
   const params = useParams();
   const router = useRouter();
+
+  function formatDiscount(discount: number | undefined | null) {
+    if (!discount) return "0";
+    return (discount < 1 ? discount * 100 : discount).toString();
+  }
 
   const [fetchSubcategories, { data: subcategories }] =
     useGetSubcategoriesLazyQuery();
@@ -269,32 +274,32 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl font-bold">Update product</h1>
           {editProductData?.editProduct?.errors?.map((err) => (
-            <p key={err.message} className="text-danger font-bold">
+            <p key={err.message} className="font-bold text-danger">
               {err.message}
             </p>
           ))}
           {publishProductData?.publishProduct?.errors?.map((err) => (
-            <p key={err.message} className="text-danger font-bold">
+            <p key={err.message} className="font-bold text-danger">
               {err.message}
             </p>
           ))}
           {unPublishProductData?.unPublishProduct?.errors?.map((err) => (
-            <p key={err.message} className="text-danger font-bold">
+            <p key={err.message} className="font-bold text-danger">
               {err.message}
             </p>
           ))}
           {editProductData?.editProduct?.updated && (
-            <p className="text-success font-bold">
+            <p className="font-bold text-success">
               Product updated successfully
             </p>
           )}
           {publishProductData?.publishProduct?.published && (
-            <p className="text-success font-bold">
+            <p className="font-bold text-success">
               Product published successfully
             </p>
           )}
           {unPublishProductData?.unPublishProduct?.unpublished && (
-            <p className="text-success font-bold">
+            <p className="font-bold text-success">
               Product unpublished successfully
             </p>
           )}
@@ -309,13 +314,13 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
             onClick={togglePublishProduct}
           >
             <PublishIcon />
-            <span className="text-success text-xl font-medium">
+            <span className="text-xl font-medium text-success">
               {published.value ? "Unpublished" : "Published"}
             </span>
           </button>
           <button className="flex items-center gap-2" onClick={removeProduct}>
             <TrashIcon />
-            <span className="text-danger text-xl font-medium">Delete</span>
+            <span className="text-xl font-medium text-danger">Delete</span>
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
 import { ssrGetCategoriesData } from "@/__generated__/ssr";
 import LinkButton from "@/components/shared/LinkButton";
@@ -10,12 +10,12 @@ import PageTitle from "@/components/pages/PageTitle";
 import CategoryCard from "@/components/pages/CategoryCard";
 import { useComputed } from "@preact/signals-react";
 
-export const getServerSideProps = (async () => {
+export const getStaticProps = (async () => {
   const client = initializeApolloClient();
   return await ssrGetCategoriesData.getServerPage({}, client);
-}) satisfies GetServerSideProps;
+}) satisfies GetStaticProps;
 
-type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+type PageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Categories: React.FC<PageProps> = ({ data }) => {
   const categories = useComputed(

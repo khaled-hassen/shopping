@@ -16,7 +16,7 @@ const OptimizedImage: React.FC<IProps> = ({ src, alt, className }) => {
       height={0}
       width={0}
       sizes="100vw"
-      className={twMerge("aspect-auto", className)}
+      className={twMerge("aspect-auto object-contain", className)}
     />
   );
 };

@@ -5,11 +5,13 @@
 @tailwind utilities;
 
 @layer base {
+    :root {
+        scroll-behavior: smooth;
+    }
+
     body {
         @apply font-karla bg-primary;
     }
-
-
 
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {

@@ -1,4 +1,4 @@
-query GetStore {
+query GetStore($pageSize: Int!, $skip: Int!) {
     store {
         id
         image
@@ -11,6 +11,29 @@ query GetStore {
     }
 
     storeFee
+
+    storeProducts(take: $pageSize, skip: $skip) {
+        items {
+            id
+            name
+            categoryId
+            productType
+            price
+            discount
+            coverImage
+            categories {
+                slug
+                name
+            }
+        }
+
+        pageInfo {
+            hasNextPage
+            hasPreviousPage
+        }
+
+        totalCount
+    }
 }
 
 mutation CreateStore($name: String!, $description: String!, $image: Upload!) {

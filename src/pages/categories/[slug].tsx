@@ -1,14 +1,28 @@
 import React from "react";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { ssrGetCategoryData } from "@/__generated__/ssr";
+import { ssrGetCategoriesData, ssrGetCategoryData } from "@/__generated__/ssr";
 import { route } from "@/router";
 import OptimizedImage from "@/components/shared/OptimizedImage";
 import { asset } from "@/utils/assets";
 import PageTitle from "@/components/pages/PageTitle";
 import CategoryCard from "@/components/pages/CategoryCard";
 
-export const getServerSideProps = (async (ctx) => {
+export const getStaticPaths = (async () => {
+  const client = initializeApolloClient();
+  const {
+    props: { data },
+  } = await ssrGetCategoriesData.getServerPage({}, client);
+
+  // Get the paths we want to pre-render based on posts
+  const paths = data?.categories?.map((cat) => ({
+    params: { slug: cat.slug },
+  }));
+
+  return { paths, fallback: "blocking" };
+}) satisfies GetStaticPaths;
+
+export const getStaticProps = (async (ctx) => {
   const slug = ctx.params?.slug as string;
   const client = initializeApolloClient();
   const { props } = await ssrGetCategoryData.getServerPage(
@@ -17,8 +31,8 @@ export const getServerSideProps = (async (ctx) => {
   );
   if (!props.data?.category) return { notFound: true };
   return { props };
-}) satisfies GetServerSideProps;
-type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+}) satisfies GetStaticProps;
+type PageProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Category: React.FC<PageProps> = ({ data }) => {
   return (

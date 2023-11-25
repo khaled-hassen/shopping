@@ -33,6 +33,7 @@ const routes = {
     path: "/reset-password",
     access: Access.NotAuthenticated,
   },
+  newStore: { path: "/new-store", access: Access.Authenticated },
   store: { path: "/store", access: Access.Authenticated },
   storePayment: { path: "/store/payment", access: Access.Authenticated },
   storeOrders: { path: "/store/orders", access: Access.Authenticated },

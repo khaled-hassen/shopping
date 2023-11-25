@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
 import { signOut } from "next-auth/react";
 import {
+  useGetUserLazyQuery,
   useGetUserQuery,
   useLogoutMutation,
   useRefreshAccessTokenLazyQuery,
@@ -17,18 +18,26 @@ const Layout: React.FC<IProps> = ({ children }) => {
   const [refreshAccessToken] = useRefreshAccessTokenLazyQuery();
   const timer = useRef<NodeJS.Timeout>();
   const [logout] = useLogoutMutation();
-  useGetUserQuery({
+  const [getUser] = useGetUserLazyQuery({
     async onCompleted(data) {
       await update({ user: data.me as any });
     },
   });
+  const userFetched = useRef(false);
+
+  useEffect(() => {
+    if (!session) return;
+    if (userFetched.current) return;
+    getUser().then(() => (userFetched.current = true));
+  }, [session, userFetched]);
 
   useEffect(() => {
     if (!session) return;
 
     async function refresh() {
       try {
-        const { data } = await refreshAccessToken();
+        const { data, error } = await refreshAccessToken();
+        if (error) return await signOut();
         const token = data?.refreshAccessToken;
         await update({ token });
       } catch (e) {

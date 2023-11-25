@@ -21,6 +21,7 @@ const config: Config = {
         "dark-gray": "#4D5157",
         danger: "#D83F31",
         success: "#219C90",
+        warning: "#F4D160",
       },
       keyframes: {
         reveal: {
