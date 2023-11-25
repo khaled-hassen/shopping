@@ -16,7 +16,7 @@ public class ConfigService : IConfigService {
     }
 
     public async Task<ConfigResult?> GetConfigAsync() {
-        var res = await _collection.Aggregate()
+        ConfigLookupResult? res = await _collection.Aggregate()
             .Lookup<Config, Category, ConfigLookupResult>(
                 _categoryCollection,
                 config => config.HomeHeroCategoryId,
@@ -46,7 +46,7 @@ public class ConfigService : IConfigService {
 
     public async Task<bool> UpdateConfigAsync(Config config) {
         config.Id = ObjectId.GenerateNewId();
-        var result = await _collection.ReplaceOneAsync(
+        ReplaceOneResult? result = await _collection.ReplaceOneAsync(
             _ => true,
             config,
             new ReplaceOptions {

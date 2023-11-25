@@ -11,6 +11,7 @@ using Backend.Interfaces;
 using Backend.Services;
 using Backend.Settings;
 using Fluid;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
@@ -61,6 +62,8 @@ builder.Services.AddSingleton<DatabaseService>();
 
 // setup email template parser
 builder.Services.AddSingleton<FluidParser>();
+
+builder.Services.AddSingleton<HtmlSanitizer>();
 
 // setup mailing service
 Configuration.Default.ApiKey.Add("api-key", builder.Configuration.GetSection("BrevoMailConfig:ApiKey").Value);

@@ -1,6 +1,7 @@
 ﻿using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
+using Ganss.Xss;
 using HotChocolate.Data;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -11,9 +12,11 @@ public class ProductService : IProductService {
     private readonly IMongoCollection<Category> _categories;
     private readonly IFileUploadService _fileUploadService;
     private readonly IMongoCollection<Product> _products;
+    private readonly HtmlSanitizer _sanitizer;
 
-    public ProductService(DatabaseService db, IFileUploadService fileUploadService) {
+    public ProductService(DatabaseService db, IFileUploadService fileUploadService, HtmlSanitizer sanitizer) {
         _fileUploadService = fileUploadService;
+        _sanitizer = sanitizer;
         _categories = db.GetCategoriesCollection();
         _products = db.GetProductsCollection();
     }
@@ -36,7 +39,7 @@ public class ProductService : IProductService {
                 SellerId = store.Id ?? ObjectId.Empty,
                 Name = product.Name,
                 BriefDescription = product.BriefDescription,
-                Description = product.Description,
+                Description = _sanitizer.Sanitize(product.Description),
                 CoverImage = coverImgUrl,
                 Images = imagesUrls,
                 Details = product.Details,
@@ -84,7 +87,7 @@ public class ProductService : IProductService {
                 SellerId = store.Id ?? ObjectId.Empty,
                 Name = product.Name,
                 BriefDescription = product.BriefDescription,
-                Description = product.Description,
+                Description = _sanitizer.Sanitize(product.Description),
                 CoverImage = coverImgUrl ?? oldProduct.CoverImage,
                 Images = imagesUrls,
                 Details = product.Details,
