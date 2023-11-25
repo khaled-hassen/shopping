@@ -22,7 +22,7 @@ public class ProductQuery {
 
     [Authorize]
     [UseUser]
-    [UsePaging(IncludeTotalCount = true, DefaultPageSize = 15)]
+    [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
     public IExecutable<StoreProduct> GetStoreProducts([GetUserStore] Store? store) {
         if (store is null) return new List<StoreProduct>().AsExecutable();
         return _productService.GetStoreProductsAsync(store);
