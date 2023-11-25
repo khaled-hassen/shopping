@@ -1,4 +1,4 @@
-query GetStore($pageSize: Int!, $skip: Int!) {
+query GetStore($pageSize: Int, $skip: Int) {
     store {
         id
         image
@@ -187,5 +187,28 @@ mutation DeleteProduct($id: String!) {
                 message
             }
         }
+    }
+}
+
+query GetStoreProductPreview($id: String!) {
+    storeProduct(id: $id) {
+        name
+        price
+        discount
+        shipmentPrice
+        briefDescription
+        description
+        details
+        coverImage
+        images
+    }
+
+    store {
+        name
+    }
+
+    productUnits(id: $id) {
+        key
+        value
     }
 }

@@ -33,6 +33,8 @@ import { useParams, useRouter } from "next/navigation";
 import EyeIcon from "@/components/icons/EyeIcon";
 import PublishIcon from "@/components/icons/PublishIcon";
 import TrashIcon from "@/components/icons/TrashIcon";
+import Link from "next/link";
+import sanitize from "sanitize-html";
 
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
@@ -239,7 +241,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
         id: params.id as string,
         product: {
           name: product.name,
-          description: product.description,
+          description: sanitize(product.description),
           briefDescription: product.briefDescription,
           categoryId: product.categoryId,
           subcategoryId: product.subcategoryId,
@@ -305,10 +307,13 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
           )}
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <button className="flex items-center gap-2">
+          <Link
+            href={route("previewStoreProduct", data.storeProduct?.id)}
+            className="flex items-center gap-2"
+          >
             <EyeIcon />
             <span className="text-xl font-medium">Preview</span>
-          </button>
+          </Link>
           <button
             className="flex items-center gap-2"
             onClick={togglePublishProduct}

@@ -70,10 +70,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      <StoreDetailsContainer
-        store={data.store as Store}
-        className="items-center"
-      >
+      <StoreDetailsContainer store={data.store as Store}>
         <PageTitle title="Products" />
         <div className="flex w-full flex-col gap-6">
           <div className="">
@@ -98,7 +95,12 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
                 <div className="flex flex-1 flex-wrap gap-x-6 gap-y-4 xs:grid md:grid-cols-2 lg:grid-cols-4">
                   <div className="flex flex-col gap-2 font-medium">
                     <p className="text-lg opacity-50">Product name</p>
-                    <p className="text-xl">{product.name}</p>
+                    <Link
+                      href={route("previewStoreProduct", product.id)}
+                      className="text-xl"
+                    >
+                      {product.name}
+                    </Link>
                   </div>
                   <div className="flex flex-col gap-2 font-medium">
                     <p className="text-lg opacity-50">Category</p>
@@ -140,7 +142,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
                   <p className="text-lg opacity-50">Actions</p>
                   <div className="flex flex-wrap items-center gap-6 xs:flex-col xs:flex-nowrap lg:flex-row">
                     <Link
-                      href={route("storeEditProduct", product.id)}
+                      href={route("editStoreProduct", product.id)}
                       className="flex items-center gap-2 text-xl font-medium"
                     >
                       <EditIcon />

@@ -33,7 +33,7 @@ const routes = {
     path: "/reset-password",
     access: Access.NotAuthenticated,
   },
-  newStore: { path: "/new-store", access: Access.Authenticated },
+  newStore: { path: "/store/new", access: Access.Authenticated },
   store: { path: "/store", access: Access.Authenticated },
   storePayment: { path: "/store/payment", access: Access.Authenticated },
   storeOrders: { path: "/store/orders", access: Access.Authenticated },
@@ -42,7 +42,11 @@ const routes = {
     path: "/store/products/new",
     access: Access.Authenticated,
   },
-  storeEditProduct: {
+  editStoreProduct: {
+    path: "/store/products/:slug/edit",
+    access: Access.Authenticated,
+  },
+  previewStoreProduct: {
     path: "/store/products/:slug",
     access: Access.Authenticated,
   },

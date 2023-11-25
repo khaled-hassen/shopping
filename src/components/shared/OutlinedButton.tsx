@@ -27,7 +27,7 @@ const OutlinedButton: React.FC<IProps> = ({
       type={type}
       disabled={loading || disabled}
       className={twMerge(
-        "flex w-fit items-center border-2 border-dark-gray bg-primary px-14 py-4 text-2xl font-medium text-dark-gray",
+        "flex w-fit items-center justify-center border-2 border-dark-gray bg-primary px-14 py-4 text-2xl font-medium text-dark-gray",
         clsx({
           "select-none opacity-50": loading || disabled,
         }),

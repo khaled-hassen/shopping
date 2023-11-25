@@ -25,6 +25,7 @@ import Checkbox from "@/components/form/Checkbox";
 import { useSignal } from "@preact/signals-react";
 import { redirect, useRouter } from "next/navigation";
 import { route } from "@/router";
+import sanitize from "sanitize-html";
 
 export const getServerSideProps = (async (context) => {
   const client = initializeApolloClient(context);
@@ -174,7 +175,7 @@ const NewProduct: React.FC<PageProps> = ({ data }) => {
       variables: {
         product: {
           name: product.name,
-          description: product.description,
+          description: sanitize(product.description),
           briefDescription: product.briefDescription,
           categoryId: product.categoryId,
           subcategoryId: product.subcategoryId,
@@ -196,7 +197,7 @@ const NewProduct: React.FC<PageProps> = ({ data }) => {
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold">Create a new product</h1>
         {addProductData?.createNewProduct?.errors?.map((err) => (
-          <p key={err.message} className="text-danger font-bold">
+          <p key={err.message} className="font-bold text-danger">
             {err.message}
           </p>
         ))}
