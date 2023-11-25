@@ -10,7 +10,7 @@ public interface IUserService {
 
     public Task<LoginResult?> LoginAsync(string email, string password);
 
-    public Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken);
+    public Task<AccessToken> RefreshAccessTokenAsync(string refreshToken);
     public Task LogoutAsync(ObjectId userId, string? refreshToken);
     public Task SendEmailVerificationEmailAsync(string email);
     public Task VerifyEmailAsync(string token);

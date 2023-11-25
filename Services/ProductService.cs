@@ -3,22 +3,27 @@ using Backend.Interfaces;
 using Backend.Models;
 using Ganss.Xss;
 using HotChocolate.Data;
+using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Backend.Services;
 
 public class ProductService : IProductService {
+    private readonly IMemoryCache _cache;
     private readonly IMongoCollection<Category> _categories;
     private readonly IFileUploadService _fileUploadService;
     private readonly IMongoCollection<Product> _products;
     private readonly HtmlSanitizer _sanitizer;
+    private readonly IMongoCollection<Subcategory> _subcategories;
 
-    public ProductService(DatabaseService db, IFileUploadService fileUploadService, HtmlSanitizer sanitizer) {
+    public ProductService(DatabaseService db, IFileUploadService fileUploadService, HtmlSanitizer sanitizer, IMemoryCache cache) {
         _fileUploadService = fileUploadService;
         _sanitizer = sanitizer;
+        _cache = cache;
         _categories = db.GetCategoriesCollection();
         _products = db.GetProductsCollection();
+        _subcategories = db.GetSubcategoriesCollection();
     }
 
     public async Task AddProductAsync(ProductInput product, Store store) {
@@ -102,6 +107,7 @@ public class ProductService : IProductService {
                 Published = false
             }
         );
+        _cache.Remove($"ProductUnits-{id}");
     }
 
     public async Task<Product?> GetStoreProductAsync(string id, Store store) =>
@@ -147,4 +153,23 @@ public class ProductService : IProductService {
                 p => p.Categories
             )
             .AsExecutable();
+
+    public async Task<Dictionary<string, string>?> GetProductUnitsAsync(string id) {
+        Product? product = await _products.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
+        if (product is null) return null;
+        if (_cache.TryGetValue($"ProductUnits-{id}", out Dictionary<string, string>? units)) return units;
+
+        Subcategory? subcategory = await _subcategories.Find(c => c.Id.Equals(product.SubcategoryId)).FirstOrDefaultAsync();
+        if (subcategory is null) return null;
+
+        IEnumerable<Filter> filters = subcategory.Filters.Where(f => f.ProductTypes.Contains(product.ProductType));
+        units = new Dictionary<string, string>();
+        foreach (Filter filter in filters) {
+            if (filter.Type != FilterType.Number) continue;
+            units.Add(filter.Name, filter.Unit);
+        }
+
+        _cache.Set($"ProductUnits-{id}", units, TimeSpan.FromDays(30));
+        return units;
+    }
 }

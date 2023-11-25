@@ -13,6 +13,7 @@ using Backend.Settings;
 using Fluid;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using sib_api_v3_sdk.Api;
@@ -64,6 +65,7 @@ builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddSingleton<FluidParser>();
 
 builder.Services.AddSingleton<HtmlSanitizer>();
+builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
 
 // setup mailing service
 Configuration.Default.ApiKey.Add("api-key", builder.Configuration.GetSection("BrevoMailConfig:ApiKey").Value);

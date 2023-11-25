@@ -82,9 +82,13 @@ public class UserService : IUserService {
         };
     }
 
-    public async Task<AccessToken> RefreshAccessTokenAsync(ObjectId userId, string refreshToken) {
+    public async Task<AccessToken> RefreshAccessTokenAsync(string refreshToken) {
         ClaimsPrincipal? claimsPrincipal = AuthHelpers.ValidateToken(refreshToken);
         if (claimsPrincipal is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+        Claim? claim = claimsPrincipal.FindFirst(ClaimTypes.Sid);
+        if (claim is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
+
+        ObjectId userId = ObjectId.Parse(claim.Value);
         User? user = await _users.Find(
                 Builders<User>.Filter.And(
                     Builders<User>.Filter.Eq(c => c.Id, userId),

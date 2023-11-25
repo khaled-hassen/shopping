@@ -31,12 +31,10 @@ public class UserQuery {
         return user.Result;
     }
 
-    [Authorize]
-    [UseUser]
-    public async Task<AccessToken> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor, [GetUser] UserResult user) {
+    public async Task<AccessToken> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor) {
         string? refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
         if (refreshToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
-        return await _userService.RefreshAccessTokenAsync(user.Id, refreshToken);
+        return await _userService.RefreshAccessTokenAsync(refreshToken);
     }
 
     public async Task<bool> SendEmailVerificationEmail(string email) {

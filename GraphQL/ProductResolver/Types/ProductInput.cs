@@ -21,6 +21,5 @@ public class ProductInput {
     public HashSet<ProductImage> Images { get; set; } = null!;
 
     [GraphQLType<AnyType>]
-    [GraphQLNonNullType]
     public object Details { get; set; } = null!;
 }

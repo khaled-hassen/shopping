@@ -26,4 +26,6 @@ public class ProductQuery {
         if (store is null) return null;
         return _productService.GetStoreProductsAsync(store);
     }
+
+    public async Task<Dictionary<string, string>?> GetProductUnits(string id) => await _productService.GetProductUnitsAsync(id);
 }
