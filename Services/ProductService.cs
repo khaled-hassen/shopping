@@ -8,11 +8,13 @@ using MongoDB.Driver;
 namespace Backend.Services;
 
 public class ProductService : IProductService {
+    private readonly IMongoCollection<Category> _categories;
     private readonly IFileUploadService _fileUploadService;
     private readonly IMongoCollection<Product> _products;
 
     public ProductService(DatabaseService db, IFileUploadService fileUploadService) {
         _fileUploadService = fileUploadService;
+        _categories = db.GetCategoriesCollection();
         _products = db.GetProductsCollection();
     }
 
@@ -40,7 +42,6 @@ public class ProductService : IProductService {
                 Details = product.Details,
                 Discount = product.Discount,
                 Price = product.Price,
-                DiscountedPrice = product.Discount is null ? null : product.Discount * product.Price,
                 CategoryId = product.CategoryId,
                 SubcategoryId = product.SubcategoryId,
                 ProductType = product.ProductType.ToLower(),
@@ -89,7 +90,6 @@ public class ProductService : IProductService {
                 Details = product.Details,
                 Discount = product.Discount,
                 Price = product.Price,
-                DiscountedPrice = product.Discount is null ? null : product.Discount * product.Price,
                 CategoryId = product.CategoryId,
                 SubcategoryId = product.SubcategoryId,
                 ProductType = product.ProductType.ToLower(),
@@ -133,6 +133,15 @@ public class ProductService : IProductService {
     }
 
 
-    public IExecutable<Product> GetStoreProductsAsync(Store store) =>
-        _products.Find(p => p.SellerId.Equals(store.Id)).AsExecutable();
+    public IExecutable<StoreProduct> GetStoreProductsAsync(Store store) =>
+        _products
+            .Aggregate()
+            .Match(p => p.SellerId.Equals(store.Id))
+            .Lookup<Product, Category, StoreProduct>(
+                _categories,
+                p => p.CategoryId,
+                c => c.Id,
+                p => p.Categories
+            )
+            .AsExecutable();
 }

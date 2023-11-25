@@ -14,7 +14,6 @@ public class Product {
     public string Description { get; set; } = null!;
     public decimal Price { get; set; }
     public decimal? Discount { get; set; }
-    public decimal? DiscountedPrice { get; set; }
     public decimal? ShipmentPrice { get; set; }
     public ObjectId CategoryId { get; set; }
     public ObjectId SubcategoryId { get; set; }

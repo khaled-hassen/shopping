@@ -1,4 +1,5 @@
 ﻿using Backend.Attributes;
+using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
 using HotChocolate.Authorization;
@@ -22,8 +23,8 @@ public class ProductQuery {
     [Authorize]
     [UseUser]
     [UsePaging(IncludeTotalCount = true, DefaultPageSize = 15)]
-    public IExecutable<Product> GetStoreProducts([GetUserStore] Store? store) {
-        if (store is null) return new List<Product>().AsExecutable();
+    public IExecutable<StoreProduct> GetStoreProducts([GetUserStore] Store? store) {
+        if (store is null) return new List<StoreProduct>().AsExecutable();
         return _productService.GetStoreProductsAsync(store);
     }
 }

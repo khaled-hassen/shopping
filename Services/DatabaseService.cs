@@ -3,7 +3,9 @@ using Backend.Attributes;
 using Backend.Models;
 using Backend.Settings;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Events;
 
 namespace Backend.Services;
 
@@ -11,7 +13,12 @@ public class DatabaseService {
     private readonly IMongoDatabase _database;
 
     public DatabaseService(IOptions<DataBaseSettings> settings) {
-        var client = new MongoClient(settings.Value.ConnectionString);
+        var url = new MongoUrl(settings.Value.ConnectionString);
+        MongoClientSettings? mongodbSettings = MongoClientSettings.FromUrl(url);
+        mongodbSettings.ClusterConfigurator = cb => {
+            cb.Subscribe<CommandStartedEvent>(e => { Console.WriteLine($"{e.CommandName} - {e.Command.ToJson()}"); });
+        };
+        var client = new MongoClient(mongodbSettings);
         _database = client.GetDatabase(settings.Value.DatabaseName);
     }
 
