@@ -83,6 +83,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 // setup graphql
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGraphQLServer()
+    .AddMongoDbPagingProviders()
     .AddAuthorization()
     .AllowIntrospection(builder.Environment.IsDevelopment())
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment())

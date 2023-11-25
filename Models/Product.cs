@@ -19,7 +19,7 @@ public class Product {
     public ObjectId CategoryId { get; set; }
     public ObjectId SubcategoryId { get; set; }
     public string ProductType { get; set; } = null!;
-    public HashSet<ObjectId>? Reviews { get; set; }
+    public HashSet<ObjectId>? ReviewsIds { get; set; }
     public string CoverImage { get; set; } = null!;
     public HashSet<string> Images { get; set; } = null!;
 

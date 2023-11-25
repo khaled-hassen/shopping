@@ -1,6 +1,7 @@
 ﻿using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
+using HotChocolate.Data;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -93,7 +94,7 @@ public class ProductService : IProductService {
                 SubcategoryId = product.SubcategoryId,
                 ProductType = product.ProductType.ToLower(),
                 ShipmentPrice = product.ShipmentPrice,
-                Reviews = oldProduct.Reviews,
+                ReviewsIds = oldProduct.ReviewsIds,
                 AddedAt = oldProduct.AddedAt,
                 Published = false
             }
@@ -130,4 +131,8 @@ public class ProductService : IProductService {
             p => p.Id.ToString() == id && p.SellerId.Equals(store.Id)
         );
     }
+
+
+    public IExecutable<Product> GetStoreProductsAsync(Store store) =>
+        _products.Find(p => p.SellerId.Equals(store.Id)).AsExecutable();
 }
