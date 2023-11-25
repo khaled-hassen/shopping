@@ -3,7 +3,6 @@ using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
 using HotChocolate.Authorization;
-using HotChocolate.Data;
 
 namespace Backend.GraphQL.ProductResolver;
 
@@ -24,7 +23,7 @@ public class ProductQuery {
     [UseUser]
     [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
     public IExecutable<StoreProduct> GetStoreProducts([GetUserStore] Store? store) {
-        if (store is null) return new List<StoreProduct>().AsExecutable();
+        if (store is null) return null;
         return _productService.GetStoreProductsAsync(store);
     }
 }
