@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { ssrGetStoreProductPreview } from "@/__generated__/ssr";
-import { route } from "@/router";
+import { ssrGetProduct } from "@/__generated__/ssr";
 import Gallery from "@/components/shared/Gallery";
 import { asset } from "@/utils/assets";
 import { Format } from "@/utils/format";
@@ -16,30 +15,28 @@ import sanitize from "sanitize-html";
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
   const client = initializeApolloClient(context);
-  const result = await ssrGetStoreProductPreview.getServerPage(
+  const result = await ssrGetProduct.getServerPage(
     { variables: { id } },
     client,
   );
-  if (!result.props.data?.store)
-    return { redirect: { destination: route("userStore"), permanent: false } };
-  if (!result.props.data?.storeProduct) return { notFound: true };
+  if (!result.props.data?.product) return { notFound: true };
   return result;
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const Product: React.FC<PageProps> = ({ data }) => {
+const Product: React.FC<PageProps> = ({ data: { product } }) => {
   function calculatePrice(price: number, discount?: number | null) {
     return Format.currency(price - price * (discount || 0));
   }
 
   const units = useMemo(() => {
     return (
-      data.storeProduct?.units?.reduce(
+      product?.units?.reduce(
         (old, newVal) => ({ ...old, [newVal.key]: newVal.value }),
         {} as Record<string, string>,
       ) || {}
     );
-  }, [data]);
+  }, [product]);
 
   return (
     <div className="flex flex-col gap-10">
@@ -48,44 +45,39 @@ const Product: React.FC<PageProps> = ({ data }) => {
         <div className="w-full transition-[width] lg:w-[36rem] xl:w-[40rem]">
           <Gallery
             images={[
-              asset(data.storeProduct?.coverImage),
-              ...(data.storeProduct?.images || []).map(asset),
+              asset(product?.coverImage),
+              ...(product?.images || []).map(asset),
             ]}
           />
         </div>
         <div className="flex flex-1 flex-col gap-6">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-6">
-              <h2 className="text-4xl font-medium">
-                {data.storeProduct?.name}
-              </h2>
-              {data.storeProduct?.discount && (
+              <h2 className="text-4xl font-medium">{product?.name}</h2>
+              {product?.discount && (
                 <p className="bg-warning px-1 py-0.5 text-sm">
-                  Save {Format.percent(data.storeProduct?.discount)}
+                  Save {Format.percent(product?.discount)}
                 </p>
               )}
             </div>
-            <p className="text-2xl">By {data.store?.name}</p>
+            <p className="text-2xl">By {product?.store?.name}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4 text-2xl">
               <p className="font-medium">Price:</p>
               <p
                 className={clsx({
-                  "line-through opacity-50": data.storeProduct?.discount,
+                  "line-through opacity-50": product?.discount,
                 })}
               >
-                {Format.currency(data.storeProduct?.price)}
+                {Format.currency(product?.price)}
               </p>
             </div>
-            {!!data.storeProduct?.discount && (
+            {!!product?.discount && (
               <div className="flex items-center gap-4 text-2xl">
                 <p className="font-medium">New Price:</p>
                 <p className="">
-                  {calculatePrice(
-                    data.storeProduct?.price || 0,
-                    data.storeProduct?.discount,
-                  )}
+                  {calculatePrice(product?.price || 0, product?.discount)}
                 </p>
               </div>
             )}
@@ -97,10 +89,10 @@ const Product: React.FC<PageProps> = ({ data }) => {
               <p className="text-2xl font-medium">Shipment</p>
               <ShipmentIcon />
             </div>
-            {data.storeProduct?.shipmentPrice ? (
+            {product?.shipmentPrice ? (
               <p className="text-xl">
                 This product shipment costs{" "}
-                {Format.currency(data.storeProduct?.shipmentPrice)}
+                {Format.currency(product?.shipmentPrice)}
               </p>
             ) : (
               <p className="text-xl">This item has free shipment</p>
@@ -108,7 +100,7 @@ const Product: React.FC<PageProps> = ({ data }) => {
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-2xl font-medium">Brief description</p>
-            <p className="text-xl">{data.storeProduct?.briefDescription}</p>
+            <p className="text-xl">{product?.briefDescription}</p>
           </div>
         </div>
       </div>
@@ -116,28 +108,26 @@ const Product: React.FC<PageProps> = ({ data }) => {
         <div
           className="all-revert"
           dangerouslySetInnerHTML={{
-            __html: sanitize(data.storeProduct?.description || ""),
+            __html: sanitize(product?.description || ""),
           }}
         />
       </Expandable>
 
       <Expandable title="Product description" defaultOpen>
         <div className="flex flex-col gap-4 empty:hidden">
-          {Object.entries(data.storeProduct?.details).map(
-            ([key, val]: [string, any]) => (
-              <div key={key} className="flex items-end gap-2">
-                <p className="text-2xl font-medium first-letter:uppercase">
-                  {key}:
-                </p>
-                <p className="text-xl">
-                  {val}{" "}
-                  {!!units[key] && (
-                    <span className="uppercase">{units[key]}</span>
-                  )}
-                </p>
-              </div>
-            ),
-          )}
+          {Object.entries(product?.details).map(([key, val]: [string, any]) => (
+            <div key={key} className="flex items-end gap-2">
+              <p className="text-2xl font-medium first-letter:uppercase">
+                {key}:
+              </p>
+              <p className="text-xl">
+                {val}{" "}
+                {!!units[key] && (
+                  <span className="uppercase">{units[key]}</span>
+                )}
+              </p>
+            </div>
+          ))}
         </div>
       </Expandable>
     </div>

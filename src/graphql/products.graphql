@@ -25,3 +25,24 @@ query GetProducts($subcategorySlug: String!, $pageSize: Int, $skip: Int) {
         }
     }
 }
+
+query GetProduct($id: String!) {
+    product(id: $id) {
+        name
+        price
+        discount
+        shipmentPrice
+        briefDescription
+        description
+        details
+        coverImage
+        images
+        units {
+            key
+            value
+        }
+        store {
+            name
+        }
+    }
+}
