@@ -8,4 +8,5 @@ public interface IProductService {
     Task<ProductResult?> GetProductAsync(string id, UserResult? user);
     public Task<Dictionary<string, string>?> GetProductUnitsAsync(string id);
     IExecutable<ProductResult> GetStoreAsync(string storeId);
+    IExecutable<ProductResult> GetWishlistProductsAsync(UserResult user);
 }

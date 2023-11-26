@@ -108,6 +108,24 @@ public class ProductService : IProductService {
             .AsExecutable();
     }
 
+    public IExecutable<ProductResult> GetWishlistProductsAsync(UserResult user) {
+        HashSet<ObjectId>? wishlistIds = user.WishlistIds;
+        if (wishlistIds is null || wishlistIds.Count == 0) return null;
+
+        return _products
+            .Aggregate()
+            .Match(c => wishlistIds.Contains(c.Id ?? ObjectId.Empty))
+            .Match(c => c.Published)
+            .Lookup<Product, Store, ProductLookupResult>(
+                _stores,
+                p => p.SellerId,
+                s => s.Id,
+                p => p.Stores
+            )
+            .Project(CreateProductProjection())
+            .AsExecutable();
+    }
+
     private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(
         string? productId = null,
         bool includeUnits = false,

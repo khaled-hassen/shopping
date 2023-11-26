@@ -2,6 +2,7 @@
 using Backend.GraphQL.ProductResolver.Types;
 using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
+using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.ProductResolver;
 
@@ -19,4 +20,10 @@ public class ProductQuery {
 
     [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
     public IExecutable<ProductResult> GetStoreProducts(string storeId) => _productService.GetStoreAsync(storeId);
+
+
+    [Authorize]
+    [UseUser]
+    [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
+    public IExecutable<ProductResult> GetUserWishlistProducts([GetUser] UserResult user) => _productService.GetWishlistProductsAsync(user);
 }
