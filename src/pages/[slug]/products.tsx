@@ -1,7 +1,11 @@
 import React from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { ProductResult, ssrGetProducts } from "@/__generated__/ssr";
+import {
+  ProductResult,
+  PublicStore,
+  ssrGetProducts,
+} from "@/__generated__/ssr";
 import { route } from "@/router";
 import OptimizedImage from "@/components/shared/OptimizedImage";
 import { asset } from "@/utils/assets";
@@ -101,7 +105,11 @@ const Products: React.FC<PageProps> = ({
         <PageTitle title="Products" />
         <div className="grid empty:hidden md:grid-cols-2 xl:grid-cols-3">
           {products?.items?.map((product) => (
-            <ProductCard key={product.id} product={product as ProductResult} />
+            <ProductCard
+              key={product.id}
+              product={product as ProductResult}
+              store={product.store as PublicStore}
+            />
           ))}
         </div>
       </section>

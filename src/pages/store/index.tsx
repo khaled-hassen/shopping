@@ -30,14 +30,14 @@ export const getServerSideProps = (async (context) => {
     },
     client,
   );
-  if (!response.props.data?.store)
+  if (!response.props.data?.userStore)
     return { redirect: { destination: route("newStore"), permanent: false } };
   return {
     props: {
       ...response.props,
       page,
       totalPages: Pagination.calculateTotalPages(
-        response.props.data.storeProducts?.totalCount || 0,
+        response.props.data.userStoreProducts?.totalCount || 0,
       ),
     },
   };
@@ -46,12 +46,12 @@ export const getServerSideProps = (async (context) => {
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
-  const products = useSignal(data.storeProducts?.items || []);
+  const products = useSignal(data.userStoreProducts?.items || []);
   const router = useRouter();
   const [deleteProduct] = useDeleteProductMutation();
 
   useEffect(() => {
-    products.value = data.storeProducts?.items || [];
+    products.value = data.userStoreProducts?.items || [];
   }, [data]);
 
   function calculatePrice(price: number, discount?: number | null) {
@@ -70,7 +70,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      <StoreDetailsContainer store={data.store as Store}>
+      <StoreDetailsContainer store={data.userStore as Store}>
         <PageTitle title="Products" />
         <div className="flex w-full flex-col gap-6">
           <div className="">

@@ -20,9 +20,9 @@ export const getServerSideProps = (async (context) => {
     { variables: { id } },
     client,
   );
-  if (!result.props.data?.store)
+  if (!result.props.data?.userStore)
     return { redirect: { destination: route("userStore"), permanent: false } };
-  if (!result.props.data?.storeProduct) return { notFound: true };
+  if (!result.props.data?.userStoreProduct) return { notFound: true };
   return result;
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -34,7 +34,7 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
 
   const units = useMemo(() => {
     return (
-      data.storeProduct?.units?.reduce(
+      data.userStoreProduct?.units?.reduce(
         (old, newVal) => ({ ...old, [newVal.key]: newVal.value }),
         {} as Record<string, string>,
       ) || {}
@@ -48,8 +48,8 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
         <div className="w-full transition-[width] lg:w-[36rem] xl:w-[40rem]">
           <Gallery
             images={[
-              asset(data.storeProduct?.coverImage),
-              ...(data.storeProduct?.images || []).map(asset),
+              asset(data.userStoreProduct?.coverImage),
+              ...(data.userStoreProduct?.images || []).map(asset),
             ]}
           />
         </div>
@@ -57,34 +57,34 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-6">
               <h2 className="text-4xl font-medium">
-                {data.storeProduct?.name}
+                {data.userStoreProduct?.name}
               </h2>
-              {data.storeProduct?.discount && (
+              {data.userStoreProduct?.discount && (
                 <p className="bg-warning px-1 py-0.5 text-sm">
-                  Save {Format.percent(data.storeProduct?.discount)}
+                  Save {Format.percent(data.userStoreProduct?.discount)}
                 </p>
               )}
             </div>
-            <p className="text-2xl">By {data.store?.name}</p>
+            <p className="text-2xl">By {data.userStore?.name}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4 text-2xl">
               <p className="font-medium">Price:</p>
               <p
                 className={clsx({
-                  "line-through opacity-50": data.storeProduct?.discount,
+                  "line-through opacity-50": data.userStoreProduct?.discount,
                 })}
               >
-                {Format.currency(data.storeProduct?.price)}
+                {Format.currency(data.userStoreProduct?.price)}
               </p>
             </div>
-            {!!data.storeProduct?.discount && (
+            {!!data.userStoreProduct?.discount && (
               <div className="flex items-center gap-4 text-2xl">
                 <p className="font-medium">New Price:</p>
                 <p className="">
                   {calculatePrice(
-                    data.storeProduct?.price || 0,
-                    data.storeProduct?.discount,
+                    data.userStoreProduct?.price || 0,
+                    data.userStoreProduct?.discount,
                   )}
                 </p>
               </div>
@@ -97,10 +97,10 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
               <p className="text-2xl font-medium">Shipment</p>
               <ShipmentIcon />
             </div>
-            {data.storeProduct?.shipmentPrice ? (
+            {data.userStoreProduct?.shipmentPrice ? (
               <p className="text-xl">
                 This product shipment costs{" "}
-                {Format.currency(data.storeProduct?.shipmentPrice)}
+                {Format.currency(data.userStoreProduct?.shipmentPrice)}
               </p>
             ) : (
               <p className="text-xl">This item has free shipment</p>
@@ -108,7 +108,7 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-2xl font-medium">Brief description</p>
-            <p className="text-xl">{data.storeProduct?.briefDescription}</p>
+            <p className="text-xl">{data.userStoreProduct?.briefDescription}</p>
           </div>
         </div>
       </div>
@@ -116,14 +116,14 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
         <div
           className="all-revert"
           dangerouslySetInnerHTML={{
-            __html: sanitize(data.storeProduct?.description || ""),
+            __html: sanitize(data.userStoreProduct?.description || ""),
           }}
         />
       </Expandable>
 
       <Expandable title="Product description" defaultOpen>
         <div className="flex flex-col gap-4 empty:hidden">
-          {Object.entries(data.storeProduct?.details).map(
+          {Object.entries(data.userStoreProduct?.details).map(
             ([key, val]: [string, any]) => (
               <div key={key} className="flex items-end gap-2">
                 <p className="text-2xl font-medium first-letter:uppercase">

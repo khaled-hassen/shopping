@@ -78,7 +78,9 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
                 </p>
               )}
             </div>
-            <p className="text-2xl">By {product?.store?.name}</p>
+            <Link href={route("store", product?.store.id)} className="text-2xl">
+              By {product?.store?.name}
+            </Link>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4 text-2xl">

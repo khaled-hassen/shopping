@@ -23,14 +23,14 @@ import {
 } from "@/__generated__/client";
 import Checkbox from "@/components/form/Checkbox";
 import { useSignal } from "@preact/signals-react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { route } from "@/router";
 import sanitize from "sanitize-html";
 
 export const getServerSideProps = (async (context) => {
   const client = initializeApolloClient(context);
   const result = await ssrGetNewProductInitialData.getServerPage({}, client);
-  if (!result.props.data?.store)
+  if (!result.props.data?.userStore)
     return { redirect: { destination: route("userStore"), permanent: false } };
   return result;
 }) satisfies GetServerSideProps;

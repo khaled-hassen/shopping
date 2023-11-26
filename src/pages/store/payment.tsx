@@ -15,29 +15,29 @@ type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Payment: React.FC<PageProps> = ({ data }) => {
   const storeFees = useComputed(() => {
-    if (!data.store || !data.storeFree) return 0;
-    return data.store.balance.totalSales * data.storeFree;
+    if (!data.userStore || !data.storeFee) return 0;
+    return data.userStore.balance.totalSales * data.storeFee;
   });
 
   return (
     <div className="flex flex-col gap-10">
-      <StoreDetailsContainer hideDetails store={data.store as Store}>
+      <StoreDetailsContainer hideDetails store={data.userStore as Store}>
         <div className="flex flex-col justify-between gap-10 sm:max-w-2xl sm:flex-row sm:items-start">
           <div className="flex items-center gap-10">
             <p className="text-3xl font-bold">Balance</p>
             <p className="text-3xl">
-              {Format.currency(data.store?.balance.balance)}
+              {Format.currency(data.userStore?.balance.balance)}
             </p>
           </div>
           <div className="flex flex-col gap-4 text-2xl">
             <p className="font-bold">Details</p>
             <div className="flex items-center justify-between gap-10">
               <p>Total sales</p>
-              <p>{Format.currency(data.store?.balance.totalSales)}</p>
+              <p>{Format.currency(data.userStore?.balance.totalSales)}</p>
             </div>
             <div className="flex items-center justify-between gap-10">
               <p>Store sales fee</p>
-              <p>{(data.storeFree || 0) * 100}%</p>
+              <p>{(data.storeFee || 0) * 100}%</p>
             </div>
             <div className="flex items-center justify-between gap-10">
               <p>Store fees</p>

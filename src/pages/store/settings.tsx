@@ -38,8 +38,8 @@ const Settings: React.FC<PageProps> = ({ data: storeData }) => {
   } = useForm<StoreSchema>({
     resolver: zodResolver(storeSchema),
     defaultValues: {
-      name: storeData?.store?.name,
-      description: storeData?.store?.description,
+      name: storeData?.userStore?.name,
+      description: storeData?.userStore?.description,
       imageUploaded: true,
     },
   });
@@ -69,7 +69,7 @@ const Settings: React.FC<PageProps> = ({ data: storeData }) => {
           onSubmit={handleSubmit(saveChanges)}
           extraInfo={
             data?.updateStore?.updated && (
-              <p className="text-success font-bold">
+              <p className="font-bold text-success">
                 Store details updated successfully
               </p>
             )
@@ -78,7 +78,7 @@ const Settings: React.FC<PageProps> = ({ data: storeData }) => {
           <ImageUpload
             label="Store image"
             error={errors.imageUploaded?.message}
-            defaultValue={asset(storeData?.store?.image)}
+            defaultValue={asset(storeData?.userStore?.image)}
             onUpload={(file) => {
               image.value = file;
               setValue("imageUploaded", !!file);

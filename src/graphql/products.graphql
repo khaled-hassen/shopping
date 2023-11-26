@@ -1,19 +1,19 @@
 query GetProducts($subcategorySlug: String!, $pageSize: Int, $skip: Int) {
-  products(subcategorySlug: $subcategorySlug, take: $pageSize, skip: $skip) {
-      items {
-          id
-          name
-          price
-          discount
-          coverImage
-          store {
-              id
-              name
-          }
-      }
+    products(subcategorySlug: $subcategorySlug, take: $pageSize, skip: $skip) {
+        items {
+            id
+            name
+            price
+            discount
+            coverImage
+            store {
+                id
+                name
+            }
+        }
 
-      totalCount
-  }
+        totalCount
+    }
 
     subcategory(slug: $subcategorySlug) {
         name
@@ -42,6 +42,7 @@ query GetProduct($id: String!) {
             value
         }
         store {
+            id
             name
         }
         category {
@@ -52,5 +53,25 @@ query GetProduct($id: String!) {
             name
             slug
         }
+    }
+}
+
+query GetStoreProducts($id: String!, $pageSize: Int, $skip: Int) {
+    publicStore(id: $id) {
+        id,
+        name
+        image
+        description
+    }
+
+    storeProducts(storeId: $id, take: $pageSize, skip: $skip) {
+        items {
+            id
+            name
+            price
+            discount
+            coverImage
+        }
+        totalCount
     }
 }

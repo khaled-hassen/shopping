@@ -1,16 +1,17 @@
 import React from "react";
 import OptimizedImage from "@/components/shared/OptimizedImage";
 import Link from "next/link";
-import { ProductResult } from "@/__generated__/ssr";
+import { ProductResult, PublicStore } from "@/__generated__/ssr";
 import { asset } from "@/utils/assets";
 import { route } from "@/router";
 import { Format } from "@/utils/format";
 
 interface IProps {
   product: ProductResult;
+  store: PublicStore;
 }
 
-const ProductCard: React.FC<IProps> = ({ product }) => {
+const ProductCard: React.FC<IProps> = ({ product, store }) => {
   function calculatePrice(price: number, discount?: number | null) {
     return Format.currency(price - price * (discount || 0));
   }
@@ -23,7 +24,7 @@ const ProductCard: React.FC<IProps> = ({ product }) => {
         </p>
       )}
 
-      <div className="touch-screen:gap-4 flex flex-1 flex-col items-center gap-10 transition-[gap] group-hover:gap-4">
+      <div className="touch-screen:gap-4 flex  flex-1 flex-col items-center gap-10 transition-all group-hover:mb-[0.85rem] group-hover:gap-4">
         <Link href={route("product", product.id)}>
           <OptimizedImage
             src={asset(product.coverImage)}
@@ -39,10 +40,10 @@ const ProductCard: React.FC<IProps> = ({ product }) => {
             {product.name}
           </Link>
           <Link
-            href={route("store", product.store.id)}
+            href={route("store", store.id)}
             className="text-center font-medium"
           >
-            {product.store.name}
+            {store.name}
           </Link>
           <div className="flex items-center gap-2">
             <p className="text-xl font-medium">
@@ -56,6 +57,7 @@ const ProductCard: React.FC<IProps> = ({ product }) => {
           </div>
         </div>
       </div>
+
       <div className="touch-screen:translate-y-0 mb-[-1px] flex translate-y-full flex-col transition-transform group-hover:translate-y-0">
         <button className="border border-b-0 border-dark-gray border-opacity-20 bg-primary px-20 py-4">
           <span className="text-2xl font-medium">Add to cart</span>

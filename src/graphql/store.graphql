@@ -1,5 +1,5 @@
 query GetStore($pageSize: Int, $skip: Int) {
-    store {
+    userStore {
         id
         image
         name
@@ -12,7 +12,7 @@ query GetStore($pageSize: Int, $skip: Int) {
 
     storeFee
 
-    storeProducts(take: $pageSize, skip: $skip) {
+    userStoreProducts(take: $pageSize, skip: $skip) {
         items {
             id
             name
@@ -77,7 +77,7 @@ mutation CreateNewProduct($product: ProductInput!) {
 
 query GetNewProductInitialData {
     storeFee
-    store {
+    userStore {
         id
     }
     categories {
@@ -114,7 +114,7 @@ mutation AddNewProduct($product: ProductInput!) {
 query GetStoreProduct($id: String!) {
     storeFee
 
-    store {
+    userStore {
         id
     }
 
@@ -123,7 +123,7 @@ query GetStoreProduct($id: String!) {
         name
     }
 
-    storeProduct(id: $id) {
+    userStoreProduct(id: $id) {
         id
         briefDescription
         categoryId
@@ -186,7 +186,7 @@ mutation DeleteProduct($id: String!) {
 }
 
 query GetStoreProductPreview($id: String!) {
-    storeProduct(id: $id) {
+    userStoreProduct(id: $id) {
         name
         price
         discount
@@ -202,7 +202,7 @@ query GetStoreProductPreview($id: String!) {
         }
     }
 
-    store {
+    userStore {
         name
     }
 }

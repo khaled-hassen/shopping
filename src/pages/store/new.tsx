@@ -17,7 +17,7 @@ import { route } from "@/router";
 export const getServerSideProps = (async (context) => {
   const client = initializeApolloClient(context);
   const response = await ssrGetStore.getServerPage({}, client);
-  if (response.props.data?.store)
+  if (response.props.data?.userStore)
     return { redirect: { destination: route("userStore"), permanent: false } };
   return { props: {} };
 }) satisfies GetServerSideProps;
