@@ -29,4 +29,6 @@ public class ProductQuery {
 
     [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
     public IExecutable<ProductResult> GetProducts(string subcategorySlug) => _productService.GetProductsAsync(subcategorySlug);
+
+    public async Task<ProductResult?> GetProduct(string id) => await _productService.GetProductAsync(id);
 }

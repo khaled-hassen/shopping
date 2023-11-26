@@ -181,6 +181,18 @@ public class ProductService : IProductService {
             .AsExecutable();
     }
 
+    public async Task<ProductResult?> GetProductAsync(string id) =>
+        await _products
+            .Aggregate()
+            .Match(c => c.Id.ToString() == id).Lookup<Product, Store, ProductLookupResult>(
+                _stores,
+                p => p.SellerId,
+                s => s.Id,
+                p => p.Stores
+            )
+            .Project(CreateProductProjection(true, id))
+            .FirstOrDefaultAsync();
+
     private async Task<Dictionary<string, string>?> GetProductUnitsAsync(string id) {
         Product? product = await _products.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
         if (product is null) return null;
@@ -200,8 +212,9 @@ public class ProductService : IProductService {
         return units;
     }
 
-    private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(bool withUnits = false) =>
-        c => new ProductResult {
+    private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(bool withUnits = false, string? productId = null) {
+        Dictionary<string, string>? units = withUnits && productId is not null ? GetProductUnitsAsync(productId).Result : null;
+        return c => new ProductResult {
             Id = c.Id,
             SellerId = c.SellerId,
             Name = c.Name,
@@ -224,6 +237,8 @@ public class ProductService : IProductService {
                 Name = c.Stores.First().Name,
                 Image = c.Stores.First().Image,
                 Description = c.Stores.First().Description
-            }
+            },
+            Units = units
         };
+    }
 }

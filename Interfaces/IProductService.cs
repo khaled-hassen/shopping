@@ -12,4 +12,5 @@ public interface IProductService {
     Task DeleteProductAsync(string id, Store store);
     IExecutable<StoreProduct> GetStoreProductsAsync(Store store);
     IExecutable<ProductResult> GetProductsAsync(string subcategorySlug);
+    Task<ProductResult?> GetProductAsync(string id);
 }
