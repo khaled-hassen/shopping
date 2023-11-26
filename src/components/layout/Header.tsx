@@ -33,7 +33,7 @@ const accountDropdownItems = [
   { name: "Settings", path: route("account"), Icon: SettingsIcon },
   { name: "Orders", path: route("orders"), Icon: OrdersIcon },
   { name: "Wishlist", path: route("wishlist"), Icon: WishlistIcon },
-  { name: "Store", path: route("store"), Icon: StoreIcon },
+  { name: "Store", path: route("userStore"), Icon: StoreIcon },
 ];
 
 const Header: React.FC<IProps> = ({}) => {

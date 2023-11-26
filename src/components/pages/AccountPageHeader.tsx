@@ -20,7 +20,7 @@ const pages = [
   { name: "Billing", path: route("billing"), Icon: BillingIcon },
   { name: "Orders", path: route("orders"), Icon: OrdersIcon },
   { name: "Wishlist", path: route("wishlist"), Icon: WishlistIcon },
-  { name: "Store", path: route("store"), Icon: StoreIcon },
+  { name: "Store", path: route("userStore"), Icon: StoreIcon },
 ];
 
 const AccountPageHeader: React.FC<IProps> = ({}) => {
@@ -34,7 +34,7 @@ const AccountPageHeader: React.FC<IProps> = ({}) => {
 
   return (
     <div className="flex flex-col-reverse items-end justify-between gap-10 xs:flex-row xs:items-start">
-      <div className="border-dark-gray flex w-full flex-col  gap-10 border p-4 xs:w-fit xs:flex-row xs:flex-wrap xs:items-center">
+      <div className="flex w-full flex-col gap-10  border border-dark-gray p-4 xs:w-fit xs:flex-row xs:flex-wrap xs:items-center">
         {pages.map((item) => (
           <Link
             key={item.path}
@@ -55,7 +55,7 @@ const AccountPageHeader: React.FC<IProps> = ({}) => {
         ))}
       </div>
       <button
-        className="border-dark-gray group flex items-center gap-4 border p-4 text-xl"
+        className="group flex items-center gap-4 border border-dark-gray p-4 text-xl"
         onClick={logoutUser}
       >
         <div className="grid h-full place-content-center">

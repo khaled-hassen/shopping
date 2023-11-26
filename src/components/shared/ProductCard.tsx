@@ -4,34 +4,64 @@ import Link from "next/link";
 import { ProductResult } from "@/__generated__/ssr";
 import { asset } from "@/utils/assets";
 import { route } from "@/router";
+import { Format } from "@/utils/format";
 
 interface IProps {
   product: ProductResult;
 }
 
 const ProductCard: React.FC<IProps> = ({ product }) => {
+  function calculatePrice(price: number, discount?: number | null) {
+    return Format.currency(price - price * (discount || 0));
+  }
+
   return (
-    <div className="children:transition-all children:duration-300">
-      <Link
-        href={route("product", product.id)}
-        className="group relative flex h-[26rem] origin-top flex-col items-center border border-dark-gray border-opacity-20 bg-primary p-10 hover:z-[1] hover:scale-y-105 hover:shadow-2xl"
-      >
-        <div className="absolute left-1/2 top-0 h-1 w-52 origin-top -translate-x-1/2 scale-y-0 bg-dark-gray group-hover:scale-y-100" />
-        <OptimizedImage
-          src={asset(product.coverImage)}
-          alt={product.name}
-          className="h-60 w-full mix-blend-darken group-hover:h-48"
-        />
-        <div className="-mb-10 grid flex-1 place-content-center group-hover:mb-6">
-          <p className="max-w-[14rem] text-center text-3xl">{product.name}</p>
+    <div className="group relative flex h-[29rem] flex-col items-center overflow-hidden border border-dark-gray border-opacity-20 bg-primary p-4 pb-0 xs:p-10">
+      {!!product.discount && (
+        <p className="absolute left-0 top-0 bg-warning px-1 py-0.5 text-sm">
+          Save {Format.percent(product.discount)}
+        </p>
+      )}
+
+      <div className="touch-screen:gap-4 flex flex-1 flex-col items-center gap-10 transition-[gap] group-hover:gap-4">
+        <Link href={route("product", product.id)}>
+          <OptimizedImage
+            src={asset(product.coverImage)}
+            alt={product.name}
+            className="h-60 w-full mix-blend-darken"
+          />
+        </Link>
+        <div className="flex flex-col items-center">
+          <Link
+            href={route("product", product.id)}
+            className="text-center text-2xl font-medium"
+          >
+            {product.name}
+          </Link>
+          <Link
+            href={route("store", product.store.id)}
+            className="text-center font-medium"
+          >
+            {product.store.name}
+          </Link>
+          <div className="flex items-center gap-2">
+            <p className="text-xl font-medium">
+              {calculatePrice(product.price, product.discount)}
+            </p>
+            {!!product.discount && (
+              <p className="text-sm line-through opacity-50">
+                {Format.currency(product.price)}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="absolute bottom-0 left-1/2 flex w-52 origin-bottom -translate-x-1/2 scale-y-0 flex-col group-hover:scale-y-100">
-          <button className="border border-b-0 border-dark-gray border-opacity-20 bg-primary p-4">
-            <span className="text-2xl font-medium">Browse</span>
-          </button>
-          <div className="h-1 bg-dark-gray" />
-        </div>
-      </Link>
+      </div>
+      <div className="touch-screen:translate-y-0 mb-[-1px] flex translate-y-full flex-col transition-transform group-hover:translate-y-0">
+        <button className="border border-b-0 border-dark-gray border-opacity-20 bg-primary px-20 py-4">
+          <span className="text-2xl font-medium">Add to cart</span>
+        </button>
+        <div className="h-1 bg-dark-gray" />
+      </div>
     </div>
   );
 };

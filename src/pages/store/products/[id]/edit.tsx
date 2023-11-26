@@ -44,7 +44,7 @@ export const getServerSideProps = (async (context) => {
     client,
   );
   if (!result.props.data?.store)
-    return { redirect: { destination: route("store"), permanent: false } };
+    return { redirect: { destination: route("userStore"), permanent: false } };
   if (!result.props.data?.storeProduct) return { notFound: true };
   return result;
 }) satisfies GetServerSideProps;
@@ -267,7 +267,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
 
   async function removeProduct() {
     await deleteProduct({ variables: { id: params.id as string } });
-    router.replace(route("store"));
+    router.replace(route("userStore"));
   }
 
   return (
@@ -308,7 +308,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <Link
-            href={route("previewStoreProduct", data.storeProduct?.id)}
+            href={route("userStorePreviewProduct", data.storeProduct?.id)}
             className="flex items-center gap-2"
           >
             <EyeIcon />

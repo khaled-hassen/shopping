@@ -34,24 +34,28 @@ const routes = {
     access: Access.NotAuthenticated,
   },
   newStore: { path: "/store/new", access: Access.Authenticated },
-  store: { path: "/store", access: Access.Authenticated },
-  storePayment: { path: "/store/payment", access: Access.Authenticated },
-  storeOrders: { path: "/store/orders", access: Access.Authenticated },
-  storeSettings: { path: "/store/settings", access: Access.Authenticated },
-  storeNewProduct: {
+  userStore: { path: "/store", access: Access.Authenticated },
+  userStorePayment: { path: "/store/payment", access: Access.Authenticated },
+  userStoreOrders: { path: "/store/orders", access: Access.Authenticated },
+  userStoreSettings: { path: "/store/settings", access: Access.Authenticated },
+  userStoreNewProduct: {
     path: "/store/products/new",
     access: Access.Authenticated,
   },
-  editStoreProduct: {
+  userStoreEditProduct: {
     path: "/store/products/:slug/edit",
     access: Access.Authenticated,
   },
-  previewStoreProduct: {
+  userStorePreviewProduct: {
     path: "/store/products/:slug",
     access: Access.Authenticated,
   },
   product: {
     path: "/products/:slug",
+    access: Access.Public,
+  },
+  store: {
+    path: "/stores/:slug",
     access: Access.Public,
   },
 };

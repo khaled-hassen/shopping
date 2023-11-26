@@ -32,6 +32,9 @@ const config: Config = {
       animation: {
         reveal: "reveal 1s ease-in-out",
       },
+      screens: {
+        "touch-screen": { raw: "(hover: none)" },
+      },
     },
   },
   plugins: [

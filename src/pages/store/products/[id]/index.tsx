@@ -21,7 +21,7 @@ export const getServerSideProps = (async (context) => {
     client,
   );
   if (!result.props.data?.store)
-    return { redirect: { destination: route("store"), permanent: false } };
+    return { redirect: { destination: route("userStore"), permanent: false } };
   if (!result.props.data?.storeProduct) return { notFound: true };
   return result;
 }) satisfies GetServerSideProps;

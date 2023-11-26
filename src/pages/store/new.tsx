@@ -18,7 +18,7 @@ export const getServerSideProps = (async (context) => {
   const client = initializeApolloClient(context);
   const response = await ssrGetStore.getServerPage({}, client);
   if (response.props.data?.store)
-    return { redirect: { destination: route("store"), permanent: false } };
+    return { redirect: { destination: route("userStore"), permanent: false } };
   return { props: {} };
 }) satisfies GetServerSideProps;
 
@@ -52,7 +52,7 @@ const NewStore: React.FC<PageProps> = () => {
       },
     });
     if (response.data?.createStore.errors) return;
-    router.replace(route("store"));
+    router.replace(route("userStore"));
   }
 
   return (

@@ -64,7 +64,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
   }
 
   function changePage(page: number) {
-    router.push(route("store") + `?page=${page}`, { scroll: false });
+    router.push(route("userStore") + `?page=${page}`, { scroll: false });
     window.scroll({ top: 0 });
   }
 
@@ -75,7 +75,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
         <div className="flex w-full flex-col gap-6">
           <div className="">
             <Link
-              href={route("storeNewProduct")}
+              href={route("userStoreNewProduct")}
               className="flex items-center gap-4 text-xl font-medium"
             >
               <PlusIcon />
@@ -96,7 +96,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
                   <div className="flex flex-col gap-2 font-medium">
                     <p className="text-lg opacity-50">Product name</p>
                     <Link
-                      href={route("previewStoreProduct", product.id)}
+                      href={route("userStorePreviewProduct", product.id)}
                       className="text-xl"
                     >
                       {product.name}
@@ -142,7 +142,7 @@ const Store: React.FC<PageProps> = ({ data, page, totalPages }) => {
                   <p className="text-lg opacity-50">Actions</p>
                   <div className="flex flex-wrap items-center gap-6 xs:flex-col xs:flex-nowrap lg:flex-row">
                     <Link
-                      href={route("editStoreProduct", product.id)}
+                      href={route("userStoreEditProduct", product.id)}
                       className="flex items-center gap-2 text-xl font-medium"
                     >
                       <EditIcon />
