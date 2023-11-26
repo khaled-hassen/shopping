@@ -9,6 +9,8 @@ import PageTitle from "@/components/pages/PageTitle";
 import Pagination from "@/utils/pagination";
 import Link from "next/link";
 import ProductCard from "@/components/shared/ProductCard";
+import Paging from "@/components/shared/Paging";
+import { useRouter } from "next/navigation";
 
 export const getServerSideProps = (async (ctx) => {
   const slug = ctx.params?.slug as string;
@@ -32,12 +34,25 @@ export const getServerSideProps = (async (ctx) => {
       totalPages: Pagination.calculateTotalPages(
         props.data.products?.totalCount || 0,
       ),
+      slug,
     },
   };
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const Products: React.FC<PageProps> = ({ data: { products, subcategory } }) => {
+const Products: React.FC<PageProps> = ({
+  data: { products, subcategory },
+  page,
+  totalPages,
+  slug,
+}) => {
+  const router = useRouter();
+
+  function changePage(page: number) {
+    router.push(route("products", slug) + `?page=${page}`, { scroll: false });
+    window.scroll({ top: 0 });
+  }
+
   return (
     <div className="-mt-10 flex flex-col gap-20">
       <section className="remove-page-right-padding remove-page-left-padding lg:page-right-padding flex flex-col items-center gap-20 bg-[#EAEBEF] lg:flex-row">
@@ -90,6 +105,14 @@ const Products: React.FC<PageProps> = ({ data: { products, subcategory } }) => {
           ))}
         </div>
       </section>
+
+      <div className="flex justify-center">
+        <Paging
+          initialPage={page}
+          totalPages={totalPages}
+          onPageChange={changePage}
+        />
+      </div>
     </div>
   );
 };
