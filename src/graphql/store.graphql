@@ -27,11 +27,6 @@ query GetStore($pageSize: Int, $skip: Int) {
             }
         }
 
-        pageInfo {
-            hasNextPage
-            hasPreviousPage
-        }
-
         totalCount
     }
 }
@@ -201,14 +196,13 @@ query GetStoreProductPreview($id: String!) {
         details
         coverImage
         images
+        units {
+            key
+            value
+        }
     }
 
     store {
         name
-    }
-
-    productUnits(id: $id) {
-        key
-        value
     }
 }

@@ -1,0 +1,27 @@
+query GetProducts($subcategorySlug: String!, $pageSize: Int, $skip: Int) {
+  products(subcategorySlug: $subcategorySlug, take: $pageSize, skip: $skip) {
+      items {
+          id
+          name
+          price
+          discount
+          coverImage
+          store {
+              id
+              name
+          }
+      }
+
+      totalCount
+  }
+
+    subcategory(slug: $subcategorySlug) {
+        name
+        productTypes
+        image
+        category {
+            name
+            slug
+        }
+    }
+}

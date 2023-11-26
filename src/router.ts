@@ -50,6 +50,10 @@ const routes = {
     path: "/store/products/:slug",
     access: Access.Authenticated,
   },
+  product: {
+    path: "/products/:slug",
+    access: Access.Public,
+  },
 };
 
 type Route = keyof typeof routes;

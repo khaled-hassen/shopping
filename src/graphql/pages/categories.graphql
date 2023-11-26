@@ -21,7 +21,7 @@ query GetCategoriesPageData {
 }
 
 query GetCategoryPageData($slug: String!) {
-    category(id: $slug) {
+    category(slug: $slug) {
         name
         image
         subcategories {

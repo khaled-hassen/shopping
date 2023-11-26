@@ -34,7 +34,7 @@ const PreviewProduct: React.FC<PageProps> = ({ data }) => {
 
   const units = useMemo(() => {
     return (
-      data.productUnits?.reduce(
+      data.storeProduct?.units?.reduce(
         (old, newVal) => ({ ...old, [newVal.key]: newVal.value }),
         {} as Record<string, string>,
       ) || {}
