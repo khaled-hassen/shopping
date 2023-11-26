@@ -1,8 +1,5 @@
-﻿using Backend.Attributes;
-using Backend.GraphQL.ProductResolver.Types;
+﻿using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
-using Backend.Models;
-using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.ProductResolver;
 
@@ -12,23 +9,11 @@ public class ProductQuery {
 
     public ProductQuery(IProductService productService) => _productService = productService;
 
-    [Authorize]
-    [UseUser]
-    public async Task<StoreProductResult?> GetStoreProduct(string id, [GetUserStore] Store? store) {
-        if (store is null) return null;
-        return await _productService.GetStoreProductAsync(id, store);
-    }
-
-    [Authorize]
-    [UseUser]
-    [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
-    public IExecutable<StoreProduct> GetStoreProducts([GetUserStore] Store? store) {
-        if (store is null) return null;
-        return _productService.GetStoreProductsAsync(store);
-    }
-
     [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
     public IExecutable<ProductResult> GetProducts(string subcategorySlug) => _productService.GetProductsAsync(subcategorySlug);
 
     public async Task<ProductResult?> GetProduct(string id) => await _productService.GetProductAsync(id);
+
+    [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
+    public IExecutable<ProductResult> GetStoreProducts(string storeId) => _productService.GetStoreAsync(storeId);
 }
