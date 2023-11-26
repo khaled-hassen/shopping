@@ -56,7 +56,10 @@ const Gallery: React.FC<IProps> = ({ images }) => {
       >
         {images.map((img, i) => (
           <SwiperSlide key={i} className="!flex !h-fit justify-center">
-            <OptimizedImage src={img} className="h-auto w-full max-w-2xl" />
+            <OptimizedImage
+              src={img}
+              className="h-auto max-h-[30rem] w-full max-w-2xl"
+            />
           </SwiperSlide>
         ))}
       </Swiper>

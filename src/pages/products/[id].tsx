@@ -14,6 +14,12 @@ import sanitize from "sanitize-html";
 import Link from "next/link";
 import { route } from "@/router";
 import ChevronIcon from "@/components/icons/ChevronIcon";
+import {
+  useAddProductToWishlistMutation,
+  useRemoveProductFromWishlistMutation,
+} from "@/__generated__/client";
+import { useSession } from "@/hooks/useSession";
+import { useSignal } from "@preact/signals-react";
 
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
@@ -28,8 +34,24 @@ export const getServerSideProps = (async (context) => {
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Product: React.FC<PageProps> = ({ data: { product } }) => {
+  const { session } = useSession();
+  const [addToWishlist, { loading: addingLoading }] =
+    useAddProductToWishlistMutation();
+  const [deleteFromWishlist, { loading: removingLoading }] =
+    useRemoveProductFromWishlistMutation();
+  const inWishlist = useSignal(product?.inWishlist || false);
+
   function calculatePrice(price: number, discount?: number | null) {
     return Format.currency(price - price * (discount || 0));
+  }
+
+  async function toggleWishlist() {
+    if (!session) return;
+    if (!product?.id) return;
+    if (inWishlist.value)
+      await deleteFromWishlist({ variables: { productId: product?.id } });
+    else await addToWishlist({ variables: { productId: product?.id } });
+    inWishlist.value = !inWishlist.value;
   }
 
   const units = useMemo(() => {
@@ -78,7 +100,10 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
                 </p>
               )}
             </div>
-            <Link href={route("store", product?.store.id)} className="text-2xl">
+            <Link
+              href={route("store", product?.store?.id)}
+              className="text-2xl"
+            >
               By {product?.store?.name}
             </Link>
           </div>
@@ -103,7 +128,14 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
             )}
           </div>
           <Button title="Add to cart" className="w-full max-w-lg" />
-          <OutlinedButton title="Add to wishlist" className="w-full max-w-lg" />
+          <OutlinedButton
+            title={
+              inWishlist.value ? "Remove from wishlist" : "Add to wishlist"
+            }
+            loading={addingLoading || removingLoading}
+            className="w-full max-w-lg"
+            onClick={toggleWishlist}
+          />
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4">
               <p className="text-2xl font-medium">Shipment</p>

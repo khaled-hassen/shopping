@@ -28,6 +28,7 @@ query GetProducts($subcategorySlug: String!, $pageSize: Int, $skip: Int) {
 
 query GetProduct($id: String!) {
     product(id: $id) {
+        id
         name
         price
         discount
@@ -53,6 +54,7 @@ query GetProduct($id: String!) {
             name
             slug
         }
+        inWishlist
     }
 }
 
@@ -73,5 +75,17 @@ query GetStoreProducts($id: String!, $pageSize: Int, $skip: Int) {
             coverImage
         }
         totalCount
+    }
+}
+
+mutation AddProductToWishlist($productId: String!) {
+    addProductToWishlist(input: {productId: $productId}) {
+        added
+    }
+}
+
+mutation RemoveProductFromWishlist($productId: String!) {
+    removeProductFromWishlist(input: {productId: $productId}) {
+        removed
     }
 }
