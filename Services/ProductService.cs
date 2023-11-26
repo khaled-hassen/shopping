@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Backend.GraphQL.ProductResolver.Types;
+using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
 using HotChocolate.Data;
@@ -43,7 +44,7 @@ public class ProductService : IProductService {
             .AsExecutable();
     }
 
-    public async Task<ProductResult?> GetProductAsync(string id) {
+    public async Task<ProductResult?> GetProductAsync(string id, UserResult? user) {
         IAggregateFluent<Product>? productQuery = _products
             .Aggregate()
             .Match(c => c.Id.ToString() == id)
@@ -51,6 +52,7 @@ public class ProductService : IProductService {
 
         ObjectId categoryId = await productQuery.Project(c => c.CategoryId).FirstOrDefaultAsync();
         ObjectId subcategoryId = await productQuery.Project(c => c.SubcategoryId).FirstOrDefaultAsync();
+        bool inWishlist = user?.WishlistIds?.Contains(ObjectId.Parse(id)) ?? false;
 
         return await productQuery.Lookup<Product, Store, ProductLookupResult>(
                 _stores,
@@ -65,7 +67,8 @@ public class ProductService : IProductService {
                     includeCategory: true,
                     categoryId: categoryId,
                     includeSubcategory: true,
-                    subcategoryId: subcategoryId
+                    subcategoryId: subcategoryId,
+                    inWishlist: inWishlist
                 )
             )
             .FirstOrDefaultAsync();
@@ -111,7 +114,8 @@ public class ProductService : IProductService {
         ObjectId? categoryId = null,
         bool includeCategory = false,
         ObjectId? subcategoryId = null,
-        bool includeSubcategory = false
+        bool includeSubcategory = false,
+        bool inWishlist = false
     ) {
         Dictionary<string, string>? units = includeUnits && productId is not null ? GetProductUnitsAsync(productId).Result : null;
         Category? category = null;
@@ -145,7 +149,8 @@ public class ProductService : IProductService {
             },
             Units = units,
             Category = category,
-            Subcategory = subcategory
+            Subcategory = subcategory,
+            InWishlist = inWishlist
         };
     }
 }

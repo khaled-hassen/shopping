@@ -12,6 +12,7 @@ public class UserResult {
     public string PhoneNumber { get; set; } = null!;
     public bool EmailVerified { get; set; }
     public BillingDetails? BillingDetails { get; set; } = null;
+    public HashSet<ObjectId>? WishlistIds { get; set; } = null;
 }
 
 public class AuthUserResult : UserResult {

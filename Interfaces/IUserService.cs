@@ -19,4 +19,6 @@ public interface IUserService {
     Task<PersonalDataEditResult> UpdatePersonalDataAsync(UserResult authUser, string firstName, string lastName, string phoneNumber, string email);
     Task UpdateBillingDetailsAsync(UserResult user, BillingDetails details);
     Task UpdatePasswordAsync(UserResult user, string oldPassword, string newPassword);
+    Task AddProductToWishlistAsync(UserResult user, string productId);
+    Task RemoveProductFromWishlist(UserResult user, string productId);
 }

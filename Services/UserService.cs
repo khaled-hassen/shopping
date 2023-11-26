@@ -237,4 +237,15 @@ public class UserService : IUserService {
             Builders<User>.Update.Set(c => c.Password, BCrypt.Net.BCrypt.HashPassword(newPassword))
         );
     }
+
+    public async Task AddProductToWishlistAsync(UserResult user, string productId) =>
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.AddToSet(c => c.WishlistIds, ObjectId.Parse(productId))
+        );
+
+    public async Task RemoveProductFromWishlist(UserResult user, string productId) => await _users.UpdateOneAsync(
+        c => c.Id.Equals(user.Id),
+        Builders<User>.Update.Pull(c => c.WishlistIds, ObjectId.Parse(productId))
+    );
 }

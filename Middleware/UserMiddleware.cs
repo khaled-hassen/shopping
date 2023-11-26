@@ -51,7 +51,8 @@ public class UserMiddleware {
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     EmailVerified = user.EmailVerifiedAt is not null,
-                    BillingDetails = user.BillingDetails
+                    BillingDetails = user.BillingDetails,
+                    WishlistIds = user.WishlistIds
                 }
             );
 
