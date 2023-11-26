@@ -89,3 +89,21 @@ mutation RemoveProductFromWishlist($productId: String!) {
         removed
     }
 }
+
+query GetUserWishlistItems($pageSize: Int, $skip: Int) {
+    userWishlistProducts(take: $pageSize, skip: $skip) {
+        items {
+            id
+            name
+            price
+            discount
+            coverImage
+            store {
+                id
+                name
+            }
+        }
+
+        totalCount
+    }
+}
