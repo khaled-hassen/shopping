@@ -171,6 +171,7 @@ public class ProductService : IProductService {
         return _products
             .Aggregate()
             .Match(c => c.SubcategoryId.Equals(id))
+            .Match(c => c.Published)
             .Lookup<Product, Store, ProductLookupResult>(
                 _stores,
                 p => p.SellerId,
@@ -181,17 +182,33 @@ public class ProductService : IProductService {
             .AsExecutable();
     }
 
-    public async Task<ProductResult?> GetProductAsync(string id) =>
-        await _products
+    public async Task<ProductResult?> GetProductAsync(string id) {
+        IAggregateFluent<Product>? productQuery = _products
             .Aggregate()
-            .Match(c => c.Id.ToString() == id).Lookup<Product, Store, ProductLookupResult>(
+            .Match(c => c.Id.ToString() == id)
+            .Match(c => c.Published);
+
+        ObjectId categoryId = await productQuery.Project(c => c.CategoryId).FirstOrDefaultAsync();
+        ObjectId subcategoryId = await productQuery.Project(c => c.SubcategoryId).FirstOrDefaultAsync();
+
+        return await productQuery.Lookup<Product, Store, ProductLookupResult>(
                 _stores,
                 p => p.SellerId,
                 s => s.Id,
                 p => p.Stores
             )
-            .Project(CreateProductProjection(true, id))
+            .Project(
+                CreateProductProjection(
+                    id,
+                    true,
+                    includeCategory: true,
+                    categoryId: categoryId,
+                    includeSubcategory: true,
+                    subcategoryId: subcategoryId
+                )
+            )
             .FirstOrDefaultAsync();
+    }
 
     private async Task<Dictionary<string, string>?> GetProductUnitsAsync(string id) {
         Product? product = await _products.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
@@ -212,8 +229,20 @@ public class ProductService : IProductService {
         return units;
     }
 
-    private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(bool withUnits = false, string? productId = null) {
-        Dictionary<string, string>? units = withUnits && productId is not null ? GetProductUnitsAsync(productId).Result : null;
+    private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(
+        string? productId = null,
+        bool includeUnits = false,
+        ObjectId? categoryId = null,
+        bool includeCategory = false,
+        ObjectId? subcategoryId = null,
+        bool includeSubcategory = false
+    ) {
+        Dictionary<string, string>? units = includeUnits && productId is not null ? GetProductUnitsAsync(productId).Result : null;
+        Category? category = null;
+        Subcategory? subcategory = null;
+        if (includeCategory && categoryId is not null) category = _categories.Find(c => c.Id.Equals(categoryId)).FirstOrDefault();
+        if (includeSubcategory && subcategoryId is not null) subcategory = _subcategories.Find(c => c.Id.Equals(subcategoryId)).FirstOrDefault();
+
         return c => new ProductResult {
             Id = c.Id,
             SellerId = c.SellerId,
@@ -238,7 +267,9 @@ public class ProductService : IProductService {
                 Image = c.Stores.First().Image,
                 Description = c.Stores.First().Description
             },
-            Units = units
+            Units = units,
+            Category = category,
+            Subcategory = subcategory
         };
     }
 }
