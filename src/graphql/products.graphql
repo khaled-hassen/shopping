@@ -44,5 +44,13 @@ query GetProduct($id: String!) {
         store {
             name
         }
+        category {
+            name
+            slug
+        }
+        subcategory {
+            name
+            slug
+        }
     }
 }

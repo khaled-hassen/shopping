@@ -11,6 +11,9 @@ import ShipmentIcon from "@/components/icons/ShipmentIcon";
 import { clsx } from "clsx";
 import Expandable from "@/components/shared/Expandable";
 import sanitize from "sanitize-html";
+import Link from "next/link";
+import { route } from "@/router";
+import ChevronIcon from "@/components/icons/ChevronIcon";
 
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
@@ -40,7 +43,21 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
 
   return (
     <div className="flex flex-col gap-10">
-      <h1 className="text-4xl font-bold uppercase">Product preview</h1>
+      <div className="flex w-fit flex-col items-start">
+        <div className="h-1 w-10 bg-dark-gray/50" />
+        <div className="flex items-center text-xl font-medium">
+          <Link href={route("category", product?.category?.slug)}>
+            {product?.category?.name}
+          </Link>
+          <ChevronIcon />
+          <Link href={route("products", product?.subcategory?.slug)}>
+            {product?.subcategory?.name}
+          </Link>
+          <ChevronIcon />
+          <p>{product?.name}</p>
+        </div>
+      </div>
+
       <div className="flex flex-col items-start gap-8 lg:flex-row">
         <div className="w-full transition-[width] lg:w-[36rem] xl:w-[40rem]">
           <Gallery
@@ -50,6 +67,7 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
             ]}
           />
         </div>
+
         <div className="flex flex-1 flex-col gap-6">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-6">
