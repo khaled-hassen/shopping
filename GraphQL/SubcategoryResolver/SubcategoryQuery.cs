@@ -1,4 +1,5 @@
-﻿using Backend.Interfaces;
+﻿using Backend.GraphQL.SubcategoryResolver.Types;
+using Backend.Interfaces;
 using Backend.Models;
 
 namespace Backend.GraphQL.SubcategoryResolver;
@@ -11,5 +12,5 @@ public class SubcategoryQuery {
 
     public async Task<List<Subcategory>?> GetSubcategories(string categoryId) => await _subcategoryService.GetSubcategoriesAsync(categoryId);
 
-    public async Task<Subcategory?> GetSubcategory(string id) => await _subcategoryService.GetSubcategoryAsync(id);
+    public async Task<SubcategoryResult?> GetSubcategory(string slug) => await _subcategoryService.GetSubcategoryAsync(slug);
 }

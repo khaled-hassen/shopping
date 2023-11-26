@@ -14,7 +14,7 @@ public class ProductQuery {
 
     [Authorize]
     [UseUser]
-    public async Task<ProductResult?> GetStoreProduct(string id, [GetUserStore] Store? store) {
+    public async Task<StoreProductResult?> GetStoreProduct(string id, [GetUserStore] Store? store) {
         if (store is null) return null;
         return await _productService.GetStoreProductAsync(id, store);
     }
@@ -26,4 +26,7 @@ public class ProductQuery {
         if (store is null) return null;
         return _productService.GetStoreProductsAsync(store);
     }
+
+    [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
+    public IExecutable<ProductResult> GetProducts(string subcategorySlug) => _productService.GetProductsAsync(subcategorySlug);
 }

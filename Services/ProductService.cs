@@ -1,4 +1,5 @@
-﻿using Backend.GraphQL.ProductResolver.Types;
+﻿using System.Linq.Expressions;
+using Backend.GraphQL.ProductResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
 using Ganss.Xss;
@@ -15,7 +16,9 @@ public class ProductService : IProductService {
     private readonly IFileUploadService _fileUploadService;
     private readonly IMongoCollection<Product> _products;
     private readonly HtmlSanitizer _sanitizer;
+    private readonly IMongoCollection<Store> _stores;
     private readonly IMongoCollection<Subcategory> _subcategories;
+
 
     public ProductService(DatabaseService db, IFileUploadService fileUploadService, HtmlSanitizer sanitizer, IMemoryCache cache) {
         _fileUploadService = fileUploadService;
@@ -23,6 +26,7 @@ public class ProductService : IProductService {
         _cache = cache;
         _categories = db.GetCategoriesCollection();
         _products = db.GetProductsCollection();
+        _stores = db.GetStoresCollection();
         _subcategories = db.GetSubcategoriesCollection();
     }
 
@@ -110,13 +114,13 @@ public class ProductService : IProductService {
         _cache.Remove($"product-units-{id}");
     }
 
-    public async Task<ProductResult?> GetStoreProductAsync(string id, Store store) {
+    public async Task<StoreProductResult?> GetStoreProductAsync(string id, Store store) {
         Product? product = await _products.Find(
             c => c.Id.ToString() == id && c.SellerId.Equals(store.Id)
         ).FirstOrDefaultAsync();
         if (product is null) return null;
 
-        return new ProductResult(product) {
+        return new StoreProductResult(product) {
             Description = _sanitizer.Sanitize(product.Description),
             Units = await GetProductUnitsAsync(id)
         };
@@ -148,7 +152,6 @@ public class ProductService : IProductService {
         );
     }
 
-
     public IExecutable<StoreProduct> GetStoreProductsAsync(Store store) =>
         _products
             .Aggregate()
@@ -160,6 +163,23 @@ public class ProductService : IProductService {
                 p => p.Categories
             )
             .AsExecutable();
+
+    public IExecutable<ProductResult> GetProductsAsync(string subcategorySlug) {
+        ObjectId? id = _subcategories.Find(c => c.Slug == subcategorySlug).Project(c => c.Id).FirstOrDefault();
+        if (id is null) return null;
+
+        return _products
+            .Aggregate()
+            .Match(c => c.SubcategoryId.Equals(id))
+            .Lookup<Product, Store, ProductLookupResult>(
+                _stores,
+                p => p.SellerId,
+                s => s.Id,
+                p => p.Stores
+            )
+            .Project(CreateProductProjection())
+            .AsExecutable();
+    }
 
     private async Task<Dictionary<string, string>?> GetProductUnitsAsync(string id) {
         Product? product = await _products.Find(c => c.Id.ToString() == id).FirstOrDefaultAsync();
@@ -179,4 +199,31 @@ public class ProductService : IProductService {
         _cache.Set($"product-units-{id}", units, TimeSpan.FromDays(30));
         return units;
     }
+
+    private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(bool withUnits = false) =>
+        c => new ProductResult {
+            Id = c.Id,
+            SellerId = c.SellerId,
+            Name = c.Name,
+            BriefDescription = c.BriefDescription,
+            CoverImage = c.CoverImage,
+            Images = c.Images,
+            Details = c.Details,
+            Discount = c.Discount,
+            Price = c.Price,
+            CategoryId = c.CategoryId,
+            SubcategoryId = c.SubcategoryId,
+            ProductType = c.ProductType.ToLower(),
+            ShipmentPrice = c.ShipmentPrice,
+            ReviewsIds = c.ReviewsIds,
+            AddedAt = c.AddedAt,
+            Published = c.Published,
+            Description = c.Description,
+            Store = new PublicStore {
+                Id = c.Stores.First().Id,
+                Name = c.Stores.First().Name,
+                Image = c.Stores.First().Image,
+                Description = c.Stores.First().Description
+            }
+        };
 }

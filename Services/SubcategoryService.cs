@@ -1,4 +1,5 @@
-﻿using Backend.Helpers;
+﻿using Backend.GraphQL.SubcategoryResolver.Types;
+using Backend.Helpers;
 using Backend.Interfaces;
 using Backend.Models;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,10 +21,31 @@ public class SubcategoryService : ISubcategoryService {
         _categories = database.GetCategoriesCollection();
     }
 
-    public async Task<Subcategory?> GetSubcategoryAsync(string id) {
-        if (_cache.TryGetValue($"subcategory-{id}", out Subcategory? subcategory)) return subcategory;
-        subcategory = await _subcategories.Find(c => c.Slug == id || c.Id.ToString() == id).FirstOrDefaultAsync();
-        _cache.Set($"subcategory-{id}", subcategory, TimeSpan.FromDays(30));
+    public async Task<SubcategoryResult?> GetSubcategoryAsync(string slug) {
+        if (_cache.TryGetValue($"subcategory-{slug}", out SubcategoryResult? subcategory)) return subcategory;
+        subcategory = await _subcategories
+            .Aggregate()
+            .Match(c => c.Slug == slug || c.Id.ToString() == slug)
+            .Lookup<Subcategory, Category, SubcategoryLookupResult>(
+                _categories,
+                s => s.CategoryId,
+                c => c.Id,
+                s => s.Categories
+            )
+            .Project(
+                c => new SubcategoryResult {
+                    Id = c.Id,
+                    ProductTypes = c.ProductTypes,
+                    CategoryId = c.CategoryId,
+                    Filters = c.Filters,
+                    Slug = c.Slug,
+                    Name = c.Name,
+                    Image = c.Image,
+                    Category = c.Categories.First()
+                }
+            )
+            .FirstOrDefaultAsync();
+        _cache.Set($"subcategory-{slug}", subcategory, TimeSpan.FromDays(30));
         return subcategory;
     }
 

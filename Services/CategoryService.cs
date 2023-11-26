@@ -54,12 +54,12 @@ public class CategoryService : ICategoryService {
         return categories;
     }
 
-    public async Task<CategoryResult?> GetCategoryAsync(string id) {
-        if (_cache.TryGetValue($"category-{id}", out CategoryResult? category)) return category;
+    public async Task<CategoryResult?> GetCategoryAsync(string slug) {
+        if (_cache.TryGetValue($"category-{slug}", out CategoryResult? category)) return category;
 
         category = await _categories
             .Aggregate()
-            .Match(c => c.Slug == id || c.Id.ToString() == id)
+            .Match(c => c.Slug == slug || c.Id.ToString() == slug)
             .Lookup<Category, Subcategory, CategoryResult>(
                 _subcategories,
                 category => category.SubcategoriesIds,
@@ -67,7 +67,7 @@ public class CategoryService : ICategoryService {
                 categoryResult => categoryResult.Subcategories
             )
             .FirstOrDefaultAsync();
-        _cache.Set($"category-{id}", category, TimeSpan.FromDays(30));
+        _cache.Set($"category-{slug}", category, TimeSpan.FromDays(30));
         return category;
     }
 
