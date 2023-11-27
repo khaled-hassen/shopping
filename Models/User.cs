@@ -31,4 +31,5 @@ public class User {
     public DateTime? EmailVerifiedAt { get; set; } = null;
     public BillingDetails? BillingDetails { get; set; } = null;
     public HashSet<ObjectId>? WishlistIds { get; set; } = null;
+    public Dictionary<string, int>? CartItems { get; set; } = null;
 }

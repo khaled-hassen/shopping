@@ -108,7 +108,8 @@ builder.Services.AddGraphQLServer()
     .AddType<UserMutation>()
     .AddType<StoreQuery>()
     .AddType<StoreMutation>()
-    .AddType<ProductQuery>();
+    .AddType<ProductQuery>()
+    .AddType<ProductMutation>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -111,20 +111,4 @@ public class UserMutation {
         await _userService.UpdatePasswordAsync(user, oldPassword, newPassword);
         return true;
     }
-
-    [UseMutationConvention(PayloadFieldName = "added")]
-    [Authorize]
-    [UseUser]
-    public async Task<bool> AddProductToWishlist(string productId, [GetUser] UserResult user) {
-        await _userService.AddProductToWishlistAsync(user, productId);
-        return true;
-    }
-
-    [UseMutationConvention(PayloadFieldName = "removed")]
-    [Authorize]
-    [UseUser]
-    public async Task<bool> RemoveProductFromWishlist(string productId, [GetUser] UserResult user) {
-        await _userService.RemoveProductFromWishlist(user, productId);
-        return true;
-    }
 }

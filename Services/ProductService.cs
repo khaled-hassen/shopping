@@ -16,7 +16,7 @@ public class ProductService : IProductService {
     private readonly IMongoCollection<Product> _products;
     private readonly IMongoCollection<Store> _stores;
     private readonly IMongoCollection<Subcategory> _subcategories;
-
+    private readonly IMongoCollection<User> _users;
 
     public ProductService(DatabaseService db, IMemoryCache cache) {
         _cache = cache;
@@ -24,6 +24,7 @@ public class ProductService : IProductService {
         _products = db.GetProductsCollection();
         _stores = db.GetStoresCollection();
         _subcategories = db.GetSubcategoriesCollection();
+        _users = db.GetUsersCollection();
     }
 
     public IExecutable<ProductResult> GetProductsAsync(string subcategorySlug) {
@@ -125,6 +126,67 @@ public class ProductService : IProductService {
             .Project(CreateProductProjection())
             .AsExecutable();
     }
+
+    public async Task AddProductToWishlistAsync(UserResult user, string productId) =>
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.AddToSet(c => c.WishlistIds, ObjectId.Parse(productId))
+        );
+
+    public async Task RemoveProductFromWishlistAsync(UserResult user, string productId) => await _users.UpdateOneAsync(
+        c => c.Id.Equals(user.Id),
+        Builders<User>.Update.Pull(c => c.WishlistIds, ObjectId.Parse(productId))
+    );
+
+    public async Task<CartProduct?> AddProductToCartAsync(UserResult user, string productId) {
+        Dictionary<string, int> newCartItems = user.CartItems ?? new Dictionary<string, int>();
+        if (newCartItems.ContainsKey(productId)) newCartItems[productId] += 1;
+        else newCartItems.Add(productId, 1);
+
+        UpdateResult? updated = await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.Set(c => c.CartItems, newCartItems)
+        );
+
+        if (updated is null || updated.MatchedCount == 0) return null;
+        return await _products
+            .Find(c => c.Id.ToString() == productId)
+            .Project(
+                c => new CartProduct {
+                    Id = c.Id.ToString()!,
+                    Name = c.Name,
+                    Price = c.Price,
+                    Discount = c.Discount,
+                    CoverImage = c.CoverImage
+                }
+            )
+            .FirstOrDefaultAsync();
+    }
+
+
+    public async Task<CartProduct?> RemoveProductFromCartAsync(UserResult user, string productId) {
+        UpdateResult? updated = await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update
+                .SetOnInsert(u => u.CartItems, new Dictionary<string, int>())
+                .Inc(u => u.CartItems![productId], -1)
+                .PullFilter(u => u.CartItems, c => c.Value == 0)
+        );
+        if (updated is null || updated.MatchedCount == 0) return null;
+        return await _products
+            .Find(c => c.Id.ToString() == productId)
+            .Project(
+                c => new CartProduct {
+                    Id = c.Id.ToString()!,
+                    Name = c.Name,
+                    Price = c.Price,
+                    Discount = c.Discount,
+                    CoverImage = c.CoverImage
+                }
+            )
+            .FirstOrDefaultAsync();
+    }
+
 
     private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(
         string? productId = null,

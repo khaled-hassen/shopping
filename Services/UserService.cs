@@ -53,16 +53,17 @@ public class UserService : IUserService {
             throw new GraphQLException(new Error("Email not verified", ErrorCodes.EmailNotVerified));
         }
 
-        DateTime refreshTokenExpireDate = DateTime.Now.AddDays(30);
-        var refreshToken = new RefreshToken {
-            ExpireDate = refreshTokenExpireDate,
-            Value = AuthHelpers.CreateToken(refreshTokenExpireDate)
-        };
-        await _users.UpdateOneAsync(c => c.Id.Equals(user.Id), Builders<User>.Update.AddToSet(c => c.RefreshTokens, refreshToken));
-
         var claims = new List<Claim> {
             new(ClaimTypes.Sid, user.Id.ToString()!)
         };
+
+        DateTime refreshTokenExpireDate = DateTime.Now.AddDays(30);
+        var refreshToken = new RefreshToken {
+            ExpireDate = refreshTokenExpireDate,
+            Value = AuthHelpers.CreateToken(refreshTokenExpireDate, claims)
+        };
+        await _users.UpdateOneAsync(c => c.Id.Equals(user.Id), Builders<User>.Update.AddToSet(c => c.RefreshTokens, refreshToken));
+
         DateTime accessTokenExpireDate = DateTime.Now.AddMinutes(15);
         string accessToken = AuthHelpers.CreateToken(accessTokenExpireDate, claims);
 
@@ -237,15 +238,4 @@ public class UserService : IUserService {
             Builders<User>.Update.Set(c => c.Password, BCrypt.Net.BCrypt.HashPassword(newPassword))
         );
     }
-
-    public async Task AddProductToWishlistAsync(UserResult user, string productId) =>
-        await _users.UpdateOneAsync(
-            c => c.Id.Equals(user.Id),
-            Builders<User>.Update.AddToSet(c => c.WishlistIds, ObjectId.Parse(productId))
-        );
-
-    public async Task RemoveProductFromWishlist(UserResult user, string productId) => await _users.UpdateOneAsync(
-        c => c.Id.Equals(user.Id),
-        Builders<User>.Update.Pull(c => c.WishlistIds, ObjectId.Parse(productId))
-    );
 }
