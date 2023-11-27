@@ -107,3 +107,27 @@ query GetUserWishlistItems($pageSize: Int, $skip: Int) {
         totalCount
     }
 }
+
+mutation AddProductToCart($productId: String!) {
+    addProductToCart(input: {productId: $productId}) {
+        cartProduct {
+            id
+            name
+            price
+            discount
+            coverImage
+        }
+    }
+}
+
+mutation RemoveProductFromCart($productId: String!) {
+    removeProductFromCart(input: {productId: $productId}) {
+        cartProduct {
+            id
+            name
+            price
+            discount
+            coverImage
+        }
+    }
+}

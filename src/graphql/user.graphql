@@ -64,6 +64,19 @@ query GetUser {
             city
             postalCode
         }
+        cart {
+            items {
+                product {
+                    id
+                    name
+                    price
+                    discount
+                    coverImage
+                }
+                quantity
+            }
+            total
+        }
     }
 }
 

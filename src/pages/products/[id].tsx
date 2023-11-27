@@ -20,6 +20,8 @@ import {
 } from "@/__generated__/client";
 import { useSession } from "@/hooks/useSession";
 import { useSignal } from "@preact/signals-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCart } from "@/hooks/useCart";
 
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
@@ -35,24 +37,15 @@ type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Product: React.FC<PageProps> = ({ data: { product } }) => {
   const { session } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { addToCartLoading, addProductToCart, isInCart, openCart } = useCart();
+
   const [addToWishlist, { loading: addingLoading }] =
     useAddProductToWishlistMutation();
   const [deleteFromWishlist, { loading: removingLoading }] =
     useRemoveProductFromWishlistMutation();
   const inWishlist = useSignal(product?.inWishlist || false);
-
-  function calculatePrice(price: number, discount?: number | null) {
-    return Format.currency(price - price * (discount || 0));
-  }
-
-  async function toggleWishlist() {
-    if (!session) return;
-    if (!product?.id) return;
-    if (inWishlist.value)
-      await deleteFromWishlist({ variables: { productId: product?.id } });
-    else await addToWishlist({ variables: { productId: product?.id } });
-    inWishlist.value = !inWishlist.value;
-  }
 
   const units = useMemo(() => {
     return (
@@ -62,6 +55,22 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
       ) || {}
     );
   }, [product]);
+
+  function calculatePrice(price: number, discount?: number | null) {
+    return Format.currency(price - price * (discount || 0));
+  }
+
+  async function toggleWishlist() {
+    if (!session)
+      return router.push(
+        route("login") + `?callback=${encodeURIComponent(pathname)}`,
+      );
+    if (!product?.id) return;
+    if (inWishlist.value)
+      await deleteFromWishlist({ variables: { productId: product?.id } });
+    else await addToWishlist({ variables: { productId: product?.id } });
+    inWishlist.value = !inWishlist.value;
+  }
 
   return (
     <div className="flex flex-col gap-10">
@@ -127,7 +136,16 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
               </div>
             )}
           </div>
-          <Button title="Add to cart" className="w-full max-w-lg" />
+          <Button
+            title={isInCart(product?.id || "") ? "View in cart" : "Add to cart"}
+            className="w-full max-w-lg"
+            loading={addToCartLoading}
+            onClick={() =>
+              isInCart(product?.id || "")
+                ? openCart()
+                : addProductToCart(product?.id || "")
+            }
+          />
           <OutlinedButton
             title={
               inWishlist.value ? "Remove from wishlist" : "Add to wishlist"

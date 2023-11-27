@@ -3,7 +3,6 @@ import Header from "@/components/layout/Header";
 import { signOut } from "next-auth/react";
 import {
   useGetUserLazyQuery,
-  useGetUserQuery,
   useLogoutMutation,
   useRefreshAccessTokenLazyQuery,
 } from "@/__generated__/client";

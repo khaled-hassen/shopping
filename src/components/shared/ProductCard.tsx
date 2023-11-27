@@ -5,6 +5,7 @@ import { ProductResult, PublicStore } from "@/__generated__/ssr";
 import { asset } from "@/utils/assets";
 import { route } from "@/router";
 import { Format } from "@/utils/format";
+import { useCart } from "@/hooks/useCart";
 
 interface IProps {
   product: ProductResult;
@@ -12,6 +13,8 @@ interface IProps {
 }
 
 const ProductCard: React.FC<IProps> = ({ product, store }) => {
+  const { addProductToCart, isInCart, openCart } = useCart();
+
   function calculatePrice(price: number, discount?: number | null) {
     return Format.currency(price - price * (discount || 0));
   }
@@ -24,7 +27,7 @@ const ProductCard: React.FC<IProps> = ({ product, store }) => {
         </p>
       )}
 
-      <div className="touch-screen:gap-4 flex  flex-1 flex-col items-center gap-10 transition-all group-hover:mb-[0.85rem] group-hover:gap-4">
+      <div className="flex flex-1  flex-col items-center gap-10 transition-all group-hover:mb-[0.85rem] group-hover:gap-4 touch-screen:gap-4">
         <Link href={route("product", product.id)}>
           <OptimizedImage
             src={asset(product.coverImage)}
@@ -58,9 +61,18 @@ const ProductCard: React.FC<IProps> = ({ product, store }) => {
         </div>
       </div>
 
-      <div className="touch-screen:translate-y-0 mb-[-1px] flex translate-y-full flex-col transition-transform group-hover:translate-y-0">
-        <button className="border border-b-0 border-dark-gray border-opacity-20 bg-primary px-20 py-4">
-          <span className="text-2xl font-medium">Add to cart</span>
+      <div className="mb-[-1px] flex translate-y-full flex-col transition-transform group-hover:translate-y-0 touch-screen:translate-y-0">
+        <button
+          className="border border-b-0 border-dark-gray border-opacity-20 bg-primary px-20 py-4"
+          onClick={() =>
+            isInCart(product?.id || "")
+              ? openCart()
+              : addProductToCart(product?.id || "")
+          }
+        >
+          <span className="text-2xl font-medium">
+            {isInCart(product?.id || "") ? "View in cart" : "Add to cart"}
+          </span>
         </button>
         <div className="h-1 bg-dark-gray" />
       </div>
