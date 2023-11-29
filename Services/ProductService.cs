@@ -165,12 +165,15 @@ public class ProductService : IProductService {
 
 
     public async Task<CartProduct?> RemoveProductFromCartAsync(UserResult user, string productId) {
+        Dictionary<string, int> newCartItems = user.CartItems ?? new Dictionary<string, int>();
+        if (newCartItems.ContainsKey(productId)) {
+            newCartItems[productId] -= 1;
+            if (newCartItems[productId] <= 0) newCartItems.Remove(productId);
+        }
+
         UpdateResult? updated = await _users.UpdateOneAsync(
             c => c.Id.Equals(user.Id),
-            Builders<User>.Update
-                .SetOnInsert(u => u.CartItems, new Dictionary<string, int>())
-                .Inc(u => u.CartItems![productId], -1)
-                .PullFilter(u => u.CartItems, c => c.Value == 0)
+            Builders<User>.Update.Set(c => c.CartItems, newCartItems)
         );
         if (updated is null || updated.MatchedCount == 0) return null;
         return await _products

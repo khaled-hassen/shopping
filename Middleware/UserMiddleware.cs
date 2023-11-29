@@ -74,7 +74,7 @@ public class UserMiddleware {
 
         var cart = new Cart {
             Items = products.Select(c => new CartItem { Product = c, Quantity = cartItems[c.Id] }).ToHashSet(),
-            Total = products.Sum(c => c.Price - c.Price * (c.Discount ?? 0))
+            Total = products.Sum(c => (c.Price - c.Price * (c.Discount ?? 0)) * cartItems[c.Id])
         };
 
         if (!context.ContextData.ContainsKey(UserContextDataKey))
