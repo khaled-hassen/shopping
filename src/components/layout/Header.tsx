@@ -20,6 +20,7 @@ import OrdersIcon from "@/components/icons/OrdersIcon";
 import LogoutIcon from "@/components/icons/LogoutIcon";
 import { useLogoutMutation } from "@/__generated__/client";
 import StoreIcon from "@/components/icons/StoreIcon";
+import { useCart } from "@/hooks/useCart";
 
 interface IProps {}
 
@@ -43,6 +44,8 @@ const Header: React.FC<IProps> = ({}) => {
   const { data: session } = useSession();
   const showAccountDropdown = useSignal(false);
   const [logout] = useLogoutMutation();
+
+  const { cartItemsNumber, openCart } = useCart();
 
   function toggleAccountDropdown(value: boolean) {
     if (!session) return;
@@ -108,8 +111,13 @@ const Header: React.FC<IProps> = ({}) => {
               <AccountIcon />
               <span className="hidden text-xl lg:block">Account</span>
             </Link>
-            <button className="flex items-center gap-4">
-              <CartIcon />
+            <button className="flex items-center gap-4" onClick={openCart}>
+              <span
+                data-items={cartItemsNumber.value > 9 ? "9+" : cartItemsNumber}
+                className="relative text-sm font-bold before:absolute before:-bottom-4 before:-left-2 before:content-[attr(data-items)] before:data-[items='0']:hidden before:data-[items=false]:hidden before:data-[items=true]:hidden"
+              >
+                <CartIcon />
+              </span>
               <span className="hidden text-xl lg:block">Cart</span>
             </button>
           </div>

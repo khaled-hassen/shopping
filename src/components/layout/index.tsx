@@ -7,6 +7,7 @@ import {
   useRefreshAccessTokenLazyQuery,
 } from "@/__generated__/client";
 import { useSession } from "@/hooks/useSession";
+import Cart from "@/components/shared/Cart";
 
 interface IProps {
   children: React.ReactNode;
@@ -70,6 +71,7 @@ const Layout: React.FC<IProps> = ({ children }) => {
       <main className="page-x-padding flex-1 bg-primary pb-20 pt-10 transition-[padding]">
         {children}
       </main>
+      <Cart />
     </div>
   );
 };

@@ -78,3 +78,34 @@
 .tox .tox-collection--list .tox-collection__item--active .tox-collection__item-label * {
     background-color: #cccccc !important;
 }
+
+
+.fade-enter {
+    opacity: 0;
+}
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms;
+}
+.fade-exit {
+    opacity: 1;
+}
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+}
+
+.slide-enter {
+    translate: 100% 0;
+}
+.slide-enter-active {
+    translate: 0 0;
+    transition: translate 300ms;
+}
+.slide-exit {
+    translate: 0 0;
+}
+.slide-exit-active {
+    translate: 100% 0;
+    transition: translate 300ms;
+}

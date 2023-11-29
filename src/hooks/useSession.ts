@@ -13,6 +13,7 @@ export function useSession() {
   async function update({ user, token, expires }: UpdateSessionParams) {
     const newUser = { ...session?.user, ...user };
     const newToken = { ...session?.token, ...token };
+
     await updateSession({
       ...session,
       ...{ user: newUser, token: newToken, expires },

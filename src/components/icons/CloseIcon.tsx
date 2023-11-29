@@ -1,19 +1,19 @@
 import React from "react";
 import { IconProps } from "@/components/icons/IconProps";
 
-const PlusIcon: React.FC<IconProps> = ({ size, thickness }) => {
+const CloseIcon: React.FC<IconProps> = ({}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={size ?? "22"}
-      height={size ?? "22"}
-      viewBox="0 0 22 23"
+      width="40"
+      height="41"
+      viewBox="0 0 40 41"
       fill="none"
     >
       <path
-        d="M11 1.5V21.5M1 11.5H21"
+        d="M30 10.1274L10 30.1274M10 10.1274L30 30.1274"
         stroke="black"
-        strokeWidth={thickness ?? "1.5"}
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -21,4 +21,4 @@ const PlusIcon: React.FC<IconProps> = ({ size, thickness }) => {
   );
 };
 
-export default PlusIcon;
+export default CloseIcon;

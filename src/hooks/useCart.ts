@@ -2,9 +2,16 @@ import { useSession } from "@/hooks/useSession";
 import { route } from "@/router";
 import { useRouter } from "next/router";
 import {
+  Cart,
   useAddProductToCartMutation,
   useRemoveProductFromCartMutation,
 } from "@/__generated__/client";
+import { signal } from "@preact/signals-react";
+import { useEffect } from "react";
+
+const isCartOpen = signal(false);
+const cart = signal<Cart>({ items: [], total: 0 });
+const cartItemsNumber = signal(0);
 
 export function useCart() {
   const { session, update } = useSession();
@@ -13,6 +20,11 @@ export function useCart() {
     useAddProductToCartMutation();
   const [removeFromCart, { loading: removeFromCartLoading }] =
     useRemoveProductFromCartMutation();
+
+  useEffect(() => {
+    cart.value = session?.user?.cart || { items: [], total: 0 };
+    cartItemsNumber.value = session?.user?.cart?.items.length || 0;
+  }, [session]);
 
   async function addProductToCart(productId: string) {
     if (!session) {
@@ -30,10 +42,15 @@ export function useCart() {
       cart.items.find((item) => item.product.id === productId)?.quantity || 0;
     const price = data.addProductToCart.cartProduct.price;
     const discount = data.addProductToCart.cartProduct.discount;
-    cart.items.push({
-      product: data.addProductToCart.cartProduct,
-      quantity: quantity + 1,
-    });
+
+    const item = cart.items.find((item) => item.product.id === productId);
+    if (item) item.quantity += 1;
+    else
+      cart.items.push({
+        product: data.addProductToCart.cartProduct,
+        quantity: quantity + 1,
+      });
+
     cart.total += price - price * (discount ?? 0);
     await update({ user: { cart } });
     return true;
@@ -70,14 +87,24 @@ export function useCart() {
     )?.quantity;
   }
 
-  function openCart() {}
+  function openCart() {
+    isCartOpen.value = true;
+  }
+
+  function closeCart() {
+    isCartOpen.value = false;
+  }
 
   return {
+    cartItemsNumber,
     addToCartLoading,
     removeFromCartLoading,
+    isCartOpen,
+    cart,
     isInCart,
     addProductToCart,
     removeProductFromCart,
     openCart,
+    closeCart,
   };
 }
