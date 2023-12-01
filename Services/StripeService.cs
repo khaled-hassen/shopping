@@ -2,16 +2,22 @@
 using Backend.Interfaces;
 using Backend.Models;
 using Backend.Settings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Stripe;
 using Stripe.Checkout;
 
 namespace Backend.Services;
 
-public class StripeService : IStripeService {
+public class PaymentService : IPaymentService {
+    private readonly IMongoCollection<OrderInvoice> _invoices;
     private readonly IMongoCollection<User> _users;
 
-    public StripeService(DatabaseService db) => _users = db.GetUsersCollection();
+
+    public PaymentService(DatabaseService db) {
+        _users = db.GetUsersCollection();
+        _invoices = db.GetInvoicesCollection();
+    }
 
     public async Task<string> CheckoutAsync(UserResult user) {
         string successUrl = AppConfig.WebClient + "/payment/success";
@@ -84,5 +90,27 @@ public class StripeService : IStripeService {
         );
 
         return customer.Id;
+    }
+
+    public async Task UpdateUserPurchasedProductsAsync(string userId, Invoice invoice) {
+        User? user = await _users.Find(c => c.Id.ToString() == userId).FirstOrDefaultAsync();
+        if (user is null) return;
+
+        Dictionary<string, int>? cart = user.CartItems;
+        if (cart is null || cart.Count == 0) return;
+        var id = ObjectId.GenerateNewId();
+
+        await _invoices.InsertOneAsync(
+            new OrderInvoice {
+                Id = id,
+                Invoice = invoice
+            }
+        );
+
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.Set(c => c.CartItems, new Dictionary<string, int>())
+                .AddToSet(c => c.OrdersInvoicesIds, id)
+        );
     }
 }

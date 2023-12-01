@@ -90,7 +90,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 
 // setup stripe
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:ApiKey").Value;
-builder.Services.AddScoped<IStripeService, StripeService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 // setup graphql
 builder.Services.AddHttpContextAccessor();

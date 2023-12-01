@@ -8,9 +8,9 @@ namespace Backend.Controllers;
 [Route("webhook")]
 [ApiController]
 public class WebhookController : Controller {
-    private readonly IProductService _productService;
+    private readonly IPaymentService _paymentService;
 
-    public WebhookController(IProductService productService) => _productService = productService;
+    public WebhookController(IPaymentService paymentService) => _paymentService = paymentService;
 
     [HttpPost]
     public async Task<IActionResult> Index() {
@@ -26,12 +26,12 @@ public class WebhookController : Controller {
                 var invoice = (Invoice)stripeEvent.Data.Object;
                 string? userId = invoice.Metadata.GetValueOrDefault("UserId");
                 if (userId is null) return BadRequest();
-                await _productService.UpdateUserPurchasedProductsAsync(userId, invoice);
+                await _paymentService.UpdateUserPurchasedProductsAsync(userId, invoice);
             }
 
             return Ok();
         }
-        catch (StripeException e) {
+        catch (StripeException) {
             return BadRequest();
         }
     }

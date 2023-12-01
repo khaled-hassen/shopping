@@ -8,9 +8,9 @@ namespace Backend.GraphQL.PaymentResolver;
 
 [ExtendObjectType<Mutation>]
 public class PaymentMutation {
-    private readonly IStripeService _stripeService;
+    private readonly IPaymentService _paymentService;
 
-    public PaymentMutation(IStripeService stripeService) => _stripeService = stripeService;
+    public PaymentMutation(IPaymentService paymentService) => _paymentService = paymentService;
 
     [Authorize]
     [UseUser]
@@ -20,6 +20,6 @@ public class PaymentMutation {
     public async Task<string> Checkout([GetUser] UserResult user) {
         if (user.BillingDetails is null) throw new EmptyBillingDetailsException();
         if (user.Cart is null || user.Cart.Items.Count == 0) throw new EmptyCartException();
-        return await _stripeService.CheckoutAsync(user);
+        return await _paymentService.CheckoutAsync(user);
     }
 }
