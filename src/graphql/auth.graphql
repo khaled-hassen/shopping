@@ -45,8 +45,24 @@ mutation CreateAccount($firstName: String!, $lastName: String!, $email: String!,
 
 query RefreshAccessToken {
     refreshAccessToken {
-        value
-        expires
+        email
+        firstName
+        lastName
+        phoneNumber
+        emailVerified
+        accessToken {
+            value
+            expires
+        }
+        billingDetails {
+            lastName
+            firstName
+            country
+            address
+            state
+            city
+            postalCode
+        }
     }
 }
 

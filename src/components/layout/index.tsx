@@ -8,6 +8,7 @@ import {
 } from "@/__generated__/client";
 import { useSession } from "@/hooks/useSession";
 import Cart from "@/components/shared/Cart";
+import { signIn } from "next-auth/react";
 
 interface IProps {
   children: React.ReactNode;
@@ -20,15 +21,34 @@ const Layout: React.FC<IProps> = ({ children }) => {
   const [logout] = useLogoutMutation();
   const [getUser] = useGetUserLazyQuery({
     async onCompleted(data) {
+      userFetched.current = true;
       await update({ user: data.me as any });
     },
   });
   const userFetched = useRef(false);
+  const refreshingUser = useRef(false);
+
+  useEffect(() => {
+    if (session === undefined) return;
+    if (session) return;
+    if (refreshingUser.current) return;
+    refreshingUser.current = true;
+    refreshAccessToken()
+      .then(async ({ data, error }) => {
+        if (error) return;
+        const user = data?.refreshAccessToken;
+        await signIn("credentials", {
+          user: JSON.stringify(user),
+          redirect: false,
+        });
+      })
+      .then(() => (refreshingUser.current = false));
+  }, [session, refreshingUser]);
 
   useEffect(() => {
     if (!session) return;
     if (userFetched.current) return;
-    getUser().then(() => (userFetched.current = true));
+    getUser().finally(() => {});
   }, [session, userFetched]);
 
   useEffect(() => {
@@ -38,11 +58,9 @@ const Layout: React.FC<IProps> = ({ children }) => {
       try {
         const { data, error } = await refreshAccessToken();
         if (error) return await signOut();
-        const token = data?.refreshAccessToken;
+        const token = data?.refreshAccessToken?.accessToken;
         await update({ token });
-      } catch (e) {
-        await signOut();
-      }
+      } catch (e) {}
     }
 
     (async () => {
