@@ -1,6 +1,5 @@
 ﻿using Backend.GraphQL.UserResolver.Types;
 using Backend.Models;
-using Backend.Types;
 using MongoDB.Bson;
 
 namespace Backend.Interfaces;
@@ -10,7 +9,7 @@ public interface IUserService {
 
     public Task<LoginResult?> LoginAsync(string email, string password);
 
-    public Task<AccessToken> RefreshAccessTokenAsync(string refreshToken);
+    public Task<AuthUserResult?> RefreshAccessTokenAsync(string refreshToken);
     public Task LogoutAsync(ObjectId userId, string? refreshToken);
     public Task SendEmailVerificationEmailAsync(string email);
     public Task VerifyEmailAsync(string token);

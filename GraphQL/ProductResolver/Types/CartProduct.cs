@@ -1,7 +1,7 @@
 ﻿namespace Backend.GraphQL.ProductResolver.Types;
 
 public class CartProduct {
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
     public string Name { get; set; } = null!;
     public decimal Price { get; set; }
     public decimal? Discount { get; set; }

@@ -83,7 +83,7 @@ public class UserService : IUserService {
         };
     }
 
-    public async Task<AccessToken> RefreshAccessTokenAsync(string refreshToken) {
+    public async Task<AuthUserResult?> RefreshAccessTokenAsync(string refreshToken) {
         ClaimsPrincipal? claimsPrincipal = AuthHelpers.ValidateToken(refreshToken);
         if (claimsPrincipal is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
         Claim? claim = claimsPrincipal.FindFirst(ClaimTypes.Sid);
@@ -118,7 +118,16 @@ public class UserService : IUserService {
         DateTime expireDate = DateTime.Now.AddMinutes(15);
         string token = AuthHelpers.CreateToken(expireDate, claims);
 
-        return new AccessToken(token, expireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture));
+        return new AuthUserResult {
+            Id = user.Id ?? ObjectId.Empty,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            EmailVerified = user.EmailVerifiedAt is not null,
+            AccessToken = new AccessToken(token, expireDate.AddMinutes(-2).ToString(CultureInfo.InvariantCulture)),
+            BillingDetails = user.BillingDetails
+        };
     }
 
     public async Task LogoutAsync(ObjectId userId, string? refreshToken) {

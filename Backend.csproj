@@ -7,33 +7,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-        <PackageReference Include="Fluid.Core" Version="2.5.0" />
-        <PackageReference Include="HotChocolate.AspNetCore" Version="13.5.1" />
-        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.5.1" />
-        <PackageReference Include="HotChocolate.Data.MongoDb" Version="13.5.1" />
-        <PackageReference Include="HtmlSanitizer" Version="8.0.795" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.12" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-        <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
-        <PackageReference Include="sib_api_v3_sdk" Version="4.0.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0"/>
+        <PackageReference Include="Fluid.Core" Version="2.5.0"/>
+        <PackageReference Include="HotChocolate.AspNetCore" Version="13.5.1"/>
+        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.5.1"/>
+        <PackageReference Include="HotChocolate.Data.MongoDb" Version="13.5.1"/>
+        <PackageReference Include="HtmlSanitizer" Version="8.0.795"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5"/>
+        <PackageReference Include="MongoDB.Driver" Version="2.22.0"/>
+        <PackageReference Include="sib_api_v3_sdk" Version="4.0.2"/>
+        <PackageReference Include="Stripe.net" Version="43.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Email\static\" />
-        <Folder Include="wwwroot\" />
-        <Folder Include="wwwroot\Storage\" />
-        <Folder Include="wwwroot\Storage\stores\" />
+        <Folder Include="Email\static\"/>
+        <Folder Include="wwwroot\"/>
+        <Folder Include="wwwroot\Storage\"/>
+        <Folder Include="wwwroot\Storage\stores\"/>
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653558841427e3c088b23296.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653562de9f01fcc010d3ab37.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653566fa7b740ae12877b84a.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\Storage\products\cover-655e9b561d7fbb91d8616b4a.jpg" />
-        <_ContentIncludedByDefault Remove="wwwroot\Storage\products\iamge-1-655e9b561d7fbb91d8616b4a.png" />
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653558841427e3c088b23296.jpg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653562de9f01fcc010d3ab37.jpg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\653558841427e3c088b23296\653566fa7b740ae12877b84a.jpg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\products\cover-655e9b561d7fbb91d8616b4a.jpg"/>
+        <_ContentIncludedByDefault Remove="wwwroot\Storage\products\iamge-1-655e9b561d7fbb91d8616b4a.png"/>
     </ItemGroup>
 
 </Project>

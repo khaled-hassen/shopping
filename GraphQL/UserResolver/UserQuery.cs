@@ -31,7 +31,7 @@ public class UserQuery {
         return user.Result;
     }
 
-    public async Task<AccessToken> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor) {
+    public async Task<AuthUserResult?> RefreshAccessToken([Service] IHttpContextAccessor httpContextAccessor) {
         string? refreshToken = httpContextAccessor.HttpContext?.Request.Cookies["refreshToken"];
         if (refreshToken is null) throw new GraphQLException(new Error("Not authorized", ErrorCodes.UnauthorizedCode));
         return await _userService.RefreshAccessTokenAsync(refreshToken);
