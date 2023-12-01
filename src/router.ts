@@ -58,6 +58,14 @@ const routes = {
     path: "/stores/:slug",
     access: Access.Public,
   },
+  paymentFailed: {
+    path: "/payment/failed",
+    access: Access.Authenticated,
+  },
+  paymentSuccess: {
+    path: "/payment/success",
+    access: Access.Authenticated,
+  },
 };
 
 type Route = keyof typeof routes;

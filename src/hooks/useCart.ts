@@ -51,7 +51,7 @@ export function useCart() {
         quantity: quantity + 1,
       });
 
-    cart.total += price - price * (discount ?? 0);
+    cart.total += Math.max(0, price - price * (discount ?? 0));
     await update({ user: { cart } });
     return true;
   }

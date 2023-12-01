@@ -7,6 +7,8 @@ import OptimizedImage from "@/components/shared/OptimizedImage";
 import { asset } from "@/utils/assets";
 import MinusIcon from "@/components/icons/MinusIcon";
 import PlusIcon from "@/components/icons/PlusIcon";
+import { useCheckoutMutation } from "@/__generated__/client";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -19,8 +21,22 @@ const Cart: React.FC<Props> = ({}) => {
     removeProductFromCart,
   } = useCart();
 
+  const router = useRouter();
+  const [checkout, { data, loading, reset }] = useCheckoutMutation({
+    onCompleted({ checkout: { redirectUrl } }) {
+      if (redirectUrl) router.push(redirectUrl);
+    },
+  });
+
   return (
-    <SidebarContainer title="Cart" show={isCartOpen.value} onClose={closeCart}>
+    <SidebarContainer
+      title="Cart"
+      show={isCartOpen.value}
+      onClose={() => {
+        reset();
+        closeCart();
+      }}
+    >
       <div className="flex flex-1 flex-col overflow-auto">
         {cart.value?.items.map(({ product, quantity }) => (
           <div
@@ -61,11 +77,22 @@ const Cart: React.FC<Props> = ({}) => {
         ))}
       </div>
       <div className="flex flex-col gap-6 border-t border-black border-opacity-20 pt-4">
+        {data?.checkout.errors?.map((error) => (
+          <p key={error.message} className="font-medium text-danger">
+            {error.message}
+          </p>
+        ))}
         <p className="text-2xl">
           <span className="font-bold">Total: </span>
           <span className="">{Format.currency(cart.value?.total)}</span>
         </p>
-        <Button title="Checkout" className="w-full" />
+        <Button
+          title="Checkout"
+          className="w-full"
+          disabled={cart.value.items.length === 0}
+          loading={loading}
+          onClick={checkout}
+        />
       </div>
     </SidebarContainer>
   );

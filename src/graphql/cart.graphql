@@ -1,0 +1,15 @@
+mutation Checkout {
+    checkout {
+        redirectUrl
+
+        errors {
+            ...on EmptyCartError {
+                message
+            }
+
+            ...on EmptyBillingDetailsError {
+                message
+            }
+        }
+    }
+}
