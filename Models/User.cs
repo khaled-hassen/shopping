@@ -30,6 +30,8 @@ public class User {
     public HashSet<RefreshToken> RefreshTokens { get; set; } = new();
     public DateTime? EmailVerifiedAt { get; set; } = null;
     public BillingDetails? BillingDetails { get; set; } = null;
-    public HashSet<ObjectId>? WishlistIds { get; set; } = null;
+    public HashSet<ObjectId> WishlistIds { get; set; } = new();
     public Dictionary<string, int>? CartItems { get; set; } = null;
+    public HashSet<ObjectId> OrdersInvoicesIds { get; set; } = new();
+    public string? CustomerId { get; set; } = null;
 }

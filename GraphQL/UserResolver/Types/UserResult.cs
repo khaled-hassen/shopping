@@ -25,7 +25,8 @@ public class UserResult {
     public BillingDetails? BillingDetails { get; set; } = null;
     public HashSet<ObjectId>? WishlistIds { get; set; } = null;
     public Dictionary<string, int>? CartItems { get; set; } = null;
-    public Cart? Cart { get; set; } = null;
+    public Cart? Cart { get; set; }
+    public string? CustomerId { get; set; } = null;
 }
 
 public class AuthUserResult : UserResult {

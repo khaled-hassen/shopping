@@ -1,15 +1,23 @@
 ﻿using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
+using Backend.Models;
 using Backend.Settings;
+using MongoDB.Driver;
+using Stripe;
 using Stripe.Checkout;
 
 namespace Backend.Services;
 
 public class StripeService : IStripeService {
+    private readonly IMongoCollection<User> _users;
+
+    public StripeService(DatabaseService db) => _users = db.GetUsersCollection();
+
     public async Task<string> CheckoutAsync(UserResult user) {
         string successUrl = AppConfig.WebClient + "/payment/success";
         string cancelUrl = AppConfig.WebClient + "/payment/cancel";
 
+        string customerId = await GetStripeCustomerAsync(user);
         var options = new SessionCreateOptions {
             SuccessUrl = successUrl,
             CancelUrl = cancelUrl,
@@ -17,9 +25,12 @@ public class StripeService : IStripeService {
             Currency = "eur",
             LineItems = new List<SessionLineItemOptions>(),
             PaymentMethodTypes = new List<string> { "card" },
-            CustomerEmail = user.Email,
+            Customer = customerId,
             InvoiceCreation = new SessionInvoiceCreationOptions {
-                Enabled = true
+                Enabled = true,
+                InvoiceData = new SessionInvoiceCreationInvoiceDataOptions {
+                    Metadata = new Dictionary<string, string> { { "UserId", user.Id.ToString()! } }
+                }
             }
         };
 
@@ -32,7 +43,10 @@ public class StripeService : IStripeService {
                             Currency = "eur",
                             ProductData = new SessionLineItemPriceDataProductDataOptions {
                                 Name = item.Product.Name,
-                                Images = new List<string> { item.Product.CoverImage }
+                                Images = new List<string> { item.Product.CoverImage },
+                                Metadata = new Dictionary<string, string> {
+                                    { "ProductId", item.Product.Id.ToString() }
+                                }
                             }
                         },
                         Quantity = item.Quantity
@@ -44,5 +58,31 @@ public class StripeService : IStripeService {
         var service = new SessionService();
         Session? session = await service.CreateAsync(options);
         return session?.Url ?? "";
+    }
+
+    public async Task<string> GetStripeCustomerAsync(UserResult user) {
+        var service = new CustomerService();
+
+        Customer? customer;
+        if (user.CustomerId is not null) {
+            customer = await service.GetAsync(user.CustomerId);
+            if (customer is not null) return customer.Id;
+        }
+
+        var options = new CustomerCreateOptions {
+            Email = user.Email,
+            Name = user.FirstName + " " + user.LastName,
+            Metadata = new Dictionary<string, string> { { "UserId", user.Id.ToString()! } }
+        };
+
+        customer = await service.CreateAsync(options);
+        user.CustomerId = customer.Id;
+
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.Set(u => u.CustomerId, user.CustomerId)
+        );
+
+        return customer.Id;
     }
 }

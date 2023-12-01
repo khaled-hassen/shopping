@@ -7,6 +7,7 @@ public static class AppConfig {
     public static string WebClient { get; private set; } = null!;
     public static string NoReplySenderEmail { get; private set; } = null!;
     public static decimal StoreFee { get; private set; }
+    public static string StripeWebhookSecret { get; private set; } = null!;
 
     public static void Configure(IConfiguration config) {
         IConfigurationSection jwtSection = config.GetSection("Jwt");
@@ -19,5 +20,6 @@ public static class AppConfig {
         };
         NoReplySenderEmail = config.GetSection("MailConfig:NoReplaySender").Value ?? "";
         StoreFee = Convert.ToDecimal(config.GetSection("StoreConfig:Fee").Value);
+        StripeWebhookSecret = config.GetSection("Stripe:WebhookSecret").Value ?? "";
     }
 }

@@ -7,12 +7,15 @@ using HotChocolate.Data;
 using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using Stripe;
+using Product = Backend.Models.Product;
 
 namespace Backend.Services;
 
 public class ProductService : IProductService {
     private readonly IMemoryCache _cache;
     private readonly IMongoCollection<Category> _categories;
+    private readonly IMongoCollection<OrderInvoice> _invoices;
     private readonly IMongoCollection<Product> _products;
     private readonly IMongoCollection<Store> _stores;
     private readonly IMongoCollection<Subcategory> _subcategories;
@@ -25,6 +28,7 @@ public class ProductService : IProductService {
         _stores = db.GetStoresCollection();
         _subcategories = db.GetSubcategoriesCollection();
         _users = db.GetUsersCollection();
+        _invoices = db.GetInvoicesCollection();
     }
 
     public IExecutable<ProductResult> GetProductsAsync(string subcategorySlug) {
@@ -190,6 +194,27 @@ public class ProductService : IProductService {
             .FirstOrDefaultAsync();
     }
 
+    public async Task UpdateUserPurchasedProductsAsync(string userId, Invoice invoice) {
+        User? user = await _users.Find(c => c.Id.ToString() == userId).FirstOrDefaultAsync();
+        if (user is null) return;
+
+        Dictionary<string, int>? cart = user.CartItems;
+        if (cart is null || cart.Count == 0) return;
+        var id = ObjectId.GenerateNewId();
+
+        await _invoices.InsertOneAsync(
+            new OrderInvoice {
+                Id = id,
+                Invoice = invoice
+            }
+        );
+
+        await _users.UpdateOneAsync(
+            c => c.Id.Equals(user.Id),
+            Builders<User>.Update.Set(c => c.CartItems, new Dictionary<string, int>())
+                .AddToSet(c => c.OrdersInvoicesIds, id)
+        );
+    }
 
     private Expression<Func<ProductLookupResult, ProductResult>> CreateProductProjection(
         string? productId = null,
