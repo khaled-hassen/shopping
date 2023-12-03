@@ -131,3 +131,20 @@ mutation RemoveProductFromCart($productId: String!) {
         }
     }
 }
+
+query GetReviews($id: String!, $pageSize: Int, $skip: Int) {
+    productReviews(productId: $id, take: $pageSize, skip: $skip) {
+        items {
+            id
+            title
+            rating
+            comment
+            postDate
+            reviewerFullName
+            averageRating
+            totalRatings
+        }
+
+        totalCount
+    }
+}

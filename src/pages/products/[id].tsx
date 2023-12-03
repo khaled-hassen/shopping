@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { ssrGetProduct } from "@/__generated__/ssr";
+import { ssrGetProduct, ssrGetReviews } from "@/__generated__/ssr";
 import Gallery from "@/components/shared/Gallery";
 import { asset } from "@/utils/assets";
 import { Format } from "@/utils/format";
@@ -22,20 +22,48 @@ import { useSession } from "@/hooks/useSession";
 import { useSignal } from "@preact/signals-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/hooks/useCart";
+import Pagination from "@/utils/pagination";
+import OutlinedStarIcon from "@/components/icons/OutlinedStarIcon";
+import ReviewSection from "@/components/pages/product/ReviewSection";
 
 export const getServerSideProps = (async (context) => {
   const id = context.params?.id as string;
+  const page = parseInt((context.query.page as string) || "1");
   const client = initializeApolloClient(context);
-  const result = await ssrGetProduct.getServerPage(
-    { variables: { id } },
-    client,
-  );
-  if (!result.props.data?.product) return { notFound: true };
-  return result;
+  const [product, reviews] = await Promise.all([
+    ssrGetProduct.getServerPage({ variables: { id } }, client),
+    ssrGetReviews.getServerPage(
+      {
+        variables: {
+          id,
+          pageSize: Pagination.pageSize,
+          skip: Pagination.calculateSkip(page),
+        },
+      },
+      client,
+    ),
+  ]);
+
+  if (!product.props.data?.product) return { notFound: true };
+  return {
+    props: {
+      ...product.props.data,
+      reviews: reviews.props.data.productReviews?.items,
+      page,
+      totalPages: Pagination.calculateTotalPages(
+        reviews.props.data.productReviews?.totalCount || 0,
+      ),
+    },
+  };
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
-const Product: React.FC<PageProps> = ({ data: { product } }) => {
+const Product: React.FC<PageProps> = ({
+  product,
+  reviews,
+  page,
+  totalPages,
+}) => {
   const { session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -63,13 +91,19 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
   async function toggleWishlist() {
     if (!session)
       return router.push(
-        route("login") + `?callback=${encodeURIComponent(pathname)}`,
+        route("login") + `?callbackUrl=${encodeURIComponent(pathname)}`,
       );
     if (!product?.id) return;
     if (inWishlist.value)
       await deleteFromWishlist({ variables: { productId: product?.id } });
     else await addToWishlist({ variables: { productId: product?.id } });
     inWishlist.value = !inWishlist.value;
+  }
+
+  function changePage(page: number) {
+    router.push(route("product", product?.id) + `?page=${page}`, {
+      scroll: false,
+    });
   }
 
   return (
@@ -111,10 +145,19 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
             </div>
             <Link
               href={route("store", product?.store?.id)}
-              className="text-2xl"
+              className="w-fit text-2xl"
             >
               By {product?.store?.name}
             </Link>
+            <div className="flex items-center gap-2">
+              <OutlinedStarIcon size={24} thickness={2} />
+              <p className="text-xl">
+                {Format.rating(
+                  reviews?.[0].averageRating,
+                  reviews?.[0].totalRatings,
+                )}
+              </p>
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4 text-2xl">
@@ -174,6 +217,7 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
           </div>
         </div>
       </div>
+
       <Expandable title="Product description" defaultOpen>
         <div
           className="all-revert"
@@ -200,6 +244,15 @@ const Product: React.FC<PageProps> = ({ data: { product } }) => {
           ))}
         </div>
       </Expandable>
+
+      <ReviewSection
+        avgRating={reviews?.[0].averageRating || 0}
+        totalReviews={reviews?.[0].totalRatings || 0}
+        reviews={reviews || []}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={changePage}
+      />
     </div>
   );
 };

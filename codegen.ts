@@ -15,6 +15,8 @@ const config: CodegenConfig = {
         preResolveTypes: true,
         scalars: {
           Decimal: "number",
+          Byte: "number",
+          DateTime: "string",
         },
       },
     },
@@ -32,6 +34,8 @@ const config: CodegenConfig = {
         withHooks: true,
         scalars: {
           Decimal: "number",
+          Byte: "number",
+          DateTime: "string",
         },
       },
     },

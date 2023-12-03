@@ -29,7 +29,7 @@ export function useCart() {
   async function addProductToCart(productId: string) {
     if (!session) {
       await router.push(
-        route("login") + `?callback=${encodeURIComponent(router.pathname)}`,
+        route("login") + `?callbackUrl=${encodeURIComponent(router.pathname)}`,
       );
       return false;
     }
@@ -59,7 +59,7 @@ export function useCart() {
   async function removeProductFromCart(productId: string) {
     if (!session) {
       await router.push(
-        route("login") + `?callback=${encodeURIComponent(router.pathname)}`,
+        route("login") + `?callbackUrl=${encodeURIComponent(router.pathname)}`,
       );
       return false;
     }
