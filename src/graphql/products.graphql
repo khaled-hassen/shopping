@@ -133,6 +133,15 @@ mutation RemoveProductFromCart($productId: String!) {
 }
 
 query GetReviews($id: String!, $pageSize: Int, $skip: Int) {
+    userProductReview(productId: $id) {
+        id
+        title
+        rating
+        comment
+        postDate
+        reviewerFullName
+    }
+
     productReviews(productId: $id, take: $pageSize, skip: $skip) {
         items {
             id
@@ -146,5 +155,33 @@ query GetReviews($id: String!, $pageSize: Int, $skip: Int) {
         }
 
         totalCount
+    }
+}
+
+mutation AddNewReview($id: String!, $review: NewReviewInput!) {
+    addNewReview(input: {productId: $id, review: $review}) {
+        productReview {
+            id
+            postDate
+            reviewerFullName
+        }
+
+        errors {
+            ... on InvalidInputError {
+                message
+            }
+        }
+    }
+}
+
+mutation UpdateReview($id: String!, $review: NewReviewInput!) {
+    updateReview(input: {reviewId: $id, review: $review}) {
+        updated
+
+        errors {
+            ... on InvalidInputError {
+                message
+            }
+        }
     }
 }

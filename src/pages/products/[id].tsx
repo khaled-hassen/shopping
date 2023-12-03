@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { initializeApolloClient } from "@/apollo";
-import { ssrGetProduct, ssrGetReviews } from "@/__generated__/ssr";
+import {
+  ProductReview,
+  ssrGetProduct,
+  ssrGetReviews,
+} from "@/__generated__/ssr";
 import Gallery from "@/components/shared/Gallery";
 import { asset } from "@/utils/assets";
 import { Format } from "@/utils/format";
@@ -48,7 +52,10 @@ export const getServerSideProps = (async (context) => {
   return {
     props: {
       ...product.props.data,
-      reviews: reviews.props.data.productReviews?.items,
+      reviews: reviews.props.data.productReviews?.items?.filter(
+        (r) => r.id !== reviews.props.data.userProductReview?.id,
+      ),
+      userReview: reviews.props.data.userProductReview,
       page,
       totalPages: Pagination.calculateTotalPages(
         reviews.props.data.productReviews?.totalCount || 0,
@@ -61,6 +68,7 @@ type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 const Product: React.FC<PageProps> = ({
   product,
   reviews,
+  userReview,
   page,
   totalPages,
 }) => {
@@ -74,6 +82,8 @@ const Product: React.FC<PageProps> = ({
   const [deleteFromWishlist, { loading: removingLoading }] =
     useRemoveProductFromWishlistMutation();
   const inWishlist = useSignal(product?.inWishlist || false);
+  const averageRating = useSignal(reviews?.[0].averageRating || 0);
+  const totalReviews = useSignal(reviews?.[0].totalRatings || 0);
 
   const units = useMemo(() => {
     return (
@@ -152,10 +162,7 @@ const Product: React.FC<PageProps> = ({
             <div className="flex items-center gap-2">
               <OutlinedStarIcon size={24} thickness={2} />
               <p className="text-xl">
-                {Format.rating(
-                  reviews?.[0].averageRating,
-                  reviews?.[0].totalRatings,
-                )}
+                {Format.rating(averageRating.value, totalReviews.value)}
               </p>
             </div>
           </div>
@@ -246,12 +253,18 @@ const Product: React.FC<PageProps> = ({
       </Expandable>
 
       <ReviewSection
-        avgRating={reviews?.[0].averageRating || 0}
-        totalReviews={reviews?.[0].totalRatings || 0}
+        productId={product?.id || ""}
+        avgRating={averageRating.value}
+        totalReviews={totalReviews.value}
+        userReview={userReview as ProductReview}
         reviews={reviews || []}
         page={page}
         totalPages={totalPages}
         onPageChange={changePage}
+        onReviewChanged={(avg, total) => {
+          averageRating.value = avg;
+          totalReviews.value = total;
+        }}
       />
     </div>
   );

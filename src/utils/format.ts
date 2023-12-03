@@ -43,6 +43,10 @@ export class Format {
     const then = new Date(date);
     const diff = then.getTime() - now.getTime();
 
+    const minutes = Math.ceil(diff / (1000 * 60));
+    if (Math.abs(minutes) < 60)
+      return relativeDateFormatter.format(minutes, "minute");
+
     const hours = Math.ceil(diff / (1000 * 60 * 60));
     if (Math.abs(hours) < 24)
       return relativeDateFormatter.format(hours, "hour");

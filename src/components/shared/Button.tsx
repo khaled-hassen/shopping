@@ -30,7 +30,7 @@ const Button: React.FC<IProps> = ({
       type={type}
       disabled={loading || disabled}
       className={twMerge(
-        "flex w-fit items-center justify-center px-14 py-4 text-2xl font-medium",
+        "flex w-fit items-center justify-center border-2 border-dark-gray px-14 py-4 text-2xl font-medium",
         clsx({
           "bg-dark-gray text-primary": color === "gray",
           "bg-primary text-dark-gray": color === "white",

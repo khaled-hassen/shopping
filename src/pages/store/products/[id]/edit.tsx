@@ -43,9 +43,9 @@ export const getServerSideProps = (async (context) => {
     { variables: { id } },
     client,
   );
-  if (!result.props.data?.store)
+  if (!result.props.data?.userStore)
     return { redirect: { destination: route("userStore"), permanent: false } };
-  if (!result.props.data?.storeProduct) return { notFound: true };
+  if (!result.props.data?.userStoreProduct) return { notFound: true };
   return result;
 }) satisfies GetServerSideProps;
 type PageProps = InferGetServerSidePropsType<typeof getServerSideProps>;
@@ -105,16 +105,16 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
   } = useForm<ProductSchema>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: data.storeProduct?.name,
-      briefDescription: data.storeProduct?.briefDescription,
-      description: data.storeProduct?.description,
-      price: data.storeProduct?.price.toString(),
-      discount: formatDiscount(data.storeProduct?.discount),
-      shipmentPrice: data.storeProduct?.shipmentPrice?.toString() || "0",
-      categoryId: data.storeProduct?.categoryId,
-      subcategoryId: data.storeProduct?.subcategoryId,
-      details: data.storeProduct?.details,
-      productType: data.storeProduct?.productType,
+      name: data.userStoreProduct?.name,
+      briefDescription: data.userStoreProduct?.briefDescription,
+      description: data.userStoreProduct?.description,
+      price: data.userStoreProduct?.price.toString(),
+      discount: formatDiscount(data.userStoreProduct?.discount),
+      shipmentPrice: data.userStoreProduct?.shipmentPrice?.toString() || "0",
+      categoryId: data.userStoreProduct?.categoryId,
+      subcategoryId: data.userStoreProduct?.subcategoryId,
+      details: data.userStoreProduct?.details,
+      productType: data.userStoreProduct?.productType,
       coverImageAdded: true,
       discountedPrice: "0",
       receivedPrice: "0",
@@ -169,9 +169,9 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
       {
         file: null,
         cover: true,
-        preview: asset(data.storeProduct?.coverImage),
+        preview: asset(data.userStoreProduct?.coverImage),
       },
-      ...(data.storeProduct?.images || []).map((img) => ({
+      ...(data.userStoreProduct?.images || []).map((img) => ({
         file: null,
         cover: false,
         preview: asset(img),
@@ -188,7 +188,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
 
   useEffect(() => {
     resetForm(true).finally(() => {});
-    published.value = data.storeProduct?.published || false;
+    published.value = data.userStoreProduct?.published || false;
   }, []);
 
   function calculatePrices() {
@@ -308,7 +308,7 @@ const EditProduct: React.FC<PageProps> = ({ data }) => {
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <Link
-            href={route("userStorePreviewProduct", data.storeProduct?.id)}
+            href={route("userStorePreviewProduct", data.userStoreProduct?.id)}
             className="flex items-center gap-2"
           >
             <EyeIcon />
