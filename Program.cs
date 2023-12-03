@@ -5,6 +5,7 @@ using Backend.GraphQL.AdminResolver;
 using Backend.GraphQL.CategoryResolver;
 using Backend.GraphQL.PaymentResolver;
 using Backend.GraphQL.ProductResolver;
+using Backend.GraphQL.ReviewResolver;
 using Backend.GraphQL.StoreResolver;
 using Backend.GraphQL.SubcategoryResolver;
 using Backend.GraphQL.UserResolver;
@@ -21,6 +22,7 @@ using sib_api_v3_sdk.Api;
 using sib_api_v3_sdk.Client;
 using Stripe;
 using ProductService = Backend.Services.ProductService;
+using ReviewService = Backend.Services.ReviewService;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 AppConfig.Configure(builder.Configuration);
@@ -83,6 +85,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 // setup admin
 builder.Services.AddHostedService<AdminHostedService>();
@@ -117,7 +120,9 @@ builder.Services.AddGraphQLServer()
     .AddType<StoreMutation>()
     .AddType<ProductQuery>()
     .AddType<ProductMutation>()
-    .AddType<PaymentMutation>();
+    .AddType<PaymentMutation>()
+    .AddType<ReviewQuery>()
+    .AddType<ReviewMutation>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

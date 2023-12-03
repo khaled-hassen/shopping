@@ -49,4 +49,6 @@ public class DatabaseService {
     public IMongoCollection<Product> GetProductsCollection() => GetCollection<Product>("products");
 
     public IMongoCollection<OrderInvoice> GetInvoicesCollection() => GetCollection<OrderInvoice>("invoices");
+
+    public IMongoCollection<Review> GetReviewsCollection() => GetCollection<Review>("reviews");
 }
