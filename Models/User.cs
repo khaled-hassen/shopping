@@ -34,4 +34,5 @@ public class User {
     public Dictionary<string, int>? CartItems { get; set; } = null;
     public HashSet<ObjectId> OrdersInvoicesIds { get; set; } = new();
     public string? CustomerId { get; set; } = null;
+    public HashSet<ObjectId> ReviewsIds { get; set; } = new();
 }

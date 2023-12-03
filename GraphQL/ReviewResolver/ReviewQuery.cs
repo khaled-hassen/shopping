@@ -1,5 +1,8 @@
-﻿using Backend.GraphQL.ReviewResolver.Types;
+﻿using Backend.Attributes;
+using Backend.GraphQL.ReviewResolver.Types;
+using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
+using HotChocolate.Authorization;
 
 namespace Backend.GraphQL.ReviewResolver;
 
@@ -11,4 +14,9 @@ public class ReviewQuery {
 
     [UseOffsetPaging(IncludeTotalCount = true, DefaultPageSize = 15)]
     public IExecutable<ProductReview> GetProductReviews(string productId) => _reviewService.GetProductReviewsAsync(productId);
+
+    [Authorize]
+    [UseUser]
+    public Task<ProductReview?> GetUserProductReview(string productId, [GetUser] UserResult user) =>
+        _reviewService.GetUserProductReviewAsync(productId, user);
 }

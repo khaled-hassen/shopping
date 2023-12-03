@@ -1,4 +1,5 @@
 ﻿using Backend.GraphQL.ReviewResolver.Types;
+using Backend.GraphQL.UserResolver.Types;
 using Backend.Interfaces;
 using Backend.Models;
 using HotChocolate.Data;
@@ -8,12 +9,14 @@ using MongoDB.Driver;
 namespace Backend.Services;
 
 public class ReviewService : IReviewService {
+    private readonly IMongoCollection<Product> _products;
     private readonly IMongoCollection<Review> _reviews;
     private readonly IMongoCollection<User> _users;
 
     public ReviewService(DatabaseService db) {
         _reviews = db.GetReviewsCollection();
         _users = db.GetUsersCollection();
+        _products = db.GetProductsCollection();
     }
 
     public IExecutable<ProductReview> GetProductReviewsAsync(string productId) {
@@ -46,9 +49,51 @@ public class ReviewService : IReviewService {
                     Title = p.Title,
                     Rating = p.Rating,
                     Comment = p.Comment,
-                    PostDate = p.PostDate,
+                    PostDate = p.PostDate
                 }
             )
             .AsExecutable();
+    }
+
+    public async Task<ProductReview?> GetUserProductReviewAsync(string productId, UserResult user) =>
+        await _reviews
+            .Aggregate()
+            .Match(c => c.ProductId.ToString() == productId && c.ReviewerId.Equals(user.Id))
+            .Project(
+                p => new ProductReview {
+                    Id = p.Id ?? ObjectId.Empty,
+                    ReviewerFullName = user.FirstName + " " + user.LastName,
+                    Title = p.Title,
+                    Rating = p.Rating,
+                    Comment = p.Comment,
+                    PostDate = p.PostDate
+                }
+            )
+            .FirstOrDefaultAsync();
+
+    public async Task<ProductReview> AddNewReviewAsync(string productId, NewReview review, UserResult user) {
+        var newReview = new Review {
+            Id = ObjectId.GenerateNewId(),
+            ReviewerId = user.Id,
+            ProductId = ObjectId.Parse(productId),
+            Title = review.Title,
+            Rating = review.Rating,
+            Comment = review.Comment,
+            PostDate = DateTime.Now
+        };
+        await _reviews.InsertOneAsync(newReview);
+        await _products.UpdateOneAsync(
+            c => c.Id.ToString() == productId,
+            Builders<Product>.Update.AddToSet(c => c.ReviewsIds, newReview.Id ?? ObjectId.Empty)
+        );
+        await _users.UpdateOneAsync(c => c.Id.Equals(user.Id), Builders<User>.Update.AddToSet(c => c.ReviewsIds, newReview.Id ?? ObjectId.Empty));
+        return new ProductReview {
+            Id = newReview.Id ?? ObjectId.Empty,
+            Title = newReview.Title,
+            Rating = newReview.Rating,
+            Comment = newReview.Comment,
+            PostDate = newReview.PostDate,
+            ReviewerFullName = user.FirstName + " " + user.LastName
+        };
     }
 }

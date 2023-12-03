@@ -91,7 +91,8 @@ public class UserMiddleware {
                     WishlistIds = user.WishlistIds,
                     Cart = cart,
                     CartItems = user.CartItems,
-                    CustomerId = user.CustomerId
+                    CustomerId = user.CustomerId,
+                    ReviewsIds = user.ReviewsIds
                 }
             );
 
