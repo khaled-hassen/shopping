@@ -47,8 +47,6 @@ public class ReviewService : IReviewService {
                     Rating = p.Rating,
                     Comment = p.Comment,
                     PostDate = p.PostDate,
-                    Likes = p.Likes,
-                    Dislikes = p.Dislikes
                 }
             )
             .AsExecutable();

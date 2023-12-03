@@ -14,6 +14,4 @@ public class Review {
     public byte Rating { get; set; }
     public string Comment { get; set; } = null!;
     public DateTime PostDate { get; set; }
-    public long Likes { get; set; }
-    public long Dislikes { get; set; }
 }
