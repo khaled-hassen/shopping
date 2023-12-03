@@ -21,4 +21,14 @@ public class ReviewMutation {
         Validator<ReviewInputValidator, NewReview>.ValidateAndThrow(review);
         return await _reviewService.AddNewReviewAsync(productId, review, user);
     }
+
+    [Authorize]
+    [UseUser]
+    [Error<InvalidInputException>]
+    [UseMutationConvention(PayloadFieldName = "updated")]
+    public async Task<bool> UpdateReview(string reviewId, NewReview review, [GetUser] UserResult user) {
+        Validator<ReviewInputValidator, NewReview>.ValidateAndThrow(review);
+        await _reviewService.UpdateReviewAsync(reviewId, review, user);
+        return true;
+    }
 }

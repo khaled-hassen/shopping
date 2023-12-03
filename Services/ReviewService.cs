@@ -55,8 +55,9 @@ public class ReviewService : IReviewService {
             .AsExecutable();
     }
 
-    public async Task<ProductReview?> GetUserProductReviewAsync(string productId, UserResult user) =>
-        await _reviews
+    public async Task<ProductReview?> GetUserProductReviewAsync(string productId, UserResult? user) {
+        if (user is null) return null;
+        return await _reviews
             .Aggregate()
             .Match(c => c.ProductId.ToString() == productId && c.ReviewerId.Equals(user.Id))
             .Project(
@@ -70,6 +71,7 @@ public class ReviewService : IReviewService {
                 }
             )
             .FirstOrDefaultAsync();
+    }
 
     public async Task<ProductReview> AddNewReviewAsync(string productId, NewReview review, UserResult user) {
         var newReview = new Review {
@@ -96,4 +98,14 @@ public class ReviewService : IReviewService {
             ReviewerFullName = user.FirstName + " " + user.LastName
         };
     }
+
+    public async Task UpdateReviewAsync(string reviewId, NewReview review, UserResult user) =>
+        await _reviews.UpdateOneAsync(
+            c => c.Id.ToString() == reviewId && c.ReviewerId.Equals(user.Id),
+            Builders<Review>.Update
+                .Set(c => c.Title, review.Title)
+                .Set(c => c.Rating, review.Rating)
+                .Set(c => c.Comment, review.Comment)
+                .Set(c => c.PostDate, DateTime.Now)
+        );
 }
