@@ -17,6 +17,7 @@ git worktree add Frontend frontend
 ```
 
 ## Backend setup
+### ⚠️ Mongodb installation is required
 > ⚠️ Project requirements:
 > appsettings.json needs to be filled out
 
