@@ -18,7 +18,7 @@ public static class AppConfig {
             jwtSection.GetSection("AdminPanel").Value ?? "",
             WebClient
         };
-        NoReplySenderEmail = config.GetSection("MailConfig:NoReplaySender").Value ?? "";
+        NoReplySenderEmail = config.GetSection("MailConfig:NoReplySender").Value ?? "";
         StoreFee = Convert.ToDecimal(config.GetSection("StoreConfig:Fee").Value);
         StripeWebhookSecret = config.GetSection("Stripe:WebhookSecret").Value ?? "";
     }
