@@ -13,8 +13,8 @@ interface IProps {}
 
 const pages = [
   { name: "Products", path: route("userStore"), Icon: ProductsIcon },
-  { name: "Payment", path: route("userStorePayment"), Icon: PaymentIcon },
-  { name: "Orders", path: route("userStoreOrders"), Icon: OrdersIcon },
+  // { name: "Payment", path: route("userStorePayment"), Icon: PaymentIcon },
+  // { name: "Orders", path: route("userStoreOrders"), Icon: OrdersIcon },
   { name: "Settings", path: route("userStoreSettings"), Icon: SettingsIcon },
 ];
 

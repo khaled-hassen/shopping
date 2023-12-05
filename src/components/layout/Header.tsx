@@ -27,12 +27,12 @@ interface IProps {}
 const pages = [
   { name: "Home", path: route("home") },
   { name: "Categories", path: route("categories") },
-  { name: "Latest", path: route("latest") },
+  // { name: "Latest", path: route("latest") },
 ];
 
 const accountDropdownItems = [
   { name: "Settings", path: route("account"), Icon: SettingsIcon },
-  { name: "Orders", path: route("orders"), Icon: OrdersIcon },
+  // { name: "Orders", path: route("orders"), Icon: OrdersIcon },
   { name: "Wishlist", path: route("wishlist"), Icon: WishlistIcon },
   { name: "Store", path: route("userStore"), Icon: StoreIcon },
 ];

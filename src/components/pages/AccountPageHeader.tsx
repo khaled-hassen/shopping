@@ -18,7 +18,7 @@ const pages = [
   { name: "Personal information", path: route("account"), Icon: AccountIcon },
   { name: "Security", path: route("security"), Icon: SecurityIcon },
   { name: "Billing", path: route("billing"), Icon: BillingIcon },
-  { name: "Orders", path: route("orders"), Icon: OrdersIcon },
+  // { name: "Orders", path: route("orders"), Icon: OrdersIcon },
   { name: "Wishlist", path: route("wishlist"), Icon: WishlistIcon },
   { name: "Store", path: route("userStore"), Icon: StoreIcon },
 ];
