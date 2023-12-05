@@ -44,8 +44,9 @@ mutation CreateSubcategory($categoryId: String!, $name: String!, $productTypes: 
 }
 
 query GetSubcategory($id: String!) {
-    subcategory(id: $id) {
+    subcategory(slug: $id) {
         id
+        slug
         name
         filters {
             name

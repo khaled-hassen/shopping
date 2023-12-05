@@ -60,7 +60,7 @@ const NewSubcategory: React.FC<IProps> = () => {
             subcategories: [
               ...(data?.subcategories || []),
               { name, productTypes, filters },
-            ],
+            ] as any,
           }),
         );
       },

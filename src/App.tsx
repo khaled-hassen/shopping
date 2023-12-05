@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Layout from "./components/Layout.tsx";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home.tsx";
 import Categories from "./pages/Categories.tsx";
@@ -11,6 +10,7 @@ import { getToken } from "./utils.ts";
 import Login from "./pages/Login.tsx";
 import { AuthContext } from "./store/auth.ts";
 import Config from "./pages/Config.tsx";
+import Layout from "./Components/Layout.tsx";
 
 const App: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);

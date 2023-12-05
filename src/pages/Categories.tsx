@@ -7,9 +7,6 @@ import {
   useDeleteCategoryMutation,
   useGetCategoriesQuery,
 } from "../__generated__/graphql.ts";
-import DeleteItemModal from "../components/DeleteItemModal.tsx";
-import EditCategoryModal from "../components/Categories/EditCategoryModal.tsx";
-import CreateCategoryModal from "../components/Categories/CreateCategoryModal.tsx";
 import { ButtonGroup, Stack } from "@mui/joy";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
@@ -20,6 +17,9 @@ import Sheet from "@mui/joy/Sheet";
 import Table from "@mui/joy/Table";
 import Link from "@mui/joy/Link";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import DeleteItemModal from "../Components/DeleteItemModal.tsx";
+import CreateCategoryModal from "../Components/Categories/CreateCategoryModal.tsx";
+import EditCategoryModal from "../Components/Categories/EditCategoryModal.tsx";
 
 interface IProps {}
 

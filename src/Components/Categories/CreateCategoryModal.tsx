@@ -14,7 +14,11 @@ interface IProps {
   onCancel(): void;
 }
 
-const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
+const CreateCategoryModal: React.FC<IProps> = ({
+  open,
+  onCreated,
+  onCancel,
+}) => {
   const [create, { loading }] = useCreateNewCategoryMutation();
   const [previewImage, setPreviewImage] = useState<string>();
   const [errors, setErrors] = useState<MutationErrors>([]);
@@ -91,4 +95,4 @@ const EditCategoryModal: React.FC<IProps> = ({ open, onCreated, onCancel }) => {
   );
 };
 
-export default EditCategoryModal;
+export default CreateCategoryModal;

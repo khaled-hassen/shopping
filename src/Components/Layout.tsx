@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
+import { CssVarsProvider } from "@mui/joy/styles";
+import { AuthContext } from "../store/auth.ts";
 import Header from "./Header.tsx";
 import Sidebar from "./Sidebar.tsx";
-import { CssVarsProvider } from "@mui/joy/styles";
-import { getToken } from "../utils.ts";
-import { AuthContext } from "../store/auth.ts";
 
 interface IProps {
   children: React.ReactNode;
