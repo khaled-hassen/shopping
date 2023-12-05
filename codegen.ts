@@ -10,6 +10,7 @@ const config: CodegenConfig = {
         "typescript",
         "typescript-operations",
         "typescript-react-apollo",
+        { add: { content: "// @ts-nocheck" } },
       ],
       config: {
         preResolveTypes: true,
@@ -25,6 +26,7 @@ const config: CodegenConfig = {
         "typescript",
         "typescript-operations",
         "graphql-codegen-apollo-next-ssr",
+        { add: { content: "// @ts-nocheck" } },
       ],
       config: {
         preResolveTypes: true,

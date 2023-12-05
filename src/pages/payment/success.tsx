@@ -14,7 +14,7 @@ const PaymentSuccess: React.FC<IProps> = ({}) => {
         Thank you for your purchase. <br /> You will receive an email with your
         order details shortly.
       </h2>
-      <LinkButton title="View orders" href={route("orders")} />
+      {/*<LinkButton title="View orders" href={route("orders")} />*/}
     </div>
   );
 };
