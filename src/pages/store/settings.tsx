@@ -13,7 +13,6 @@ import { useUpdateStoreDetailsMutation } from "@/__generated__/client";
 import { z } from "zod";
 import { asset } from "@/utils/assets";
 import StoreDetailsContainer from "@/components/pages/store/StoreDetailsContainer";
-import PageTitle from "@/components/pages/PageTitle";
 
 export const getServerSideProps = (async (context) => {
   const client = initializeApolloClient(context);
@@ -60,7 +59,6 @@ const Settings: React.FC<PageProps> = ({ data: storeData }) => {
   return (
     <div className="flex flex-col gap-10">
       <StoreDetailsContainer onlyNavigation>
-        <PageTitle title="Products" />
         <FormContainer
           title="Edit store details"
           formActionText="Save changes"
