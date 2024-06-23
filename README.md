@@ -1,4 +1,8 @@
-# shopping
+# Shopping
+
+**End of semester university project**
+
+This application is a full-stack e-commerce web app. It allows users to sell and buy products. It's divided into 3 parts: Admin where the administrator can add categories, and subcategories, and configure the overall website. Backend, it's where all the business logic. And finally, the frontend where users can sell and buy products.
 
 ## Projects
 * [Backend](https://github.com/khaled-hassen/shopping/tree/backend)
